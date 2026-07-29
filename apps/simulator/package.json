@@ -1,0 +1,16 @@
+{
+  "name": "@mech/simulator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "simulate": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@mech/contracts": "0.1.0",
+    "@mech/engine": "0.1.0",
+    "@mech/scenarios": "0.1.0"
+  }
+}

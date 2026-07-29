@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.git
+.env
+infra/data
+*.docx
+*.log
+data/**
+!data/lab/
+!data/lab/**/
+!data/lab/**/report.json

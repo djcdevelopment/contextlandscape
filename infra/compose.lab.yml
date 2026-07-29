@@ -1,0 +1,17 @@
+services:
+  worker:
+    build:
+      context: ..
+      target: lab
+    environment:
+      LAB_MATRIX_ID: "${LAB_MATRIX_ID:-overnight}"
+      LAB_SCENARIO: "${LAB_SCENARIO:-}"
+      LAB_RUNS: "${LAB_RUNS:-25}"
+      LAB_POLICIES: "${LAB_POLICIES:-12}"
+      LAB_TUNINGS: "${LAB_TUNINGS:-1}"
+      LAB_SHARD: "${LAB_SHARD:-0}"
+      LAB_SHARDS: "${LAB_SHARDS:-1}"
+      LAB_SEED_START: "${LAB_SEED_START:-0}"
+    command: ["node", "apps/lab/dist/main.js"]
+    volumes:
+      - ../data:/workspace/data

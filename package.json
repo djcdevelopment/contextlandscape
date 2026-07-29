@@ -1,0 +1,31 @@
+{
+  "name": "mech-commander",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@mech/contracts && npm run build --workspace=@mech/scenarios && npm run build --workspace=@mech/engine && npm run build --workspace=@mech/simulator && npm run build --workspace=@mech/discord-adapter && npm run build --workspace=@mech/lab && npm run build --workspace=@mech/server && npm run build --workspace=@mech/web",
+    "typecheck": "npm run typecheck --workspace=@mech/contracts && npm run typecheck --workspace=@mech/scenarios && npm run typecheck --workspace=@mech/engine && npm run typecheck --workspace=@mech/simulator && npm run typecheck --workspace=@mech/discord-adapter && npm run typecheck --workspace=@mech/lab && npm run typecheck --workspace=@mech/server && npm run typecheck --workspace=@mech/web",
+    "test": "npm run test --workspace=@mech/engine && npm run test --workspace=@mech/lab && npm run test --workspace=@mech/server",
+    "dev:server": "npm run dev --workspace=@mech/server",
+    "dev:web": "npm run dev --workspace=@mech/web",
+    "simulate": "npm run simulate --workspace=@mech/simulator --",
+    "lab": "npm run lab --workspace=@mech/lab --",
+    "gameplay-lab:preflight": "npm run preflight --workspace=@mech/server"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "@types/pg": "^8.15.4",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "typescript": "^5.8.3",
+    "tsx": "^4.19.4",
+    "vitest": "^3.2.4"
+  }
+}

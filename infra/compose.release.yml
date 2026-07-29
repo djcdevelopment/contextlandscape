@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mech
+      POSTGRES_USER: mech
+      POSTGRES_PASSWORD: "${MECH_POSTGRES_PASSWORD:?MECH_POSTGRES_PASSWORD must be set}"
+    volumes:
+      - ${MECH_DATA_ROOT:-./data}/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mech -d mech"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  playtest-data:
+    image: "${MECH_COMMANDER_IMAGE:?MECH_COMMANDER_IMAGE must be set}"
+    user: "0:0"
+    entrypoint: ["sh", "-c"]
+    command: ["mkdir -p /workspace/data/playtests && chown node:node /workspace/data/playtests"]
+    restart: "no"
+    volumes:
+      - ${MECH_DATA_ROOT:-./data}/playtests:/workspace/data/playtests
+
+  app:
+    image: "${MECH_COMMANDER_IMAGE:?MECH_COMMANDER_IMAGE must be set}"
+    restart: unless-stopped
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://mech:${MECH_POSTGRES_PASSWORD}@postgres:5432/mech
+      MECH_COMMANDER_RELEASE: "${MECH_COMMANDER_RELEASE:?MECH_COMMANDER_RELEASE must be set}"
+      PLAYTEST_EXPORT_ROOT: /workspace/data/playtests
+    ports:
+      - "${MECH_BIND_ADDRESS:-127.0.0.1}:${MECH_APP_PORT:-9080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      playtest-data:
+        condition: service_completed_successfully
+    volumes:
+      - ${MECH_DATA_ROOT:-./data}/playtests:/workspace/data/playtests

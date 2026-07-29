@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.omen
+*.log
+coverage/
+infra/data/
+apps/lab/data/
+data/gameplay-labs/preflight.json
+data/playtests/
+data/visual-checks/
+data/lab/**
+!data/lab/sleep-01-summary.json
+!data/lab/sleep-01-analysis/
+!data/lab/sleep-01-analysis/*.svg

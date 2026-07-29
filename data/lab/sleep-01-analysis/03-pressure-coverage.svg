@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Four pressure knobs, one meaningful outcome lever</title>
+  <desc id="desc">Heatmap of intended-doctrine win-rate swing across pressure values. Only starting energy in Two Baked Slices produces a substantial change, a 100 percentage point cliff.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071019"/>
+      <stop offset="0.55" stop-color="#0a131e"/>
+      <stop offset="1" stop-color="#07141a"/>
+    </linearGradient>
+    <linearGradient id="tealBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2fcfa9"/>
+      <stop offset="1" stop-color="#65f5d0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#274055" stroke-width="1" opacity=".16"/>
+    </pattern>
+    <style>
+      .sans { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .mono { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; }
+      .eyebrow { font: 700 16px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: 3px; fill: #4ff0c5; }
+      .title { font: 750 54px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: -1.4px; fill: #f3f8fc; }
+      .subtitle { font: 400 21px Inter, "Segoe UI", Arial, sans-serif; fill: #91a8bd; }
+      .label { font: 650 15px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: 1px; fill: #91a8bd; }
+      .small { font: 400 14px Inter, "Segoe UI", Arial, sans-serif; fill: #7f96aa; }
+      .metric { font: 750 42px Inter, "Segoe UI", Arial, sans-serif; fill: #f3f8fc; }
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <path d="M0 0H620L450 1000H0Z" fill="#0c2030" opacity=".18"/>
+  <text x="80" y="76" class="eyebrow">SEED PRESSURE / DEFAULT TUNING / DEEP MATRICES</text>
+     <text x="80" y="145" class="title">Four pressure knobs. One real outcome lever.</text>
+     <text x="80" y="188" class="subtitle">Win-rate swing across each tested starting-pressure range, in percentage points.</text>
+
+     <g transform="translate(80 230)">
+       <rect width="430" height="100" rx="18" fill="#2b151c" stroke="#713142"/>
+       <text x="24" y="34" class="label" fill="#d59aa8">ONLY MATERIAL EFFECT</text>
+       <text x="24" y="76" class="mono" font-size="28" font-weight="700" fill="#ff647c">100 pp energy cliff</text>
+     </g>
+     <g transform="translate(535 230)">
+       <rect width="430" height="100" rx="18" fill="#101b27" stroke="#344555"/>
+       <text x="24" y="34" class="label">EFFECTIVELY FLAT</text>
+       <text x="24" y="76" class="mono" font-size="28" font-weight="700" fill="#f3f8fc">15 / 16 cells &lt; 6 pp</text>
+     </g>
+     <g transform="translate(990 230)">
+       <rect width="530" height="100" rx="18" fill="#10202b" stroke="#28506a"/>
+       <text x="24" y="34" class="label">INTERPRETATION</text>
+       <text x="24" y="70" class="sans" font-size="18" font-weight="600" fill="#4ff0c5">Seed diversity ≠ decision diversity</text>
+     </g>
+
+     <text x="507" y="364" text-anchor="middle" class="label">ENERGY</text><text x="757" y="364" text-anchor="middle" class="label">HEAT</text><text x="1007" y="364" text-anchor="middle" class="label">DISPERSION</text><text x="1257" y="364" text-anchor="middle" class="label">CONFIDENCE DRIFT</text>
+
+      <text x="80" y="423" class="sans" font-size="20" font-weight="700" fill="#f3f8fc">Two Baked Slices</text>
+      <text x="80" y="447" class="mono" font-size="12" fill="#7f96aa">INTENDED DOCTRINE</text>
+
+        <rect x="390" y="388" width="234" height="76" rx="12" fill="#ff647c" stroke="#ff8da0"/>
+        <text x="507" y="435" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#fff3f5">100.0 pp</text>
+        <rect x="640" y="388" width="234" height="76" rx="12" fill="#315d62" stroke="#304456"/>
+        <text x="757" y="435" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">2.1 pp</text>
+        <rect x="890" y="388" width="234" height="76" rx="12" fill="#315d62" stroke="#304456"/>
+        <text x="1007" y="435" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">5.7 pp</text>
+        <rect x="1140" y="388" width="234" height="76" rx="12" fill="#315d62" stroke="#304456"/>
+        <text x="1257" y="435" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">4.9 pp</text>
+      <text x="80" y="528" class="sans" font-size="20" font-weight="700" fill="#f3f8fc">False Bottleneck</text>
+      <text x="80" y="552" class="mono" font-size="12" fill="#7f96aa">INTENDED DOCTRINE</text>
+
+        <rect x="390" y="493" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="507" y="540" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="640" y="493" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="757" y="540" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="890" y="493" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="1007" y="540" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="1140" y="493" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="1257" y="540" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+      <text x="80" y="633" class="sans" font-size="20" font-weight="700" fill="#f3f8fc">Context Furnace</text>
+      <text x="80" y="657" class="mono" font-size="12" fill="#7f96aa">INTENDED DOCTRINE</text>
+
+        <rect x="390" y="598" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="507" y="645" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="640" y="598" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="757" y="645" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="890" y="598" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="1007" y="645" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="1140" y="598" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="1257" y="645" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+      <text x="80" y="738" class="sans" font-size="20" font-weight="700" fill="#f3f8fc">Documentation Fortress</text>
+      <text x="80" y="762" class="mono" font-size="12" fill="#7f96aa">INTENDED DOCTRINE</text>
+
+        <rect x="390" y="703" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="507" y="750" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="640" y="703" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="757" y="750" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="890" y="703" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="1007" y="750" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+        <rect x="1140" y="703" width="234" height="76" rx="12" fill="#182633" stroke="#304456"/>
+        <text x="1257" y="750" text-anchor="middle" class="mono" font-size="25" font-weight="700" fill="#dce8f0">0.0 pp</text>
+
+     <g transform="translate(80 795)">
+       <rect width="700" height="130" rx="16" fill="#101b27" stroke="#344555"/>
+       <text x="22" y="30" class="label">TWO BAKED SLICES • ENERGY CLIFF</text>
+       <line x1="320" y1="120" x2="620" y2="120" stroke="#3a4d5f"/>
+       <line x1="320" y1="120" x2="620" y2="30" stroke="#4ff0c5" stroke-width="6"/>
+
+         <circle cx="320" cy="120" r="8" fill="#4ff0c5" filter="url(#glow)"/>
+         <text x="320" y="104" text-anchor="middle" class="mono" font-size="15" font-weight="700" fill="#f3f8fc">0%</text>
+         <text x="320" y="116" text-anchor="middle" class="mono" font-size="13" fill="#91a8bd">ENERGY 5</text>
+         <circle cx="620" cy="30" r="8" fill="#4ff0c5" filter="url(#glow)"/>
+         <text x="620" y="14" text-anchor="middle" class="mono" font-size="15" font-weight="700" fill="#f3f8fc">100%</text>
+         <text x="620" y="116" text-anchor="middle" class="mono" font-size="13" fill="#91a8bd">ENERGY 6</text>
+       <text x="660" y="58" text-anchor="end" class="sans" font-size="16" fill="#91a8bd">One point of energy flips</text>
+       <text x="660" y="84" text-anchor="end" class="sans" font-size="22" font-weight="700" fill="#ff647c">0% → 100%</text>
+     </g>
+     <g transform="translate(805 795)">
+       <rect width="715" height="130" rx="16" fill="#171d25" stroke="#4a4650"/>
+       <text x="22" y="30" class="label">NEXT R&amp;D GATE</text>
+       <text x="22" y="61" class="sans" font-size="17" fill="#d4e0e9">Make heat, dispersion, and confidence alter resolution—not only hashes.</text>
+       <text x="22" y="91" class="sans" font-size="17" fill="#d4e0e9">Target graded 10–30 pp responses; reject binary resource cliffs.</text>
+     </g>
+  <text x="80" y="955" class="mono" font-size="13" fill="#60788e">SLEEP-01 • 19,456,000 RUNS • 2026-07-29 • COMPOSITIONS DEDUPED WHERE NOTED</text>
+  <text x="1520" y="955" text-anchor="end" class="mono" font-size="13" fill="#60788e">MECH COMMANDER R&amp;D LAB</text>
+</svg>

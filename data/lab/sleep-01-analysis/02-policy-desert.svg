@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">The deep policy search is mostly a policy desert</title>
+  <desc id="desc">Stacked bars classify 128 unique policies per scenario. Across 512 deduplicated policies, 87.1 percent are dead and only 3.9 percent are viable.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071019"/>
+      <stop offset="0.55" stop-color="#0a131e"/>
+      <stop offset="1" stop-color="#07141a"/>
+    </linearGradient>
+    <linearGradient id="tealBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2fcfa9"/>
+      <stop offset="1" stop-color="#65f5d0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#274055" stroke-width="1" opacity=".16"/>
+    </pattern>
+    <style>
+      .sans { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .mono { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; }
+      .eyebrow { font: 700 16px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: 3px; fill: #4ff0c5; }
+      .title { font: 750 54px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: -1.4px; fill: #f3f8fc; }
+      .subtitle { font: 400 21px Inter, "Segoe UI", Arial, sans-serif; fill: #91a8bd; }
+      .label { font: 650 15px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: 1px; fill: #91a8bd; }
+      .small { font: 400 14px Inter, "Segoe UI", Arial, sans-serif; fill: #7f96aa; }
+      .metric { font: 750 42px Inter, "Segoe UI", Arial, sans-serif; fill: #f3f8fc; }
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <path d="M0 0H620L450 1000H0Z" fill="#0c2030" opacity=".18"/>
+  <text x="80" y="76" class="eyebrow">POLICY LANDSCAPE / DEEP MATRICES / DEFAULT TUNING</text>
+     <text x="80" y="145" class="title">87% of generated policies are dead.</text>
+     <text x="80" y="188" class="subtitle">Random policy generation creates volume, but very little useful balance evidence.</text>
+
+     <g transform="translate(80 230)">
+       <rect width="430" height="112" rx="18" fill="#101b27" stroke="#344555"/>
+       <text x="24" y="34" class="label">DEAD POLICIES • WIN RATE &lt; 5%</text>
+       <text x="24" y="83" class="metric">87.1%</text>
+       <text x="190" y="81" class="mono" font-size="18" fill="#91a8bd">446 / 512</text>
+     </g>
+     <g transform="translate(535 230)">
+       <rect width="430" height="112" rx="18" fill="#0f2523" stroke="#2b695b"/>
+       <text x="24" y="34" class="label" fill="#8ccfbe">VIABLE • 20–80% WIN RATE</text>
+       <text x="24" y="83" class="metric" fill="#4ff0c5">3.9%</text>
+       <text x="176" y="81" class="mono" font-size="18" fill="#91a8bd">20 / 512</text>
+     </g>
+     <g transform="translate(990 230)">
+       <rect width="530" height="112" rx="18" fill="#241d13" stroke="#6b5326"/>
+       <text x="24" y="34" class="label" fill="#cbb37b">DOMINANT • WIN RATE &gt; 95%</text>
+       <text x="24" y="83" class="metric" fill="#ffc857">8.6%</text>
+       <text x="176" y="81" class="mono" font-size="18" fill="#91a8bd">44 / 512</text>
+     </g>
+
+      <text x="80" y="415" class="sans" font-size="21" font-weight="700" fill="#f3f8fc">Two Baked Slices</text>
+      <text x="80" y="439" class="mono" font-size="13" fill="#7f96aa">128 UNIQUE POLICIES</text>
+      <clipPath id="bar-0"><rect x="370" y="390" width="1020" height="58" rx="12"/></clipPath>
+      <g clip-path="url(#bar-0)"><rect x="370" y="390" width="1012.03125" height="58" fill="#293542"/><rect x="1382.03125" y="390" width="0" height="58" fill="#8a79ff"/><rect x="1382.03125" y="390" width="7.96875" height="58" fill="#4ff0c5"/><rect x="1390" y="390" width="0" height="58" fill="#ffc857"/></g>
+      <rect x="370" y="390" width="1020" height="58" rx="12" fill="none" stroke="#3a4d5f"/>
+      <text x="388" y="426" class="mono" font-size="17" font-weight="700" fill="#c3d0da">127 DEAD • 99.2%</text>
+      <text x="1515" y="415" text-anchor="end" class="mono" font-size="15" font-weight="700" fill="#4ff0c5">1 viable</text>
+      <text x="1515" y="438" text-anchor="end" class="mono" font-size="13" fill="#ffc857">0 dominant</text>
+      <text x="80" y="540" class="sans" font-size="21" font-weight="700" fill="#f3f8fc">False Bottleneck</text>
+      <text x="80" y="564" class="mono" font-size="13" fill="#7f96aa">128 UNIQUE POLICIES</text>
+      <clipPath id="bar-1"><rect x="370" y="515" width="1020" height="58" rx="12"/></clipPath>
+      <g clip-path="url(#bar-1)"><rect x="370" y="515" width="796.875" height="58" fill="#293542"/><rect x="1166.875" y="515" width="0" height="58" fill="#8a79ff"/><rect x="1166.875" y="515" width="39.84375" height="58" fill="#4ff0c5"/><rect x="1206.71875" y="515" width="183.28125" height="58" fill="#ffc857"/></g>
+      <rect x="370" y="515" width="1020" height="58" rx="12" fill="none" stroke="#3a4d5f"/>
+      <text x="388" y="551" class="mono" font-size="17" font-weight="700" fill="#c3d0da">100 DEAD • 78.1%</text>
+      <text x="1515" y="540" text-anchor="end" class="mono" font-size="15" font-weight="700" fill="#4ff0c5">5 viable</text>
+      <text x="1515" y="563" text-anchor="end" class="mono" font-size="13" fill="#ffc857">23 dominant</text>
+      <text x="80" y="665" class="sans" font-size="21" font-weight="700" fill="#f3f8fc">Context Furnace</text>
+      <text x="80" y="689" class="mono" font-size="13" fill="#7f96aa">128 UNIQUE POLICIES</text>
+      <clipPath id="bar-2"><rect x="370" y="640" width="1020" height="58" rx="12"/></clipPath>
+      <g clip-path="url(#bar-2)"><rect x="370" y="640" width="796.875" height="58" fill="#293542"/><rect x="1166.875" y="640" width="15.9375" height="58" fill="#8a79ff"/><rect x="1182.8125" y="640" width="95.625" height="58" fill="#4ff0c5"/><rect x="1278.4375" y="640" width="111.5625" height="58" fill="#ffc857"/></g>
+      <rect x="370" y="640" width="1020" height="58" rx="12" fill="none" stroke="#3a4d5f"/>
+      <text x="388" y="676" class="mono" font-size="17" font-weight="700" fill="#c3d0da">100 DEAD • 78.1%</text>
+      <text x="1515" y="665" text-anchor="end" class="mono" font-size="15" font-weight="700" fill="#4ff0c5">12 viable</text>
+      <text x="1515" y="688" text-anchor="end" class="mono" font-size="13" fill="#ffc857">14 dominant</text>
+      <text x="80" y="790" class="sans" font-size="21" font-weight="700" fill="#f3f8fc">Documentation Fortress</text>
+      <text x="80" y="814" class="mono" font-size="13" fill="#7f96aa">128 UNIQUE POLICIES</text>
+      <clipPath id="bar-3"><rect x="370" y="765" width="1020" height="58" rx="12"/></clipPath>
+      <g clip-path="url(#bar-3)"><rect x="370" y="765" width="948.28125" height="58" fill="#293542"/><rect x="1318.28125" y="765" width="0" height="58" fill="#8a79ff"/><rect x="1318.28125" y="765" width="15.9375" height="58" fill="#4ff0c5"/><rect x="1334.21875" y="765" width="55.78125" height="58" fill="#ffc857"/></g>
+      <rect x="370" y="765" width="1020" height="58" rx="12" fill="none" stroke="#3a4d5f"/>
+      <text x="388" y="801" class="mono" font-size="17" font-weight="700" fill="#c3d0da">119 DEAD • 93.0%</text>
+      <text x="1515" y="790" text-anchor="end" class="mono" font-size="15" font-weight="700" fill="#4ff0c5">2 viable</text>
+      <text x="1515" y="813" text-anchor="end" class="mono" font-size="13" fill="#ffc857">7 dominant</text>
+     <g transform="translate(370 885)">
+       <rect x="0" y="-12" width="18" height="18" rx="4" fill="#293542"/><text x="28" y="2" class="small">DEAD &lt;5%</text>
+       <rect x="165" y="-12" width="18" height="18" rx="4" fill="#8a79ff"/><text x="193" y="2" class="small">FRINGE</text>
+       <rect x="315" y="-12" width="18" height="18" rx="4" fill="#4ff0c5"/><text x="343" y="2" class="small">VIABLE 20–80%</text>
+       <rect x="520" y="-12" width="18" height="18" rx="4" fill="#ffc857"/><text x="548" y="2" class="small">DOMINANT &gt;95%</text>
+     </g>
+     <text x="80" y="905" class="small">Each policy is averaged across four composition labels, then counted once; the current composition curves are identical.</text>
+  <text x="80" y="955" class="mono" font-size="13" fill="#60788e">SLEEP-01 • 19,456,000 RUNS • 2026-07-29 • COMPOSITIONS DEDUPED WHERE NOTED</text>
+  <text x="1520" y="955" text-anchor="end" class="mono" font-size="13" fill="#60788e">MECH COMMANDER R&amp;D LAB</text>
+</svg>

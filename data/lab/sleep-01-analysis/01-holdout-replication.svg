@@ -1,0 +1,249 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Holdout replication of tuning rankings</title>
+  <desc id="desc">Four scenario tuning rankings on train and disjoint holdout seeds. All rankings replicate, but two scenarios have three-way ties.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071019"/>
+      <stop offset="0.55" stop-color="#0a131e"/>
+      <stop offset="1" stop-color="#07141a"/>
+    </linearGradient>
+    <linearGradient id="tealBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2fcfa9"/>
+      <stop offset="1" stop-color="#65f5d0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#274055" stroke-width="1" opacity=".16"/>
+    </pattern>
+    <style>
+      .sans { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .mono { font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; }
+      .eyebrow { font: 700 16px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: 3px; fill: #4ff0c5; }
+      .title { font: 750 54px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: -1.4px; fill: #f3f8fc; }
+      .subtitle { font: 400 21px Inter, "Segoe UI", Arial, sans-serif; fill: #91a8bd; }
+      .label { font: 650 15px Inter, "Segoe UI", Arial, sans-serif; letter-spacing: 1px; fill: #91a8bd; }
+      .small { font: 400 14px Inter, "Segoe UI", Arial, sans-serif; fill: #7f96aa; }
+      .metric { font: 750 42px Inter, "Segoe UI", Arial, sans-serif; fill: #f3f8fc; }
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <path d="M0 0H620L450 1000H0Z" fill="#0c2030" opacity=".18"/>
+  <text x="80" y="76" class="eyebrow">VALIDATION / DISJOINT SEED RANGES</text>
+     <text x="80" y="145" class="title">The ranking repeats. The certainty does not.</text>
+     <text x="80" y="188" class="subtitle">Train bars and holdout dots overlap across all 24 tuning comparisons.</text>
+
+     <g transform="translate(80 220)">
+       <rect width="330" height="70" rx="14" fill="#10202b" stroke="#28506a"/>
+       <text x="22" y="29" class="label">RANKINGS REPLICATED</text>
+       <text x="22" y="57" class="mono" font-size="24" font-weight="700" fill="#4ff0c5">4/4 scenarios</text>
+     </g>
+     <g transform="translate(430 220)">
+       <rect width="330" height="70" rx="14" fill="#10202b" stroke="#28506a"/>
+       <text x="22" y="29" class="label">MAX SCORE DRIFT</text>
+       <text x="22" y="57" class="mono" font-size="24" font-weight="700" fill="#f3f8fc">0.004</text>
+     </g>
+     <g transform="translate(780 220)">
+       <rect width="350" height="70" rx="14" fill="#10202b" stroke="#28506a"/>
+       <text x="22" y="29" class="label">UNIQUE WINNERS</text>
+       <text x="22" y="57" class="mono" font-size="24" font-weight="700" fill="#4ff0c5">2 / 4 scenarios</text>
+     </g>
+     <g transform="translate(1150 220)">
+       <rect width="370" height="70" rx="14" fill="#241d13" stroke="#6b5326"/>
+       <text x="22" y="29" class="label" fill="#cbb37b">AMBIGUOUS LEADERS</text>
+       <text x="22" y="57" class="mono" font-size="24" font-weight="700" fill="#ffc857">2 three-way ties</text>
+     </g>
+
+      <g>
+        <rect x="80" y="315" width="710" height="260" rx="18" fill="#101b27" stroke="#26384a"/>
+        <text x="104" y="353" class="sans" font-size="22" font-weight="700" fill="#f3f8fc">Two Baked Slices</text>
+        <rect x="610" y="333" width="154" height="30" rx="15" fill="#ffc857" opacity=".12" stroke="#ffc857"/>
+        <text x="687" y="354" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#ffc857">3-WAY TIE</text>
+        <text x="305" y="381" class="mono" font-size="11" fill="#60788e">0</text>
+        <text x="695" y="381" text-anchor="end" class="mono" font-size="11" fill="#60788e">COMPOSITE SCORE 2.0</text>
+
+        <text x="104" y="408" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">ENERGY +1</text>
+        <line x1="305" y1="403" x2="695" y2="403" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="403" x2="490.25" y2="403" stroke="#67a9ff" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="490.25" y1="403" x2="490.25" y2="403" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="490.25" cy="403" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="408" class="mono" font-size="13" fill="#f3f8fc">0.950 / 0.950</text>
+        <text x="104" y="438" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">FULL SEND CHEAP</text>
+        <line x1="305" y1="433" x2="695" y2="433" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="433" x2="490.25" y2="433" stroke="#4ff0c5" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="490.25" y1="433" x2="490.25" y2="433" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="490.25" cy="433" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="438" class="mono" font-size="13" fill="#f3f8fc">0.950 / 0.950</text>
+        <text x="104" y="468" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">IMPLEMENT CHEAP</text>
+        <line x1="305" y1="463" x2="695" y2="463" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="463" x2="490.25" y2="463" stroke="#b58cff" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="490.25" y1="463" x2="490.25" y2="463" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="490.25" cy="463" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="468" class="mono" font-size="13" fill="#f3f8fc">0.950 / 0.950</text>
+        <text x="104" y="498" class="sans" font-size="13" font-weight="500" fill="#91a8bd">DEFAULT</text>
+        <line x1="305" y1="493" x2="695" y2="493" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="493" x2="442.085" y2="493" stroke="#8ca1b5" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="442.085" y1="493" x2="442.475" y2="493" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="442.475" cy="493" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="498" class="mono" font-size="13" fill="#7f96aa">0.703 / 0.705</text>
+        <text x="104" y="528" class="sans" font-size="13" font-weight="500" fill="#91a8bd">HEAT −1</text>
+        <line x1="305" y1="523" x2="695" y2="523" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="523" x2="442.085" y2="523" stroke="#ff956b" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="442.085" y1="523" x2="442.475" y2="523" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="442.475" cy="523" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="528" class="mono" font-size="13" fill="#7f96aa">0.703 / 0.705</text>
+        <text x="104" y="558" class="sans" font-size="13" font-weight="500" fill="#91a8bd">FULL SEND EXPENSIVE</text>
+        <line x1="305" y1="553" x2="695" y2="553" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="553" x2="305" y2="553" stroke="#ff647c" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="305" y1="553" x2="305" y2="553" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="305" cy="553" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="558" class="mono" font-size="13" fill="#7f96aa">0.000 / 0.000</text>
+      </g>
+      <g>
+        <rect x="830" y="315" width="710" height="260" rx="18" fill="#101b27" stroke="#26384a"/>
+        <text x="854" y="353" class="sans" font-size="22" font-weight="700" fill="#f3f8fc">False Bottleneck</text>
+        <rect x="1360" y="333" width="154" height="30" rx="15" fill="#4ff0c5" opacity=".12" stroke="#4ff0c5"/>
+        <text x="1437" y="354" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#4ff0c5">UNIQUE LEADER</text>
+        <text x="1055" y="381" class="mono" font-size="11" fill="#60788e">0</text>
+        <text x="1445" y="381" text-anchor="end" class="mono" font-size="11" fill="#60788e">COMPOSITE SCORE 2.0</text>
+
+        <text x="854" y="408" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">FULL SEND CHEAP</text>
+        <line x1="1055" y1="403" x2="1445" y2="403" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="403" x2="1310.06" y2="403" stroke="#4ff0c5" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="1309.865" y1="403" x2="1310.06" y2="403" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1309.865" cy="403" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="408" class="mono" font-size="13" fill="#f3f8fc">1.308 / 1.307</text>
+        <text x="854" y="438" class="sans" font-size="13" font-weight="500" fill="#91a8bd">DEFAULT</text>
+        <line x1="1055" y1="433" x2="1445" y2="433" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="433" x2="1274.18" y2="433" stroke="#8ca1b5" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1274.18" y1="433" x2="1274.18" y2="433" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1274.18" cy="433" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="438" class="mono" font-size="13" fill="#7f96aa">1.124 / 1.124</text>
+        <text x="854" y="468" class="sans" font-size="13" font-weight="500" fill="#91a8bd">HEAT −1</text>
+        <line x1="1055" y1="463" x2="1445" y2="463" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="463" x2="1274.18" y2="463" stroke="#ff956b" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1274.18" y1="463" x2="1274.18" y2="463" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1274.18" cy="463" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="468" class="mono" font-size="13" fill="#7f96aa">1.124 / 1.124</text>
+        <text x="854" y="498" class="sans" font-size="13" font-weight="500" fill="#91a8bd">ENERGY +1</text>
+        <line x1="1055" y1="493" x2="1445" y2="493" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="493" x2="1267.94" y2="493" stroke="#67a9ff" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1267.94" y1="493" x2="1267.94" y2="493" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1267.94" cy="493" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="498" class="mono" font-size="13" fill="#7f96aa">1.092 / 1.092</text>
+        <text x="854" y="528" class="sans" font-size="13" font-weight="500" fill="#91a8bd">FULL SEND EXPENSIVE</text>
+        <line x1="1055" y1="523" x2="1445" y2="523" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="523" x2="1267.94" y2="523" stroke="#ff647c" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1267.94" y1="523" x2="1267.94" y2="523" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1267.94" cy="523" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="528" class="mono" font-size="13" fill="#7f96aa">1.092 / 1.092</text>
+        <text x="854" y="558" class="sans" font-size="13" font-weight="500" fill="#91a8bd">IMPLEMENT CHEAP</text>
+        <line x1="1055" y1="553" x2="1445" y2="553" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="553" x2="1225.82" y2="553" stroke="#b58cff" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1225.82" y1="553" x2="1225.82" y2="553" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1225.82" cy="553" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="558" class="mono" font-size="13" fill="#7f96aa">0.876 / 0.876</text>
+      </g>
+      <g>
+        <rect x="80" y="605" width="710" height="260" rx="18" fill="#101b27" stroke="#26384a"/>
+        <text x="104" y="643" class="sans" font-size="22" font-weight="700" fill="#f3f8fc">Context Furnace</text>
+        <rect x="610" y="623" width="154" height="30" rx="15" fill="#4ff0c5" opacity=".12" stroke="#4ff0c5"/>
+        <text x="687" y="644" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#4ff0c5">UNIQUE LEADER</text>
+        <text x="305" y="671" class="mono" font-size="11" fill="#60788e">0</text>
+        <text x="695" y="671" text-anchor="end" class="mono" font-size="11" fill="#60788e">COMPOSITE SCORE 2.0</text>
+
+        <text x="104" y="698" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">HEAT −1</text>
+        <line x1="305" y1="693" x2="695" y2="693" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="693" x2="681.3499999999999" y2="693" stroke="#ff956b" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="680.5699999999999" y1="693" x2="681.3499999999999" y2="693" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="680.5699999999999" cy="693" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="698" class="mono" font-size="13" fill="#f3f8fc">1.930 / 1.926</text>
+        <text x="104" y="728" class="sans" font-size="13" font-weight="500" fill="#91a8bd">DEFAULT</text>
+        <line x1="305" y1="723" x2="695" y2="723" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="723" x2="622.0699999999999" y2="723" stroke="#8ca1b5" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="621.875" y1="723" x2="622.0699999999999" y2="723" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="621.875" cy="723" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="728" class="mono" font-size="13" fill="#7f96aa">1.626 / 1.625</text>
+        <text x="104" y="758" class="sans" font-size="13" font-weight="500" fill="#91a8bd">ENERGY +1</text>
+        <line x1="305" y1="753" x2="695" y2="753" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="753" x2="616.8050000000001" y2="753" stroke="#67a9ff" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="616.61" y1="753" x2="616.8050000000001" y2="753" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="616.61" cy="753" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="758" class="mono" font-size="13" fill="#7f96aa">1.599 / 1.598</text>
+        <text x="104" y="788" class="sans" font-size="13" font-weight="500" fill="#91a8bd">FULL SEND CHEAP</text>
+        <line x1="305" y1="783" x2="695" y2="783" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="783" x2="616.8050000000001" y2="783" stroke="#4ff0c5" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="616.61" y1="783" x2="616.8050000000001" y2="783" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="616.61" cy="783" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="788" class="mono" font-size="13" fill="#7f96aa">1.599 / 1.598</text>
+        <text x="104" y="818" class="sans" font-size="13" font-weight="500" fill="#91a8bd">IMPLEMENT CHEAP</text>
+        <line x1="305" y1="813" x2="695" y2="813" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="813" x2="579.95" y2="813" stroke="#b58cff" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="579.755" y1="813" x2="579.95" y2="813" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="579.755" cy="813" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="818" class="mono" font-size="13" fill="#7f96aa">1.410 / 1.409</text>
+        <text x="104" y="848" class="sans" font-size="13" font-weight="500" fill="#91a8bd">FULL SEND EXPENSIVE</text>
+        <line x1="305" y1="843" x2="695" y2="843" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="305" y1="843" x2="533.54" y2="843" stroke="#ff647c" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="533.54" y1="843" x2="534.125" y2="843" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="534.125" cy="843" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="713" y="848" class="mono" font-size="13" fill="#7f96aa">1.172 / 1.175</text>
+      </g>
+      <g>
+        <rect x="830" y="605" width="710" height="260" rx="18" fill="#101b27" stroke="#26384a"/>
+        <text x="854" y="643" class="sans" font-size="22" font-weight="700" fill="#f3f8fc">Documentation Fortress</text>
+        <rect x="1360" y="623" width="154" height="30" rx="15" fill="#ffc857" opacity=".12" stroke="#ffc857"/>
+        <text x="1437" y="644" text-anchor="middle" class="mono" font-size="12" font-weight="700" fill="#ffc857">3-WAY TIE</text>
+        <text x="1055" y="671" class="mono" font-size="11" fill="#60788e">0</text>
+        <text x="1445" y="671" text-anchor="end" class="mono" font-size="11" fill="#60788e">COMPOSITE SCORE 2.0</text>
+
+        <text x="854" y="698" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">ENERGY +1</text>
+        <line x1="1055" y1="693" x2="1445" y2="693" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="693" x2="1276.1299999999999" y2="693" stroke="#67a9ff" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="1276.1299999999999" y1="693" x2="1276.1299999999999" y2="693" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1276.1299999999999" cy="693" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="698" class="mono" font-size="13" fill="#f3f8fc">1.134 / 1.134</text>
+        <text x="854" y="728" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">FULL SEND CHEAP</text>
+        <line x1="1055" y1="723" x2="1445" y2="723" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="723" x2="1276.1299999999999" y2="723" stroke="#4ff0c5" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="1276.1299999999999" y1="723" x2="1276.1299999999999" y2="723" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1276.1299999999999" cy="723" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="728" class="mono" font-size="13" fill="#f3f8fc">1.134 / 1.134</text>
+        <text x="854" y="758" class="sans" font-size="13" font-weight="700" fill="#eaf7f3">IMPLEMENT CHEAP</text>
+        <line x1="1055" y1="753" x2="1445" y2="753" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="753" x2="1276.1299999999999" y2="753" stroke="#b58cff" stroke-width="8" stroke-linecap="round" opacity="1"/>
+        <line x1="1276.1299999999999" y1="753" x2="1276.1299999999999" y2="753" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1276.1299999999999" cy="753" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="758" class="mono" font-size="13" fill="#f3f8fc">1.134 / 1.134</text>
+        <text x="854" y="788" class="sans" font-size="13" font-weight="500" fill="#91a8bd">DEFAULT</text>
+        <line x1="1055" y1="783" x2="1445" y2="783" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="783" x2="1240.25" y2="783" stroke="#8ca1b5" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1240.25" y1="783" x2="1240.25" y2="783" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1240.25" cy="783" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="788" class="mono" font-size="13" fill="#7f96aa">0.950 / 0.950</text>
+        <text x="854" y="818" class="sans" font-size="13" font-weight="500" fill="#91a8bd">FULL SEND EXPENSIVE</text>
+        <line x1="1055" y1="813" x2="1445" y2="813" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="813" x2="1240.25" y2="813" stroke="#ff647c" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1240.25" y1="813" x2="1240.25" y2="813" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1240.25" cy="813" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="818" class="mono" font-size="13" fill="#7f96aa">0.950 / 0.950</text>
+        <text x="854" y="848" class="sans" font-size="13" font-weight="500" fill="#91a8bd">HEAT −1</text>
+        <line x1="1055" y1="843" x2="1445" y2="843" stroke="#243444" stroke-width="6" stroke-linecap="round"/>
+        <line x1="1055" y1="843" x2="1240.25" y2="843" stroke="#ff956b" stroke-width="5" stroke-linecap="round" opacity="0.68"/>
+        <line x1="1240.25" y1="843" x2="1240.25" y2="843" stroke="#f7fbff" stroke-width="2"/>
+        <circle cx="1240.25" cy="843" r="4" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+        <text x="1463" y="848" class="mono" font-size="13" fill="#7f96aa">0.950 / 0.950</text>
+      </g>
+     <g transform="translate(80 905)">
+       <line x1="0" y1="0" x2="30" y2="0" stroke="#4ff0c5" stroke-width="7" stroke-linecap="round"/>
+       <text x="42" y="5" class="small">TRAIN SCORE</text>
+       <circle cx="180" cy="0" r="5" fill="#071019" stroke="#f7fbff" stroke-width="2"/>
+       <text x="194" y="5" class="small">HOLDOUT SCORE</text>
+       <text x="420" y="5" class="small">Composite score rewards lesson separation plus the raw count of viable composition-policy cells.</text>
+     </g>
+  <text x="80" y="955" class="mono" font-size="13" fill="#60788e">SLEEP-01 • 19,456,000 RUNS • 2026-07-29 • COMPOSITIONS DEDUPED WHERE NOTED</text>
+  <text x="1520" y="955" text-anchor="end" class="mono" font-size="13" fill="#60788e">MECH COMMANDER R&amp;D LAB</text>
+</svg>

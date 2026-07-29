@@ -1,0 +1,72 @@
+[
+    {
+        "name":  "doctrine-landscape",
+        "matrixId":  "sleep-01-doctrine-landscape",
+        "runs":  1024000,
+        "cells":  1024,
+        "paretoPolicies":  60,
+        "recommendations":  4,
+        "reportPath":  "data/lab/sleep-01-doctrine-landscape/report.json",
+        "candidatePath":  "data/lab/sleep-01-doctrine-landscape/candidate-patches.json"
+    },
+    {
+        "name":  "tuning-train",
+        "matrixId":  "sleep-01-tuning-train",
+        "runs":  3072000,
+        "cells":  3072,
+        "paretoPolicies":  300,
+        "recommendations":  24,
+        "reportPath":  "data/lab/sleep-01-tuning-train/report.json",
+        "candidatePath":  "data/lab/sleep-01-tuning-train/candidate-patches.json"
+    },
+    {
+        "name":  "tuning-holdout",
+        "matrixId":  "sleep-01-tuning-holdout",
+        "runs":  3072000,
+        "cells":  3072,
+        "paretoPolicies":  300,
+        "recommendations":  24,
+        "reportPath":  "data/lab/sleep-01-tuning-holdout/report.json",
+        "candidatePath":  "data/lab/sleep-01-tuning-holdout/candidate-patches.json"
+    },
+    {
+        "name":  "deep-two-baked-slices",
+        "matrixId":  "sleep-01-deep-two-baked-slices",
+        "runs":  3072000,
+        "cells":  3072,
+        "paretoPolicies":  136,
+        "recommendations":  6,
+        "reportPath":  "data/lab/sleep-01-deep-two-baked-slices/report.json",
+        "candidatePath":  "data/lab/sleep-01-deep-two-baked-slices/candidate-patches.json"
+    },
+    {
+        "name":  "deep-false-bottleneck",
+        "matrixId":  "sleep-01-deep-false-bottleneck",
+        "runs":  3072000,
+        "cells":  3072,
+        "paretoPolicies":  72,
+        "recommendations":  6,
+        "reportPath":  "data/lab/sleep-01-deep-false-bottleneck/report.json",
+        "candidatePath":  "data/lab/sleep-01-deep-false-bottleneck/candidate-patches.json"
+    },
+    {
+        "name":  "deep-context-furnace",
+        "matrixId":  "sleep-01-deep-context-furnace",
+        "runs":  3072000,
+        "cells":  3072,
+        "paretoPolicies":  120,
+        "recommendations":  6,
+        "reportPath":  "data/lab/sleep-01-deep-context-furnace/report.json",
+        "candidatePath":  "data/lab/sleep-01-deep-context-furnace/candidate-patches.json"
+    },
+    {
+        "name":  "deep-documentation-fortress",
+        "matrixId":  "sleep-01-deep-documentation-fortress",
+        "runs":  3072000,
+        "cells":  3072,
+        "paretoPolicies":  80,
+        "recommendations":  6,
+        "reportPath":  "data/lab/sleep-01-deep-documentation-fortress/report.json",
+        "candidatePath":  "data/lab/sleep-01-deep-documentation-fortress/candidate-patches.json"
+    }
+]

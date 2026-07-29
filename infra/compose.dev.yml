@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mech
+      POSTGRES_USER: mech
+      POSTGRES_PASSWORD: mech
+    ports:
+      - "127.0.0.1:${MECH_PG_PORT:-5442}:5432"
+    volumes:
+      - mech-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mech -d mech"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build:
+      context: ..
+      target: dev
+    command: sh -c "npm run build && npm run dev:server"
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://mech:mech@postgres:5432/mech
+      MECH_COMMANDER_RELEASE: dev
+      PLAYTEST_EXPORT_ROOT: /workspace/data/playtests
+    ports:
+      - "127.0.0.1:${MECH_API_PORT:-9080}:8080"
+    volumes:
+      - ..:/workspace
+      - mech-node-modules:/workspace/node_modules
+      - mech-web-node-modules:/workspace/apps/web/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      target: dev
+    command: npm run dev --workspace=@mech/web -- --host 0.0.0.0
+    ports:
+      - "127.0.0.1:${MECH_WEB_PORT:-5173}:5173"
+    volumes:
+      - ..:/workspace
+      - mech-node-modules:/workspace/node_modules
+      - mech-web-node-modules:/workspace/apps/web/node_modules
+    depends_on:
+      - app
+
+volumes:
+  mech-pgdata:
+  mech-node-modules:
+  mech-web-node-modules:

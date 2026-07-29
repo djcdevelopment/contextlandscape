@@ -1,0 +1,28 @@
+name: mechanics-lab
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 3 * * *"
+
+jobs:
+  verify-and-simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run lab -- --matrix=ci-${{ github.run_id }} --runs=${{ github.event_name == 'schedule' && 100 || 5 }} --policies=8 --tunings=2 --shards=1 --shard=0
+      - name: Validate report
+        env:
+          MATRIX_ID: ci-${{ github.run_id }}
+        run: |
+          npm run lab -- --report=data/lab/$MATRIX_ID
+          node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync(`data/lab/${process.env.MATRIX_ID}/report.json`)); if(!r.runs || !r.cells.length || !r.recommendations.length) process.exit(1); console.log(`lab gate: ${r.runs} runs, ${r.cells.length} cells`);'
