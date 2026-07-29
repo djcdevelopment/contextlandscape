@@ -1,78 +1,341 @@
 # Mech Commander
 
-The first prototype of the AI-orchestration autobattler described in the two design documents in this repository.
+[![mechanics-lab](https://github.com/djcdevelopment/contextlandscape/actions/workflows/mechanics-lab.yml/badge.svg)](https://github.com/djcdevelopment/contextlandscape/actions/workflows/mechanics-lab.yml)
+[![Node.js 24+](https://img.shields.io/badge/Node.js-24%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/runtime-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-The prototype is intentionally a portable Linux-container application: a deterministic TypeScript rules engine, a PostgreSQL-backed match API, and a React browser board. OMEN is the development target; AM4 and GCP consume promoted images.
+Mech Commander is a research prototype for an AI-orchestration autobattler. The player commands a small force through systems-engineering decisions—scout, establish a contract, implement, review, consolidate, or commit with a full send—while managing energy, heat, dispersion, confidence drift, and incomplete information.
 
-## Current prototype
+The repository combines a playable browser game with a deterministic simulation and experimentation platform. Its purpose is to discover whether the underlying decisions are legible and interesting before committing to the larger asynchronous PvP and social product.
 
-The verified local build now includes:
+> **Prototype status:** the baseline game, synthetic balance worker, and blinded single-player gameplay labs are implemented. Content and tuning remain research-grade; synthetic recommendations never promote themselves.
 
-- four versioned single-player scenarios with deterministic replay and reconstruction;
-- a sharded synthetic balance lab with train/holdout reports and recommendation-only candidate patches;
-- five blinded gameplay-lab packs containing 24 playable variants;
-- persistent lab sessions, pre/post-reconstruction review gates, joined exports, and executable follow-up matrices;
-- PostgreSQL and in-memory runtime modes packaged in portable Linux images.
+## Table of contents
 
-The gameplay-lab implementation is verified on OMEN, but has not yet been promoted to the public AM4 route. The current public release remains the baseline `p0-rd-20260729-r5`; its gameplay-lab API paths return the gallery authentication response until the application image and AM4 Caddy allowlist are promoted together.
+- [Why this exists](#why-this-exists)
+- [Current status](#current-status)
+- [Quick start](#quick-start)
+- [How to play](#how-to-play)
+- [Architecture](#architecture)
+- [Research loop](#research-loop)
+- [Common commands](#common-commands)
+- [Repository layout](#repository-layout)
+- [Deployment](#deployment)
+- [Documentation](#documentation)
+- [Data and security](#data-and-security)
+- [Contributing](#contributing)
 
-## OMEN development
+## Why this exists
+
+The project started from two design documents:
+
+- [Mech Commander AI Autobattler Living Design](Mech_Commander_AI_Autobattler_Living_Design.docx) describes the product vision, player fantasy, core loop, forces, progression, and social direction.
+- [Scenario Forge AI Battlefield Map Design](Scenario_Forge_AI_Battlefield_Map_Design.docx) describes the scenario grammar, battlefield structure, pressure systems, and content-generation direction.
+
+This prototype narrows those ideas into a falsifiable question: can systems-engineering tradeoffs become understandable battlefield decisions? The current implementation therefore prioritizes deterministic mechanics, replayable evidence, synthetic search, and short human review labs over accounts, monetization, realtime play, or production art.
+
+## Current status
+
+| Surface | Implemented state |
+| --- | --- |
+| Playable game | React/Vite 10×10 board, selectable cells, explicit unit orders, transaction console, and post-battle reconstruction |
+| Scenario pack | Four versioned single-player scenarios with distinct lessons and rules profiles |
+| Rules engine | Deterministic TypeScript state transitions, seeded runs, idempotent commands, replay manifests, and event/projection hashes |
+| Persistence | PostgreSQL for matches, commands, events, observations, challenges, and gameplay-lab sessions; in-memory mode for portable runtime checks |
+| Synthetic research | Seeded doctrine simulator plus a resumable, sharded Docker worker with train/holdout comparisons and recommendation-only candidate patches |
+| Gameplay research | Five blinded lab packs, 24 playable variants, gated pre/post-reconstruction reviews, joined exports, and executable follow-up matrices |
+| CI | Typecheck, tests, a bounded mechanics matrix, report generation, and recommendation validation on pushes, pull requests, and a nightly schedule |
+
+The completed `sleep-01` campaign evaluated **19,456,000 deterministic matches**. It found useful policy and tuning boundaries, but also demonstrated that more simulation cannot recover a mechanic the engine does not currently exercise: composition labels do not yet produce valid chassis-balance evidence.
+
+Known boundaries:
+
+- no real population-level balance claim has been made;
+- the first human gameplay-lab cycle is still in progress;
+- composition needs mechanically distinct loadouts, initiative interactions, or multi-order slots before another large balance campaign;
+- Discord, profiles, matchmaking, ranked play, and durable progression are future product work.
+
+## Quick start
+
+### Requirements
+
+- Git
+- Docker Engine or Docker Desktop with the Compose plugin
+- PowerShell 7 for the repository scripts
+- Node.js 24 or newer for running npm commands directly on the host
+
+Default development ports:
+
+| Service | Address |
+| --- | --- |
+| Browser UI | <http://localhost:5173> |
+| Match API | <http://localhost:9080> |
+| PostgreSQL | `127.0.0.1:5442` |
+
+> **Gameplay-lab data prerequisite:** server startup validates the full source reports that produced each gameplay experiment. Those large generated reports are intentionally excluded from Git. They are already present in the OMEN research checkout; a new machine must restore the `sleep-01` report artifacts under `data/lab/` or regenerate them before starting the server. See [Gameplay-lab dataset](#gameplay-lab-dataset) below.
+
+A fresh clone can run `npm ci`, build, typecheck, and test without those reports; only server startup and gameplay-lab preflight require them.
+
+### Start the development stack
 
 ```powershell
-docker compose -f infra/compose.dev.yml up --build
+git clone https://github.com/djcdevelopment/contextlandscape.git
+Set-Location contextlandscape
+docker compose -p mech-commander-dev -f infra/compose.dev.yml up --build -d
+docker compose -p mech-commander-dev -f infra/compose.dev.yml ps
+Invoke-RestMethod http://127.0.0.1:9080/health/ready
 ```
 
-Open <http://localhost:5173>. The API is available at <http://localhost:9080>.
+Open <http://localhost:5173>. A healthy development response reports:
 
-Run the complete local acceptance seam:
+```text
+status      : ok
+persistence : postgres
+```
+
+Follow logs:
 
 ```powershell
+docker compose -p mech-commander-dev -f infra/compose.dev.yml logs -f app web
+```
+
+Stop the stack while preserving its PostgreSQL volume:
+
+```powershell
+docker compose -p mech-commander-dev -f infra/compose.dev.yml down
+```
+
+### Gameplay-lab dataset
+
+To regenerate the complete source campaign:
+
+```powershell
+docker compose -p mech-commander-lab -f infra/compose.lab.yml build worker
+.\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -DryRun
+.\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -MinimumFreeGiB 50
+```
+
+The dry run prints the matrix and storage plan without launching it. See [OVERNIGHT_EXPERIMENT_PLAN.md](OVERNIGHT_EXPERIMENT_PLAN.md) before running the full campaign.
+
+## How to play
+
+### Normal scenarios
+
+1. Choose a scenario.
+2. Select any battlefield cell to inspect its compact JSON representation.
+3. Select a friendly unit to enable its command actions.
+4. Issue one bounded order per slot and watch the transaction console.
+5. Reach the mission threshold without exhausting the relevant energy, heat, or context constraints.
+6. Use the post-battle reconstruction to understand the causal sequence.
+
+Start with **The Two Baked Slices** and use [PLAYTEST_WORKBOOK.md](PLAYTEST_WORKBOOK.md) if you want the intended verification route.
+
+### Blinded gameplay labs
+
+Select **Gameplay labs** to open GL-001 through GL-005. Trials use anonymous labels so their treatment and synthetic recommendation remain hidden.
+
+- Play until the battlefield reaches `victory` or `defeat`.
+- **Bookmark note (does not advance)** records a meaningful decision without finishing the trial.
+- Select **Complete trial**, explain the result before reconstruction, then review it again afterward.
+- Complete every anonymous trial before comparing and revealing treatments.
+- Use **Leave lab** if you need to return to the catalog; partial evidence remains server-side.
+
+The full operator procedure is in [GAMEPLAY_LAB_WORKBOOK.md](GAMEPLAY_LAB_WORKBOOK.md).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser["React + Vite browser board"] --> API["Fastify match and lab API"]
+    API --> Engine["Deterministic rules engine"]
+    API --> Scenarios["Versioned scenarios and lab registry"]
+    API --> PostgreSQL[("PostgreSQL")]
+    API --> Exports["Playtest JSON and Markdown exports"]
+
+    Simulator["Seeded doctrine simulator"] --> Engine
+    Worker["Sharded synthetic lab worker"] --> Engine
+    Worker --> Scenarios
+    Worker --> Artifacts["Compressed shards, reports, candidate patches"]
+    Exports --> Worker
+```
+
+The important boundaries are deliberate:
+
+- `packages/contracts` owns shared schemas and transport contracts.
+- `packages/engine` owns deterministic gameplay truth.
+- `packages/scenarios` owns versioned content, rules profiles, and gameplay-lab definitions.
+- `apps/server` owns persistence, hidden treatment mapping, API blinding, review gates, and exports.
+- `apps/simulator` compares named doctrines quickly.
+- `apps/lab` runs large reproducible matrices and bounded human-selected follow-ups.
+- `apps/web` renders the board and research workflow without owning hidden treatment data.
+
+Every deployable path uses a Linux container. OMEN is the development and current runtime host; the same immutable image can move to AM4 or GCP without rebuilding.
+
+## Research loop
+
+Synthetic simulation is a hypothesis generator, not a replacement for play:
+
+```text
+seeded simulation
+  -> sharded train/holdout matrix
+  -> explicit edge and falsifier
+  -> versioned blinded gameplay lab
+  -> player explanation before reconstruction
+  -> keep / revise / reject
+  -> bounded control-versus-treatment follow-up
+  -> manual scenario-version decision
+```
+
+The server performs a startup preflight before exposing the gameplay-lab catalog. It checks source provenance, scenario versions, variant reachability, winning-path evidence, and exact replay equality for control variants.
+
+Selected `sleep-01` views:
+
+- [Train/holdout replication](data/lab/sleep-01-analysis/01-holdout-replication.svg)
+- [Policy desert and dominance](data/lab/sleep-01-analysis/02-policy-desert.svg)
+- [Pressure coverage and the energy cliff](data/lab/sleep-01-analysis/03-pressure-coverage.svg)
+- [Machine-readable campaign summary](data/lab/sleep-01-summary.json)
+
+See [R_AND_D_LAB.md](R_AND_D_LAB.md) for the evidence model and [GAMEPLAY_LAB_RETROSPECTIVE.md](GAMEPLAY_LAB_RETROSPECTIVE.md) for what the first cycle taught us.
+
+## Common commands
+
+### Build and verify
+
+```powershell
+npm ci
 npm run build
 npm run typecheck
 npm test
-npm run gameplay-lab:preflight
+```
+
+### Acceptance seams
+
+With the development stack running:
+
+```powershell
 .\scripts\smoke.ps1
 .\scripts\research-smoke.ps1
 .\scripts\gameplay-lab-smoke.ps1
+npm run gameplay-lab:preflight
 ```
 
-## Public playtest deployment
-
-The current verified public runtime is available at <https://am4.tail8e749c.ts.net/mech/> through AM4's Tailscale Funnel. It runs on OMEN's Tailscale address with release image `p0-rd-20260729-r5`; the local development stack remains on ports `5173` and `9080`.
-
-See [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for the gameplay-lab promotion gate, release health checks, restart persistence, ingress validation, and rollback.
-
-For a verified production image:
+### Seeded simulation
 
 ```powershell
-$releaseId = "p0-gameplay-labs-20260729-r1"
-.\scripts\build.ps1 -Target Verify
-.\scripts\build.ps1 -Target Image -ReleaseId $releaseId -ImageTag "mech-commander:$releaseId"
+npm run simulate -- --count=100
+npm run simulate -- --scenario=false-bottleneck --count=1000
 ```
 
-The release Compose file intentionally has no `build:` section. A remote host receives an already-verified image and starts it with `--no-build`.
-
-To promote an image over the existing SSH/Tailscale path, after confirming the remote
-environment already contains `MECH_POSTGRES_PASSWORD` and any ingress settings:
+### Small synthetic matrix
 
 ```powershell
-.\scripts\promote.ps1 `
-  -Image "mech-commander:$releaseId" `
-  -ReleaseId $releaseId `
-  -SshTarget am4 `
-  -DryRun
+npm run build
+npm run lab -- --matrix=local-check --runs=25 --policies=12 --shards=1 --shard=0
+npm run lab -- --report=data/lab/local-check
+.\scripts\lab-gate.ps1 -ReportPath data/lab/local-check/report.json -MinimumRuns 25
 ```
 
-Remove `-DryRun` only after the local image and release ID are correct. The promotion
-transfers an OCI archive, checks the loaded image identity, backs up the remote pin and
-Compose file, starts without rebuilding, and leaves a rollback backup on the remote host.
+### Sharded Docker matrix
 
-## Documentation map
+```powershell
+.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8
+```
 
-- [PLAYTEST_WORKBOOK.md](PLAYTEST_WORKBOOK.md): first-time baseline scenario and UI verification.
-- [R_AND_D_LAB.md](R_AND_D_LAB.md): simulator, matrix worker, evidence model, and research gates.
-- [OVERNIGHT_EXPERIMENT_PLAN.md](OVERNIGHT_EXPERIMENT_PLAN.md): the completed 19.456-million-run campaign.
-- [GAMEPLAY_LAB_PLAN.md](GAMEPLAY_LAB_PLAN.md): reusable synthetic-to-human research architecture.
-- [GAMEPLAY_LAB_WORKBOOK.md](GAMEPLAY_LAB_WORKBOOK.md): hands-on blinded lab procedure and follow-up commands.
-- [GAMEPLAY_LAB_RETROSPECTIVE.md](GAMEPLAY_LAB_RETROSPECTIVE.md): outcomes, surprises, remaining risks, and next-cycle changes.
-- [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md): immutable-image promotion, public ingress, acceptance, and rollback.
+### Human-selected follow-up
+
+After a completed gameplay-lab session emits `follow-up-matrix.json`:
+
+```powershell
+$manifest = "data/playtests/GL-001/<lab-session-id>/follow-up-matrix.json"
+npm run lab -- --manifest=$manifest --all-shards=true
+```
+
+No command automatically promotes a candidate tuning into a scenario.
+
+## Repository layout
+
+```text
+.
+├── apps/
+│   ├── lab/                 # sharded synthetic matrix worker and reducer
+│   ├── server/              # Fastify API, persistence, lab sessions, exports
+│   ├── simulator/           # quick seeded doctrine comparisons
+│   └── web/                 # React/Vite battlefield and lab UI
+├── packages/
+│   ├── contracts/           # shared Zod schemas and TypeScript contracts
+│   ├── discord-adapter/     # future transport seam
+│   ├── engine/              # deterministic rules, replay, reconstruction
+│   └── scenarios/           # scenario pack and gameplay-lab registry
+├── infra/
+│   ├── compose.dev.yml      # OMEN development stack
+│   ├── compose.lab.yml      # portable private worker
+│   └── compose.release.yml  # immutable production runtime
+├── scripts/                 # build, smoke, lab, retention, and promotion tools
+├── data/lab/                # generated research artifacts; mostly gitignored
+├── Dockerfile               # dev, verification, lab, and runtime stages
+└── *.md / *.docx            # product, research, operations, and review docs
+```
+
+## Deployment
+
+The current public baseline is available at:
+
+<https://am4.tail8e749c.ts.net/mech/>
+
+As of 2026-07-29, that route serves release `p0-rd-20260729-r5`. The newer gameplay-lab build is verified on OMEN but has not yet been promoted with the required AM4 Caddy allowlist changes, so the public lab API families are not part of the current public acceptance claim.
+
+Release properties:
+
+- build and verify once;
+- tag with an explicit release ID;
+- transfer the immutable OCI image;
+- start remotely with `--no-build`;
+- validate application health and AM4 ingress independently;
+- retain both PostgreSQL and playtest-export data during rollback.
+
+Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for release promotion, public smoke checks, ingress validation, persistence checks, and rollback.
+
+## Documentation
+
+### Product sources
+
+- [Mech Commander AI Autobattler Living Design](Mech_Commander_AI_Autobattler_Living_Design.docx)
+- [Scenario Forge AI Battlefield Map Design](Scenario_Forge_AI_Battlefield_Map_Design.docx)
+
+### Player and operator guides
+
+- [First-time playtest workbook](PLAYTEST_WORKBOOK.md)
+- [Gameplay-lab operator workbook](GAMEPLAY_LAB_WORKBOOK.md)
+- [Deployment runbook](DEPLOYMENT_RUNBOOK.md)
+
+### Research and implementation
+
+- [Mech Commander R&D lab](R_AND_D_LAB.md)
+- [Overnight experiment plan and outcome](OVERNIGHT_EXPERIMENT_PLAN.md)
+- [Synthetic-to-gameplay lab plan](GAMEPLAY_LAB_PLAN.md)
+- [Gameplay-lab implementation retrospective](GAMEPLAY_LAB_RETROSPECTIVE.md)
+
+## Data and security
+
+- `.env.omen`, `.env`, runtime databases, generated playtests, raw shards, and browser profiles are ignored by Git.
+- `.env.example` contains development placeholders only.
+- Raw synthetic runs belong under `data/lab/`; completed human sessions belong under `data/playtests/`.
+- Only the compact `sleep-01` summary and three curated SVG analyses are tracked.
+- Public ingress uses an explicit route allowlist. A healthy container does not by itself prove that a public feature is reachable.
+- Do not commit deployment credentials, PostgreSQL volumes, participant exports, or unreviewed raw telemetry.
+
+## Contributing
+
+This is still an R&D repository, so a useful change should state which player or research question it answers.
+
+Before opening a pull request:
+
+1. Keep engine changes deterministic and add a focused test.
+2. Version scenario or lab contract changes explicitly.
+3. Run `npm run typecheck` and `npm test`.
+4. Run the relevant smoke script for API, persistence, or workflow changes.
+5. Update the appropriate workbook or runbook when operator behavior changes.
+6. Treat synthetic recommendations as evidence requiring review, not as automatic balance decisions.
+
+The `mechanics-lab` GitHub workflow repeats the core checks and runs a bounded matrix on pull requests and pushes to `main`.
