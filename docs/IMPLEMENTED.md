@@ -22,6 +22,27 @@ Last verified against engine `0.3.0`.
 - Fog of war reduced to one rule: `knownCells` starts as three cells and `scout` appends three more,
   which is what makes the single enemy unit visible.
 
+### Attention economy (`packages/engine/src/command.ts`)
+
+A second, independent reducer. It does not touch the seven-verb game above and is not yet exposed
+through the server or the browser.
+
+- Each mech emits artifacts per round according to its `throughput`. The commander's attention
+  budget is deliberately smaller than full supervision, and anything left unreviewed at the end of a
+  round is **accepted unseen**.
+- Four verbs: `verify` (costs attention, reveals soundness, resolves nothing), `accept` and `reject`
+  (free — the scarce resource is looking, not deciding), and `seize` (costs that mech's `seizeCost`,
+  guarantees progress).
+- Mechs differ in `throughput`, `seizeCost`, and **`calibration`** — how well their reported
+  confidence predicts soundness. They do **not** differ in how often they are right, because the
+  attempt-bank pilot found no accuracy gradient between real model tiers.
+- Accepting unsound work accrues `drift`; enough of it loses the mission.
+
+Verified by `npm run simulate:command`, and guarded by design tests in
+`apps/simulator/src/command-policies.test.ts` that fail if the mechanic loses its decision: spending
+attention must beat ignoring the fleet, reading the confidence signal must beat inspecting blindly,
+and no single policy may be best in every composition.
+
 ### Research rig
 
 - `apps/lab` — sharded, resumable synthetic matrix worker with a streaming reducer, Wilson intervals,

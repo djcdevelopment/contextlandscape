@@ -13,6 +13,7 @@
     "dev:server": "npm run dev --workspace=@landscape/server",
     "dev:web": "npm run dev --workspace=@landscape/web",
     "simulate": "npm run simulate --workspace=@landscape/simulator --",
+    "simulate:command": "npm run simulate:command --workspace=@landscape/simulator --",
     "lab": "npm run lab --workspace=@landscape/lab --",
     "gameplay-lab:preflight": "npm run preflight --workspace=@landscape/server"
   },

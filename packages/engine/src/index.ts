@@ -52,6 +52,8 @@ function winThreshold(profile: string): number {
   return profile === "false_bottleneck" || profile === "context_furnace" ? 6 : 7;
 }
 
+export * from "./command.js";
+
 export type ReplayBatch = { orders: Order[]; playerId?: string };
 export type UnitComposition = "balanced" | "scout-heavy" | "line-heavy" | "siege-heavy";
 
