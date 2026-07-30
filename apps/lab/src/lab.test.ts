@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ENGINE_VERSION } from "@landscape/engine";
 import { aggregateRuns, createMatrix, runMatrix } from "./lab.js";
 
 describe("synthetic balance lab", () => {
@@ -8,7 +9,7 @@ describe("synthetic balance lab", () => {
     const second = runMatrix(matrix, 0, "data/lab");
     expect(first).toEqual(second);
     expect(first).toHaveLength(2 * 4 * 4);
-    expect(first.every((record) => record.schemaVersion === 1 && record.engineVersion === "0.2.0")).toBe(true);
+    expect(first.every((record) => record.schemaVersion === 1 && record.engineVersion === ENGINE_VERSION)).toBe(true);
     expect(new Set(first.map((record) => record.projectionHash)).size).toBeGreaterThan(1);
   });
 

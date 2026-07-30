@@ -8,8 +8,8 @@ import {
   type GameplayLabSession,
   type GameplayLabSessionView,
   type GameplayLabSummary
-} from "@mech/contracts";
-import { scenarioById } from "@mech/scenarios";
+} from "@landscape/contracts";
+import { scenarioById } from "@landscape/scenarios";
 
 export type GameplayLabIds = {
   sessionId: () => string;

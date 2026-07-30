@@ -9,9 +9,9 @@ import type {
   RulesTuning,
   RulesTuningInput,
   UnitState
-} from "@mech/contracts";
-import { RulesTuningSchema, ScenarioDefinitionSchema } from "@mech/contracts";
-import { scenarioById, twoBakedSlices } from "@mech/scenarios";
+} from "@landscape/contracts";
+import { RulesTuningSchema, ScenarioDefinitionSchema } from "@landscape/contracts";
+import { scenarioById, twoBakedSlices } from "@landscape/scenarios";
 
 const actionCosts: Record<Order["action"], number> = {
   scout: 1,
@@ -23,7 +23,34 @@ const actionCosts: Record<Order["action"], number> = {
   consolidate: 1
 };
 
+// Each accepted order emits exactly one action event, so a reconstruction can price a match
+// from its event log alone. `scout` is the only action with two possible event types.
+const actionByEventType: Record<string, Order["action"]> = {
+  "terrain.revealed": "scout",
+  "bottleneck.measured": "scout",
+  "artifact.contract_built": "build_contract",
+  "implementation.resolved": "implement",
+  "verification.completed": "review",
+  "weapon.burst.resolved": "full_send",
+  "consolidation.completed": "consolidate",
+  "defense.held": "defend"
+};
+
 const initiative: Record<UnitState["chassis"], number> = { scout: 3, line: 2, siege: 1 };
+
+export const ENGINE_VERSION = "0.3.0";
+
+function actionCost(tuning: RulesTuning, action: Order["action"]): number {
+  return tuning.actionCostOverrides[action] ?? actionCosts[action];
+}
+
+function cheapestActionCost(tuning: RulesTuning): number {
+  return Math.min(...(Object.keys(actionCosts) as Order["action"][]).map((action) => actionCost(tuning, action)));
+}
+
+function winThreshold(profile: string): number {
+  return profile === "false_bottleneck" || profile === "context_furnace" ? 6 : 7;
+}
 
 export type ReplayBatch = { orders: Order[]; playerId?: string };
 export type UnitComposition = "balanced" | "scout-heavy" | "line-heavy" | "siege-heavy";
@@ -120,7 +147,7 @@ export function resolveSlot(state: MatchState, orders: Order[], playerId = "play
       events.push(event(next.matchId, next, sequence++, "order.rejected", playerId, { order, reason: "unit_unavailable" }));
       continue;
     }
-    const cost = next.rulesTuning.actionCostOverrides[order.action] ?? actionCosts[order.action];
+    const cost = actionCost(next.rulesTuning, order.action);
     if (next.commanderEnergy < cost) {
       events.push(event(next.matchId, next, sequence++, "order.rejected", unit.unitId, { order, reason: "commander_energy" }));
       continue;
@@ -202,17 +229,22 @@ export function resolveSlot(state: MatchState, orders: Order[], playerId = "play
 
   next.slot += 1;
   next.turn = Math.floor(next.slot / 2);
+  const threshold = winThreshold(profile);
   const won = profile === "false_bottleneck"
-    ? next.objectiveProgress >= 6 && next.lessonFlags.includes("measurement_verified")
+    ? next.objectiveProgress >= threshold && next.lessonFlags.includes("measurement_verified")
     : profile === "context_furnace"
-      ? next.objectiveProgress >= 6 && next.heat <= 3
+      ? next.objectiveProgress >= threshold && next.heat <= 3
       : profile === "documentation_fortress"
-        ? next.objectiveProgress >= 7 && next.artifacts.length > 0
-        : next.objectiveProgress >= 7 && next.rollbackVerified;
+        ? next.objectiveProgress >= threshold && next.artifacts.length > 0
+        : next.objectiveProgress >= threshold && next.rollbackVerified;
+  // Stalled means no action is affordable any more, not merely that energy hit zero: a tuning may
+  // price an action at zero, and one that prices every action above the remaining energy strands
+  // the commander well before zero.
+  const stalled = next.commanderEnergy < cheapestActionCost(next.rulesTuning);
   if (won) next.status = "victory";
-  else if (next.slot >= 8 || (next.commanderEnergy === 0 && next.objectiveProgress < 7) || (profile === "context_furnace" && next.heat >= 8)) next.status = "defeat";
+  else if (next.slot >= 8 || (stalled && next.objectiveProgress < threshold) || (profile === "context_furnace" && next.heat >= 8)) next.status = "defeat";
   events.push(event(next.matchId, next, sequence, "fire_control.snapshot", null, {
-    fireRate: events.length,
+    fireRate: next.slot,
     dispersion: next.dispersion,
     commanderLoad: next.commanderLoad,
     heat: next.heat,
@@ -269,7 +301,7 @@ export function buildReplayManifest(state: MatchState, events: EventEnvelope[]):
     matchId: state.matchId,
     scenarioId: state.scenarioId,
     scenarioVersion: state.scenarioVersion,
-    engineVersion: "0.2.0",
+    engineVersion: ENGINE_VERSION,
     seed: state.seed,
     compositionId: state.compositionId,
     tuningId: state.rulesTuning.tuningId,
@@ -282,9 +314,12 @@ export function buildReplayManifest(state: MatchState, events: EventEnvelope[]):
 export function buildReconstruction(state: MatchState, events: EventEnvelope[]): Reconstruction {
   const eventTypes: Record<string, number> = {};
   for (const item of events) eventTypes[item.eventType] = (eventTypes[item.eventType] ?? 0) + 1;
-  const actionEvents = events.filter((item) => item.eventType !== "fire_control.snapshot" && item.eventType !== "order.rejected");
+  const actionEvents = events.filter((item) => item.eventType in actionByEventType);
   const rejectedCount = events.filter((item) => item.eventType === "order.rejected").length;
-  const commanderEnergySpent = actionEvents.reduce((sum, item) => sum + (item.eventType === "weapon.burst.resolved" && item.data.fireMode === "full" ? 2 : 1), 0);
+  // Price each accepted order through the match's own tuning. Inferring cost from the event type
+  // alone would ignore `actionCostOverrides`, which every tuned gameplay-lab variant relies on.
+  const tuning = state.rulesTuning ?? RulesTuningSchema.parse({});
+  const commanderEnergySpent = actionEvents.reduce((sum, item) => sum + actionCost(tuning, actionByEventType[item.eventType]), 0);
   const artifactsBuilt = events
     .filter((item) => item.eventType.startsWith("artifact."))
     .map((item) => String(item.data.artifact ?? "unknown"));

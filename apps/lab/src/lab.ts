@@ -3,10 +3,10 @@ import { createReadStream, createWriteStream } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { once } from "node:events";
 import { createInterface } from "node:readline";
-import type { Order, RulesTuningInput, ScenarioDefinition, SimulationMatrix, SimulationRun } from "@mech/contracts";
-import { SimulationMatrixSchema, SimulationRunSchema } from "@mech/contracts";
-import { createMatchState, runReplay, type UnitComposition } from "@mech/engine";
-import { scenarios } from "@mech/scenarios";
+import type { Order, RulesTuningInput, ScenarioDefinition, SimulationMatrix, SimulationRun } from "@landscape/contracts";
+import { SimulationMatrixSchema, SimulationRunSchema } from "@landscape/contracts";
+import { ENGINE_VERSION, createMatchState, runReplay, type UnitComposition } from "@landscape/engine";
+import { scenarios } from "@landscape/scenarios";
 
 export const compositions: UnitComposition[] = ["balanced", "scout-heavy", "line-heavy", "siege-heavy"];
 
@@ -156,7 +156,7 @@ export function createMatrix(options: Partial<LabOptions> = {}): SimulationMatri
   return SimulationMatrixSchema.parse({
     schemaVersion: 1,
     matrixId: options.matrixId ?? `matrix-${new Date().toISOString().replace(/[:.]/g, "-")}`,
-    engineVersion: "0.2.0",
+    engineVersion: ENGINE_VERSION,
     scenarioIds: selected,
     compositionIds: compositions,
     tuningCount: options.tuningOverrides?.length ?? options.tuningCount ?? 1,

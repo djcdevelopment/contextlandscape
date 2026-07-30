@@ -1,5 +1,5 @@
 {
-  "name": "@mech/engine",
+  "name": "@landscape/engine",
   "version": "0.1.0",
   "type": "module",
   "exports": "./dist/index.js",
@@ -10,8 +10,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@mech/contracts": "0.1.0",
-    "@mech/scenarios": "0.1.0"
+    "@landscape/contracts": "0.1.0",
+    "@landscape/scenarios": "0.1.0"
   },
   "devDependencies": {
     "vitest": "^3.2.4"

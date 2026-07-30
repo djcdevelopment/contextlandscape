@@ -12,7 +12,7 @@ import type {
   GameplayLabSession,
   GameplayLabTrial,
   PlaytestObservation
-} from "@mech/contracts";
+} from "@landscape/contracts";
 import {
   ChallengeSchema,
   GameplayLabBookmarkSchema,
@@ -20,9 +20,9 @@ import {
   GameplayLabSessionSchema,
   OrderSchema,
   PlaytestObservationSchema
-} from "@mech/contracts";
-import { buildReconstruction, buildReplayManifest, createMatchState, projectForPlayer, resolveSlot } from "@mech/engine";
-import { gameplayLabById, gameplayLabs, scenarioById, scenarios, twoBakedSlices } from "@mech/scenarios";
+} from "@landscape/contracts";
+import { ENGINE_VERSION, buildReconstruction, buildReplayManifest, createMatchState, projectForPlayer, resolveSlot } from "@landscape/engine";
+import { gameplayLabById, gameplayLabs, scenarioById, scenarios, twoBakedSlices } from "@landscape/scenarios";
 import {
   bookmarkGameplayLabDecision,
   completeGameplayLabTrial,
@@ -42,16 +42,30 @@ const memoryGameplayLabSessions = new Map<string, GameplayLabSession>();
 const matchLockTails = new Map<string, Promise<void>>();
 const gameplayLabLockTails = new Map<string, Promise<void>>();
 const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL }) : undefined;
-const releaseId = process.env.MECH_COMMANDER_RELEASE ?? "dev";
+const releaseId = process.env.CONTEXT_LANDSCAPE_RELEASE ?? "dev";
 const playtestExportRoot = process.env.PLAYTEST_EXPORT_ROOT ?? join(process.cwd(), "data", "playtests");
 const repoRoot = /[\\/]apps[\\/]server$/.test(process.cwd()) ? resolve(process.cwd(), "../..") : process.cwd();
+// `auto` (the default) separates environment problems from rules defects: a checkout without the
+// large `sleep-01` reports still boots, but an unwinnable variant or a drifted control never does.
+// `strict` makes missing provenance fatal too (CI and release); `warn` downgrades everything.
+const labPreflightMode = process.env.LAB_PREFLIGHT ?? "auto";
 const startupLabPreflight = preflightGameplayLabs(repoRoot);
-if (startupLabPreflight.labs.some((lab) =>
-  !lab.sourceFilesPresent ||
+const labsMissingSources = startupLabPreflight.labs.filter((lab) => !lab.sourceFilesPresent);
+const labsFailingRules = startupLabPreflight.labs.filter((lab) =>
   lab.controlReplayMatchesScenario === false ||
   lab.variants.some((variant) => !variant.winnable)
-)) {
-  throw new Error("gameplay_lab_startup_preflight_failed");
+);
+if (labsFailingRules.length > 0 && labPreflightMode !== "warn") {
+  throw new Error(`gameplay_lab_startup_preflight_failed: ${labsFailingRules.map((lab) => lab.labId).join(", ")}`);
+}
+if (labsMissingSources.length > 0 && labPreflightMode === "strict") {
+  throw new Error(`gameplay_lab_source_reports_missing: ${labsMissingSources.map((lab) => lab.labId).join(", ")}`);
+}
+for (const lab of labsMissingSources) {
+  console.warn(`[preflight] ${lab.labId} is missing its source reports; its provenance is unverified in this environment.`);
+}
+for (const lab of labsFailingRules) {
+  console.warn(`[preflight] ${lab.labId} failed reachability or control replay and is serving anyway (LAB_PREFLIGHT=warn).`);
 }
 
 async function initDb() {
@@ -389,7 +403,7 @@ async function buildGameplayLabExport(session: GameplayLabSession) {
     ? {
         schemaVersion: 1,
         matrixId: `follow-up-${session.labId.toLowerCase()}-${session.labSessionId}`,
-        engineVersion: "0.2.0",
+        engineVersion: ENGINE_VERSION,
         sourceLabSessionId: session.labSessionId,
         selectedVariantId: selectedVariant.variantId,
         scenarioIds: [definition.scenarioId],
@@ -534,7 +548,7 @@ await app.register(cors, { origin: true });
 const webRoot = join(process.cwd(), "apps/web/dist");
 if (existsSync(webRoot)) await app.register(fastifyStatic, { root: webRoot, prefix: "/" });
 
-app.get("/health/live", async () => ({ status: "ok", service: "mech-commander" }));
+app.get("/health/live", async () => ({ status: "ok", service: "context-landscape" }));
 app.get("/health/ready", async (_request, reply) => {
   if (!pool) return { status: "ok", persistence: "memory" };
   try {
@@ -544,7 +558,17 @@ app.get("/health/ready", async (_request, reply) => {
     return reply.code(503).send({ status: "not-ready" });
   }
 });
-  app.get("/version", async () => ({ releaseId, engineVersion: "0.2.0", eventSchemaVersion: 1, scenario: twoBakedSlices.scenarioId }));
+app.get("/version", async () => ({
+  releaseId,
+  engineVersion: ENGINE_VERSION,
+  eventSchemaVersion: 1,
+  scenario: twoBakedSlices.scenarioId,
+  labPreflight: {
+    mode: labPreflightMode,
+    sourcesVerified: labsMissingSources.length === 0,
+    rulesVerified: labsFailingRules.length === 0
+  }
+}));
 app.get("/api/scenarios", async () => scenarios.map((scenario) => ({
   scenarioId: scenario.scenarioId,
   title: scenario.title,
@@ -787,7 +811,7 @@ app.post<{ Body: { scenarioId?: string; creatorId?: string } }>("/api/challenges
   const state = createMatchState(challenge.matchId, challenge.creatorId, scenario.seed, scenario.scenarioId);
   await saveMatch(challenge.matchId, { state, events: [] });
   await saveChallenge(challenge);
-  return reply.code(201).send({ challenge, joinPath: `/mech/?challenge=${challenge.challengeId}` });
+  return reply.code(201).send({ challenge, joinPath: `/landscape/?challenge=${challenge.challengeId}` });
 });
 
 app.get<{ Params: { id: string } }>("/api/challenges/:id", async (request, reply) => {
@@ -868,7 +892,7 @@ app.post<{ Params: { id: string }; Body: unknown }>("/api/matches/:id/orders", a
 });
 
 app.get("/", async (_request, reply) => {
-  if (!existsSync(join(webRoot, "index.html"))) return reply.type("text/plain").send("Mech Commander API is running");
+  if (!existsSync(join(webRoot, "index.html"))) return reply.type("text/plain").send("Context Landscape API is running");
   return reply.sendFile("index.html");
 });
 

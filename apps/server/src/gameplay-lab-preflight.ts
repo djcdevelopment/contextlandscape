@@ -1,8 +1,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { Action, GameplayLabDefinition, MatchState, Order } from "@mech/contracts";
-import { createMatchState, runReplay, resolveSlot } from "@mech/engine";
-import { gameplayLabs, scenarioById } from "@mech/scenarios";
+import type { Action, GameplayLabDefinition, MatchState, Order } from "@landscape/contracts";
+import { createMatchState, runReplay, resolveSlot } from "@landscape/engine";
+import { gameplayLabs, scenarioById } from "@landscape/scenarios";
 
 export type GameplayLabVariantPreflight = {
   variantId: string;
