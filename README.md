@@ -35,7 +35,7 @@ The project started from two design documents, both now archived under `docs/arc
 
 > **These are vision documents, not specifications.** They describe weapons, mounts, loadouts, terrain
 > types, commander upgrades, mission families, and campaign packs that this codebase does not
-> implement, and they predate the current project name and direction. Read
+> implement, and they predate the current design direction. Read
 > [docs/IMPLEMENTED.md](docs/IMPLEMENTED.md) for what actually exists.
 
 This prototype narrows those ideas into a falsifiable question: can systems-engineering tradeoffs become understandable battlefield decisions? The current implementation therefore prioritizes deterministic mechanics, replayable evidence, synthetic search, and short human review labs over accounts, monetization, realtime play, or production art.
