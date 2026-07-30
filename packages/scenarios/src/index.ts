@@ -1,4 +1,4 @@
-import type { ScenarioDefinition } from "@mech/contracts";
+import type { ScenarioDefinition } from "@landscape/contracts";
 
 export { gameplayLabById, gameplayLabs } from "./gameplay-labs.js";
 

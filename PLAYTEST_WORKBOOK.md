@@ -1,4 +1,4 @@
-# Mech Commander first-time verification workbook
+# Context Landscape first-time verification workbook
 
 This is the manual verification path for someone who has not seen the interface before. It tests the current OMEN vertical slice, not the future Discord/PvP product.
 
@@ -7,8 +7,8 @@ This is the manual verification path for someone who has not seen the interface 
 From the repository root in PowerShell:
 
 ```powershell
-docker compose -p mech-commander-dev -f infra/compose.dev.yml up -d
-docker compose -p mech-commander-dev -f infra/compose.dev.yml ps
+docker compose -p context-landscape-dev -f infra/compose.dev.yml up -d
+docker compose -p context-landscape-dev -f infra/compose.dev.yml ps
 Invoke-RestMethod http://127.0.0.1:9080/health/ready
 ```
 
@@ -22,7 +22,7 @@ Expected:
 If the stack is not running, use the full rebuild once:
 
 ```powershell
-docker compose -p mech-commander-dev -f infra/compose.dev.yml up --build -d
+docker compose -p context-landscape-dev -f infra/compose.dev.yml up --build -d
 ```
 
 ## 2. Automated seam check
@@ -117,7 +117,7 @@ Record whether the failure feels caused by a visible decision or merely by an ar
 The API smoke script performs this more directly, but the runtime persistence check can be run manually:
 
 ```powershell
-docker compose -p mech-commander-dev -f infra/compose.dev.yml restart app
+docker compose -p context-landscape-dev -f infra/compose.dev.yml restart app
 Invoke-RestMethod http://127.0.0.1:9080/health/ready
 ```
 

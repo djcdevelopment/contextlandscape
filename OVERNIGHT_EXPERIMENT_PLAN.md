@@ -29,7 +29,7 @@ Each experiment emits compressed raw shards, a report, candidate patches, pairwi
 ## Launch
 
 ```powershell
-docker compose -p mech-commander-lab -f infra/compose.lab.yml build worker
+docker compose -p context-landscape-lab -f infra/compose.lab.yml build worker
 .\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -DryRun
 .\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -MinimumFreeGiB 50
 ```

@@ -7,7 +7,7 @@ import type {
   MatchProjection,
   Reconstruction,
   UnitState
-} from "@mech/contracts";
+} from "@landscape/contracts";
 import "./style.css";
 
 const actions = ["scout", "build_contract", "implement", "review", "defend", "full_send", "consolidate"] as const;
@@ -58,10 +58,10 @@ function App() {
   const [labSession, setLabSession] = useState<GameplayLabSessionView | null>(null);
   const [labExportPaths, setLabExportPaths] = useState<GameplayLabPayload["exportPaths"]>();
   const [sessionId] = useState(() => {
-    const existing = localStorage.getItem("mech-commander.playtestSession");
+    const existing = localStorage.getItem("context-landscape.playtestSession");
     if (existing) return existing;
     const created = crypto.randomUUID();
-    localStorage.setItem("mech-commander.playtestSession", created);
+    localStorage.setItem("context-landscape.playtestSession", created);
     return created;
   });
   const [selectedUnit, setSelectedUnit] = useState("scout-01");
@@ -107,7 +107,7 @@ function App() {
     setLabSession(payload.session);
     setLabExportPaths(payload.exportPaths);
     setBattlefield(payload.projection, payload.events);
-    localStorage.setItem("mech-commander.gameplayLabSessionId", payload.session.labSessionId);
+    localStorage.setItem("context-landscape.gameplayLabSessionId", payload.session.labSessionId);
     requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "instant" })));
   }
 
@@ -122,10 +122,10 @@ function App() {
       });
       setLabSession(null);
       setLabExportPaths(undefined);
-      localStorage.removeItem("mech-commander.gameplayLabSessionId");
+      localStorage.removeItem("context-landscape.gameplayLabSessionId");
       setBattlefield(nextMatch);
       observe("match.created", { scenarioId: nextMatch.scenarioId }, nextMatch.matchId);
-      localStorage.setItem("mech-commander.matchId", nextMatch.matchId);
+      localStorage.setItem("context-landscape.matchId", nextMatch.matchId);
     } catch (caught) {
       setError(String(caught));
     } finally {
@@ -139,11 +139,11 @@ function App() {
     try {
       const payload = await jsonRequest<MatchWithEvents>(`/api/matches/${matchId}`);
       setLabSession(null);
-      localStorage.removeItem("mech-commander.gameplayLabSessionId");
+      localStorage.removeItem("context-landscape.gameplayLabSessionId");
       setBattlefield(payload, payload.events ?? []);
       observe("match.resumed", { scenarioId: payload.scenarioId, eventCount: payload.events?.length ?? 0 }, payload.matchId);
     } catch {
-      localStorage.removeItem("mech-commander.matchId");
+      localStorage.removeItem("context-landscape.matchId");
       await newMatch();
     } finally {
       setBusy(false);
@@ -174,7 +174,7 @@ function App() {
     try {
       applyLabPayload(await jsonRequest<GameplayLabPayload>(`/api/gameplay-lab-sessions/${labSessionId}`));
     } catch {
-      localStorage.removeItem("mech-commander.gameplayLabSessionId");
+      localStorage.removeItem("context-landscape.gameplayLabSessionId");
       await newMatch();
     } finally {
       setBusy(false);
@@ -187,7 +187,7 @@ function App() {
       "Leave this gameplay lab? Its recorded progress stays on the server, but this browser will stop reopening the session automatically."
     );
     if (!confirmed) return;
-    localStorage.removeItem("mech-commander.gameplayLabSessionId");
+    localStorage.removeItem("context-landscape.gameplayLabSessionId");
     setLabSession(null);
     setLabExportPaths(undefined);
     setBattlefield(null);
@@ -262,7 +262,7 @@ function App() {
         body: JSON.stringify({ scenarioId: selectedScenarioId, creatorId: sessionId })
       });
       setChallengeLink(`${window.location.origin}${body.joinPath}`);
-      localStorage.setItem("mech-commander.matchId", body.challenge.matchId);
+      localStorage.setItem("context-landscape.matchId", body.challenge.matchId);
       await resumeMatch(body.challenge.matchId);
       observe("challenge.created", { scenarioId: selectedScenarioId });
     } catch (caught) {
@@ -282,7 +282,7 @@ function App() {
           body: JSON.stringify({ opponentId: sessionId })
         });
       }
-      localStorage.setItem("mech-commander.matchId", challenge.matchId);
+      localStorage.setItem("context-landscape.matchId", challenge.matchId);
       await resumeMatch(challenge.matchId);
       observe("challenge.accepted", { challengeId }, challenge.matchId);
     } catch (caught) {
@@ -327,8 +327,8 @@ function App() {
     const query = new URLSearchParams(window.location.search);
     const challengeId = query.get("challenge");
     const requestedLabSessionId = query.get("labSession");
-    const savedLabSessionId = localStorage.getItem("mech-commander.gameplayLabSessionId");
-    const savedMatchId = localStorage.getItem("mech-commander.matchId");
+    const savedLabSessionId = localStorage.getItem("context-landscape.gameplayLabSessionId");
+    const savedMatchId = localStorage.getItem("context-landscape.matchId");
     void (challengeId
       ? acceptChallenge(challengeId)
       : requestedLabSessionId || savedLabSessionId
@@ -358,8 +358,8 @@ function App() {
   return <main>
     <header>
       <div>
-        <p className="eyebrow">MECH COMMANDER · {labSession ? "GAMEPLAY LAB" : "SCENARIO"}</p>
-        <h1>{labSession?.title ?? selectedScenario?.title ?? "Mech Commander"}</h1>
+        <p className="eyebrow">CONTEXT LANDSCAPE · {labSession ? "GAMEPLAY LAB" : "SCENARIO"}</p>
+        <h1>{labSession?.title ?? selectedScenario?.title ?? "Context Landscape"}</h1>
         <p className="lede">{selectedScenario?.missionObjective ?? "Move the integration objective with the least commander energy."}</p>
       </div>
       <div className="match-controls">

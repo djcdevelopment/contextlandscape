@@ -11,10 +11,10 @@ $root = Split-Path -Parent $PSScriptRoot
 Push-Location $root
 try {
   if ($Target -eq 'Verify') {
-    docker build --target verify -t mech-commander-build:verify .
+    docker build --target verify -t context-landscape-build:verify .
     if ($LASTEXITCODE -ne 0) { throw 'Docker verification failed' }
   } elseif ($Target -eq 'Image') {
-    if ($ImageTag -eq '') { $ImageTag = "mech-commander:$ReleaseId" }
+    if ($ImageTag -eq '') { $ImageTag = "context-landscape:$ReleaseId" }
     $revision = 'workspace'
     if ((Get-Command git -ErrorAction SilentlyContinue) -and (Test-Path (Join-Path $root '.git'))) {
       $revision = (& git -C $root rev-parse HEAD).Trim()

@@ -1,5 +1,5 @@
 {
-  "name": "@mech/lab",
+  "name": "@landscape/lab",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "lab": "node dist/main.js"
   },
   "dependencies": {
-    "@mech/contracts": "0.1.0",
-    "@mech/engine": "0.1.0",
-    "@mech/scenarios": "0.1.0"
+    "@landscape/contracts": "0.1.0",
+    "@landscape/engine": "0.1.0",
+    "@landscape/scenarios": "0.1.0"
   }
 }

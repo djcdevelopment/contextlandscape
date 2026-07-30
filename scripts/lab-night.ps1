@@ -12,7 +12,7 @@ param(
 $ErrorActionPreference = 'Stop'
 if ($Shards -lt 1) { throw 'Shards must be positive' }
 $repo = Split-Path -Parent $PSScriptRoot
-$project = 'mech-commander-lab'
+$project = 'context-landscape-lab'
 $jobs = @()
 $matrixDir = Join-Path $repo "data/lab/$MatrixId"
 $manifestPath = Join-Path $matrixDir 'manifest.json'

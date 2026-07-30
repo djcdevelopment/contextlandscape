@@ -23,7 +23,7 @@ services:
     environment:
       PORT: 8080
       DATABASE_URL: postgresql://mech:mech@postgres:5432/mech
-      MECH_COMMANDER_RELEASE: dev
+      CONTEXT_LANDSCAPE_RELEASE: dev
       PLAYTEST_EXPORT_ROOT: /workspace/data/playtests
     ports:
       - "127.0.0.1:${MECH_API_PORT:-9080}:8080"
@@ -39,7 +39,7 @@ services:
     build:
       context: ..
       target: dev
-    command: npm run dev --workspace=@mech/web -- --host 0.0.0.0
+    command: npm run dev --workspace=@landscape/web -- --host 0.0.0.0
     ports:
       - "127.0.0.1:${MECH_WEB_PORT:-5173}:5173"
     volumes:

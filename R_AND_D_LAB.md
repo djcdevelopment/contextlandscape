@@ -1,4 +1,4 @@
-# Mech Commander R&D lab
+# Context Landscape R&D lab
 
 This is the research surface for validating the game thesis before Discord, realtime play, or profiles become product commitments.
 
@@ -45,7 +45,7 @@ The JSON report compares named doctrines by win rate, average objective progress
 
 ## Synthetic balance lab
 
-The `@mech/lab` worker expands the simulator into a reproducible matrix across scenarios, generated policies, force compositions, and seeds. It writes a manifest plus compressed JSONL shard files under `data/lab/<matrix-id>/`; raw synthetic runs never enter the match PostgreSQL database.
+The `@landscape/lab` worker expands the simulator into a reproducible matrix across scenarios, generated policies, force compositions, and seeds. It writes a manifest plus compressed JSONL shard files under `data/lab/<matrix-id>/`; raw synthetic runs never enter the match PostgreSQL database.
 
 Run a small local matrix and aggregate it:
 

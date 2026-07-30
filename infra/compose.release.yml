@@ -15,7 +15,7 @@ services:
       retries: 12
 
   playtest-data:
-    image: "${MECH_COMMANDER_IMAGE:?MECH_COMMANDER_IMAGE must be set}"
+    image: "${CONTEXT_LANDSCAPE_IMAGE:?CONTEXT_LANDSCAPE_IMAGE must be set}"
     user: "0:0"
     entrypoint: ["sh", "-c"]
     command: ["mkdir -p /workspace/data/playtests && chown node:node /workspace/data/playtests"]
@@ -24,12 +24,12 @@ services:
       - ${MECH_DATA_ROOT:-./data}/playtests:/workspace/data/playtests
 
   app:
-    image: "${MECH_COMMANDER_IMAGE:?MECH_COMMANDER_IMAGE must be set}"
+    image: "${CONTEXT_LANDSCAPE_IMAGE:?CONTEXT_LANDSCAPE_IMAGE must be set}"
     restart: unless-stopped
     environment:
       PORT: 8080
       DATABASE_URL: postgresql://mech:${MECH_POSTGRES_PASSWORD}@postgres:5432/mech
-      MECH_COMMANDER_RELEASE: "${MECH_COMMANDER_RELEASE:?MECH_COMMANDER_RELEASE must be set}"
+      CONTEXT_LANDSCAPE_RELEASE: "${CONTEXT_LANDSCAPE_RELEASE:?CONTEXT_LANDSCAPE_RELEASE must be set}"
       PLAYTEST_EXPORT_ROOT: /workspace/data/playtests
     ports:
       - "${MECH_BIND_ADDRESS:-127.0.0.1}:${MECH_APP_PORT:-9080}:8080"

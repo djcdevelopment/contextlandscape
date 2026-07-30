@@ -1,4 +1,4 @@
-import type { Challenge, Reconstruction } from "@mech/contracts";
+import type { Challenge, Reconstruction } from "@landscape/contracts";
 
 export type DiscordEmbed = {
   title: string;
@@ -12,9 +12,9 @@ export function buildChallengeLaunchMessage(challenge: Challenge, publicBaseUrl:
   content: string;
   embeds: DiscordEmbed[];
 } {
-  const joinUrl = `${publicBaseUrl.replace(/\/$/, "")}/mech/?challenge=${challenge.challengeId}`;
+  const joinUrl = `${publicBaseUrl.replace(/\/$/, "")}/landscape/?challenge=${challenge.challengeId}`;
   return {
-    content: `A Mech Commander challenge is ready: ${joinUrl}`,
+    content: `A Context Landscape challenge is ready: ${joinUrl}`,
     embeds: [{
       title: `Challenge · ${challenge.scenarioId}`,
       description: "Accept in the browser to join the canonical event-sourced match.",
