@@ -39,9 +39,24 @@ through the server or the browser.
 - Accepting unsound work accrues `drift`; enough of it loses the mission.
 
 Verified by `npm run simulate:command`, and guarded by design tests in
-`apps/simulator/src/command-policies.test.ts` that fail if the mechanic loses its decision: spending
-attention must beat ignoring the fleet, reading the confidence signal must beat inspecting blindly,
-and no single policy may be best in every composition.
+`apps/simulator/src/command-policies.test.ts`. Two properties hold at 2000 seeded runs per cell:
+
+- **Attention beats ignoring the fleet**, in every composition. `accept-all` places last everywhere,
+  by +0.411 / +0.498 / +0.623 win rate. There is a decision here.
+- **Reading the confidence signal beats inspecting blindly**, which beats inspecting the wrong
+  things — `verify-lowest` > `verify-arbitrary` > `verify-highest`, monotonic in all three
+  compositions, on identical attention. The commander's read is a skill, not a lookup.
+
+**Known gap: composition is not yet a strategic choice.** `verify-lowest-confidence` wins all three
+(0.852 / 0.967 / 1.000), so the fleet you field does not change how you should play. This is not
+asserted as a test: its margin over `seize-cheapest` in scout-heavy is 0.022, about 1.4 standard
+errors even at n=1000, so the winner flips with sample size and a test would fail at random.
+
+An earlier measurement appeared to show composition mattering, with `seize-cheapest` taking
+`balanced`. That was an artifact of a weak uniform — FNV-1a over 2^32 barely moves its high bits for
+labels differing only in a trailing index, so every artifact a mech produced in a round shared one
+fate (97.8% identical soundness against 37% expected). Fixed with an avalanche finalizer and
+regression-tested; the apparent result did not survive it.
 
 ### Research rig
 

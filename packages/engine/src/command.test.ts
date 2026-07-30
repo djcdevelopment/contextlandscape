@@ -77,10 +77,23 @@ describe("command round", () => {
     expect(first.events).toEqual(second.events);
   });
 
-  it("produces different work for different seeds", () => {
-    const a = createCommandState("cmd-a", 1, [...fleet]);
-    const b = createCommandState("cmd-b", 2, [...fleet]);
-    expect(a.pending.map((x) => x.sound)).not.toEqual(b.pending.map((x) => x.sound));
+  it("produces uncorrelated work across seeds, at the configured soundness rate", () => {
+    // Asserting that two specific seeds differ would be a coin flip: six draws at p=0.7 collide
+    // (0.7^2 + 0.3^2)^6 = 3.8% of the time, so that test fails by chance roughly one run in 26.
+    // Measure the distribution instead.
+    let collisions = 0;
+    let sound = 0;
+    let total = 0;
+    const trials = 1500;
+    for (let seed = 0; seed < trials; seed += 1) {
+      const left = createCommandState("cmd-a", seed, [...fleet]).pending.map((a) => a.sound);
+      const right = createCommandState("cmd-b", seed + 1, [...fleet]).pending.map((a) => a.sound);
+      if (left.join() === right.join()) collisions += 1;
+      for (const value of left) { total += 1; if (value) sound += 1; }
+    }
+    expect(collisions / trials).toBeLessThan(0.08);
+    expect(sound / total).toBeGreaterThan(0.66);
+    expect(sound / total).toBeLessThan(0.74);
   });
 
   it("reaches a terminal state within the round limit", () => {
@@ -92,6 +105,22 @@ describe("command round", () => {
     }
     expect(state.status).not.toBe("active");
     expect(state.round).toBeLessThanOrEqual(state.rules.roundLimit);
+  });
+
+  // Regression: the uniform used to be raw FNV-1a over 2^32. Because FNV finishes by multiplying,
+  // labels differing only in a trailing index barely move the high bits, so artifacts from one mech
+  // in one round drew near-identical numbers and almost always shared a fate — 97.8% identical
+  // against 37% expected. A fraction reads the high bits; only the avalanche step fixes that.
+  it("draws independent soundness for artifacts from the same mech in the same round", () => {
+    let identical = 0;
+    const trials = 2000;
+    for (let seed = 0; seed < trials; seed += 1) {
+      const drawn = createCommandState(`indep-${seed}`, seed, ["scout"]).pending.map((a) => a.sound);
+      if (drawn.every((value) => value === drawn[0])) identical += 1;
+    }
+    // Independent at p=0.7 over three draws gives 0.7^3 + 0.3^3 = 0.370.
+    expect(identical / trials).toBeGreaterThan(0.28);
+    expect(identical / trials).toBeLessThan(0.48);
   });
 
   it("reports confidence that tracks soundness for a calibrated mech and not for an uncalibrated one", () => {

@@ -104,9 +104,21 @@ function fnv1a(text: string): number {
   return hash >>> 0;
 }
 
-/** Deterministic uniform in [0,1) derived from the seed and a label — no RNG state to thread. */
+/**
+ * Deterministic uniform in [0,1) derived from the seed and a label — no RNG state to thread.
+ *
+ * The avalanche step is load-bearing. FNV-1a finishes with `(h ^ lastByte) * PRIME`, so labels that
+ * differ only in a trailing index move the result by roughly the prime — about 0.004 of 2^32. Taken
+ * as a fraction, consecutive artifact ids therefore draw near-identical numbers, and every artifact
+ * a mech produced in a round would share one fate: measured at 97.8% identical soundness against 37%
+ * expected. Modulo would have been fine because it reads the low bits; a fraction reads the high
+ * ones. Finalize with xorshift-multiply before using the value as a uniform.
+ */
 function unit(seed: number, label: string): number {
-  return fnv1a(`${seed}:${label}`) / 4294967296;
+  let hash = fnv1a(`${seed}:${label}`);
+  hash = Math.imul(hash ^ (hash >>> 16), 2246822507);
+  hash = Math.imul(hash ^ (hash >>> 13), 3266489909);
+  return (hash >>> 0) / 4294967296;
 }
 
 function event(state: CommandState, sequence: number, eventType: string, data: Record<string, unknown>): EventEnvelope {

@@ -1,0 +1,544 @@
+<title>The Attention Economy</title>
+
+<style>
+  :root {
+    --ground: #0b1017;
+    --panel: #111a24;
+    --rail: #0e1620;
+    --sunk: #0a1219;
+    --line: #223143;
+    --line-soft: #1a2632;
+    --ink: #e9eef5;
+    --body: #9eacbd;
+    --muted: #8292a6;
+    --sound: #67e8b3;
+    --unsound: #fb7185;
+    --attention: #f8d66d;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Deliberately single-theme: this is the Context Landscape console, which ships dark. */
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  * { box-sizing: border-box; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 20px 72px; }
+
+  .eyebrow {
+    color: var(--sound);
+    font-size: .68rem;
+    letter-spacing: .18em;
+    font-weight: 700;
+    margin: 0 0 10px;
+  }
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+    letter-spacing: -.045em;
+    line-height: 1.03;
+    text-wrap: balance;
+    margin: 0 0 14px;
+  }
+  .lede {
+    font-family: var(--sans);
+    color: var(--body);
+    font-size: 1.02rem;
+    line-height: 1.6;
+    max-width: 62ch;
+    margin: 0 0 8px;
+  }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  .setup {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    margin: 26px 0 22px; padding-top: 22px; border-top: 1px solid var(--line-soft);
+  }
+  .setup-label { color: var(--muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+
+  button {
+    font: inherit; color: var(--ink); background: #141e2a;
+    border: 1px solid #304054; border-radius: 8px;
+    padding: 8px 12px; cursor: pointer;
+    transition: border-color .12s, background .12s, color .12s;
+  }
+  button:hover:not(:disabled) { border-color: var(--sound); background: #192c31; }
+  button:focus-visible { outline: 2px solid var(--attention); outline-offset: 2px; }
+  button:disabled { opacity: .32; cursor: not-allowed; }
+  button[aria-pressed="true"] { border-color: var(--sound); color: var(--sound); background: #14262a; }
+
+  .console { display: grid; grid-template-columns: minmax(0, 1fr) 268px; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .console { grid-template-columns: minmax(0, 1fr); } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+  .panel-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 14px 16px; border-bottom: 1px solid var(--line-soft);
+  }
+  .panel-head h2 { margin: 0; font-size: .78rem; letter-spacing: .13em; text-transform: uppercase; color: var(--ink); }
+  .panel-note { color: var(--muted); font-size: .7rem; }
+
+  .queue { display: flex; flex-direction: column; }
+  .row {
+    display: grid; grid-template-columns: 92px 1fr auto; gap: 14px; align-items: center;
+    padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
+  }
+  .row:last-child { border-bottom: 0; }
+  .row.settled { opacity: .42; }
+
+  .who { display: flex; flex-direction: column; gap: 3px; }
+  .who b { font-size: .8rem; font-weight: 600; letter-spacing: .01em; }
+  .who span { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+  .signal { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .signal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .signal-label { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .signal-value { font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--body); }
+  .meter { height: 4px; background: var(--sunk); border-radius: 2px; overflow: hidden; }
+  .meter i { display: block; height: 100%; background: var(--muted); border-radius: 2px; }
+
+  .verdict { font-size: .64rem; letter-spacing: .11em; text-transform: uppercase; font-weight: 700; }
+  .verdict.sound { color: var(--sound); }
+  .verdict.unsound { color: var(--unsound); }
+  .row.is-sound .meter i { background: var(--sound); }
+  .row.is-unsound .meter i { background: var(--unsound); }
+
+  .acts { display: flex; gap: 6px; }
+  .acts button { padding: 6px 9px; font-size: .72rem; }
+  .cost { color: var(--attention); font-variant-numeric: tabular-nums; }
+  .cost.free { color: var(--muted); }
+
+  .rail { display: flex; flex-direction: column; gap: 12px; }
+  .gauge { background: var(--rail); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .gauge-label { display: block; color: var(--muted); font-size: .64rem; letter-spacing: .13em; text-transform: uppercase; }
+  .gauge-value { display: block; margin-top: 8px; font-size: 1.7rem; font-variant-numeric: tabular-nums; line-height: 1; }
+  .gauge-sub { display: block; margin-top: 7px; color: var(--muted); font-size: .68rem; }
+  .gauge.progress .gauge-value { color: var(--sound); }
+  .gauge.drift .gauge-value { color: var(--unsound); }
+
+  .pips { display: flex; gap: 5px; margin-top: 9px; }
+  .pip { width: 100%; height: 9px; border-radius: 2px; background: var(--sunk); border: 1px solid #2a3a4c; }
+  .pip.lit { background: var(--attention); border-color: var(--attention); }
+
+  .track { height: 5px; margin-top: 9px; background: var(--sunk); border-radius: 3px; overflow: hidden; }
+  .track i { display: block; height: 100%; }
+  .progress .track i { background: var(--sound); }
+  .drift .track i { background: var(--unsound); }
+
+  .commit { width: 100%; padding: 11px; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; }
+  .commit:hover:not(:disabled) { border-color: var(--attention); background: #241f14; color: var(--attention); }
+  .warn { color: var(--attention); font-size: .68rem; line-height: 1.5; margin: 0; }
+
+  .ledger { margin-top: 16px; padding: 0; }
+  .ledger ol { list-style: none; margin: 0; padding: 6px 0; max-height: 190px; overflow-y: auto; }
+  .ledger li {
+    display: grid; grid-template-columns: 46px 1fr auto; gap: 12px;
+    padding: 6px 16px; font-size: .74rem; color: var(--body); border-bottom: 1px solid var(--line-soft);
+  }
+  .ledger li:last-child { border-bottom: 0; }
+  .ledger .rnd { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ledger .delta { font-variant-numeric: tabular-nums; }
+  .ledger .up { color: var(--sound); }
+  .ledger .down { color: var(--unsound); }
+  .ledger .empty { padding: 16px; color: var(--muted); font-size: .74rem; }
+
+  .outcome { margin-top: 22px; border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--panel); }
+  .outcome[hidden] { display: none; }
+  .outcome h2 { margin: 0 0 6px; font-family: var(--sans); font-size: 1.35rem; letter-spacing: -.02em; }
+  .outcome h2.victory { color: var(--sound); }
+  .outcome h2.defeat { color: var(--unsound); }
+  .outcome p { color: var(--body); font-family: var(--sans); font-size: .93rem; line-height: 1.6; max-width: 62ch; margin: 0 0 16px; }
+
+  .bars { display: flex; flex-direction: column; gap: 7px; margin: 0 0 6px; }
+  .bar { display: grid; grid-template-columns: 178px 1fr 46px; gap: 12px; align-items: center; font-size: .74rem; }
+  .bar-name { color: var(--body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { height: 14px; background: var(--sunk); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; background: #2f4a5e; border-radius: 3px; }
+  .bar-num { text-align: right; font-variant-numeric: tabular-nums; color: var(--body); }
+  .bar.you .bar-name { color: var(--attention); font-weight: 700; }
+  .bar.you .bar-fill { background: var(--attention); }
+  .bar.you .bar-num { color: var(--attention); }
+  .bar.floor .bar-name, .bar.floor .bar-num { color: var(--muted); }
+  .bar.floor .bar-fill { background: #33404e; }
+
+  .footnote { color: var(--muted); font-size: .7rem; line-height: 1.6; margin: 14px 0 0; max-width: 74ch; }
+  .footnote code { color: var(--body); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">CONTEXT LANDSCAPE · MECHANIC SLICE</p>
+  <h1>The attention economy</h1>
+  <p class="lede">
+    Your fleet produces more work than you can inspect. Looking costs attention; deciding is free.
+    Anything you haven't reviewed when the round closes is <strong>accepted unseen</strong>.
+  </p>
+  <p class="lede">
+    So the question is never which mech is reliable — they're all equally often right. It's
+    <strong>what you choose not to look at</strong>, and whose confidence you believe when you do.
+  </p>
+
+  <div class="setup">
+    <span class="setup-label">Fleet</span>
+    <button type="button" data-comp="scout-heavy">scout-heavy</button>
+    <button type="button" data-comp="balanced">balanced</button>
+    <button type="button" data-comp="siege-heavy">siege-heavy</button>
+    <button type="button" id="restart" style="margin-left:auto">New mission</button>
+  </div>
+
+  <div class="console">
+    <div>
+      <section class="panel queue-panel">
+        <div class="panel-head">
+          <h2>Pending review</h2>
+          <span class="panel-note" id="queue-note"></span>
+        </div>
+        <div class="queue" id="queue"></div>
+      </section>
+
+      <section class="panel ledger">
+        <div class="panel-head"><h2>Round ledger</h2><span class="panel-note">what each round cost you</span></div>
+        <ol id="ledger"><li class="empty">No rounds closed yet.</li></ol>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <div class="gauge">
+        <span class="gauge-label">Attention</span>
+        <span class="gauge-value" id="att-value">3</span>
+        <div class="pips" id="pips"></div>
+        <span class="gauge-sub" id="att-sub">refreshes each round</span>
+      </div>
+      <div class="gauge progress">
+        <span class="gauge-label">Objective</span>
+        <span class="gauge-value" id="prog-value">0</span>
+        <div class="track"><i id="prog-bar" style="width:0%"></i></div>
+        <span class="gauge-sub" id="prog-sub">0 of 12 to win</span>
+      </div>
+      <div class="gauge drift">
+        <span class="gauge-label">Confidence drift</span>
+        <span class="gauge-value" id="drift-value">0</span>
+        <div class="track"><i id="drift-bar" style="width:0%"></i></div>
+        <span class="gauge-sub" id="drift-sub">unsound work you approved</span>
+      </div>
+      <button type="button" class="commit" id="commit">Close round</button>
+      <p class="warn" id="warn"></p>
+    </aside>
+  </div>
+
+  <section class="outcome" id="outcome" hidden>
+    <h2 id="outcome-title"></h2>
+    <p id="outcome-text"></p>
+    <div class="bars" id="bars"></div>
+    <p class="footnote">
+      Baselines are win rates over 200 seeded runs per policy from
+      <code>npm run simulate:command</code>, on this same reducer.
+      <strong style="color:var(--body)">accept-all</strong> spends no attention at all — it is the null
+      hypothesis. If it were competitive, this design would contain no decision and would not be worth building.
+    </p>
+  </section>
+
+  <p class="footnote">
+    Same rules as <code>packages/engine/src/command.ts</code>: deterministic per seed, attention 3/round,
+    verify 1, seize costs the mech's own rate, 12 to win, 4 drift to lose, 8 rounds.
+    Chassis differ in output volume, in what it costs you to take over, and in
+    <strong style="color:var(--body)">calibration</strong> — how much their stated confidence is worth.
+    They do not differ in how often they are right, because a three-tier pilot found no such gradient.
+  </p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var PROFILES = {
+    scout: { chassis: "scout", throughput: 3, seizeCost: 1, calibration: 0.2 },
+    line:  { chassis: "line",  throughput: 2, seizeCost: 2, calibration: 0.6 },
+    siege: { chassis: "siege", throughput: 1, seizeCost: 3, calibration: 0.9 }
+  };
+  var RULES = { attentionPerRound: 3, verifyCost: 1, objectiveTarget: 12, driftLimit: 4, roundLimit: 8, soundnessRate: 0.7 };
+  var COMPOSITIONS = {
+    "scout-heavy": ["scout", "scout", "line"],
+    "balanced": ["scout", "line", "siege"],
+    "siege-heavy": ["line", "siege", "siege"]
+  };
+  // Win rates over 200 seeded runs per cell, from the policy harness.
+  var BASELINES = {
+    "scout-heavy": [["verify-lowest-confidence",.845],["seize-cheapest",.780],["verify-arbitrary",.675],["verify-highest-confidence",.520],["accept-all",.450]],
+    "balanced":    [["verify-lowest-confidence",.970],["seize-cheapest",.895],["verify-arbitrary",.785],["verify-highest-confidence",.540],["accept-all",.400]],
+    "siege-heavy": [["verify-lowest-confidence",1.000],["verify-arbitrary",.970],["verify-highest-confidence",.705],["seize-cheapest",.655],["accept-all",.310]]
+  };
+
+  function fnv1a(text) {
+    var hash = 2166136261;
+    for (var i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+  // The avalanche step matters: FNV-1a ends in a multiply, so labels differing only in a trailing
+  // index barely move the high bits — and read as a fraction of 2^32, every artifact a mech made in
+  // a round would share one fate. Mirrors packages/engine/src/command.ts exactly.
+  function unit(seed, label) {
+    var h = fnv1a(seed + ":" + label);
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h >>> 0) / 4294967296;
+  }
+
+  var state = null;
+
+  function buildFleet(comp) {
+    return COMPOSITIONS[comp].map(function (chassis, index) {
+      var p = PROFILES[chassis];
+      return {
+        mechId: chassis + "-" + String(index + 1).padStart(2, "0"),
+        chassis: chassis, throughput: p.throughput, seizeCost: p.seizeCost, calibration: p.calibration
+      };
+    });
+  }
+
+  function emit(s) {
+    var out = [];
+    s.fleet.forEach(function (mech) {
+      for (var i = 0; i < mech.throughput; i += 1) {
+        var id = s.matchId + ":r" + s.round + ":" + mech.mechId + ":" + i;
+        var sound = unit(s.seed, "sound:" + id) < RULES.soundnessRate;
+        var signal = sound ? 0.75 : 0.25;
+        var noise = unit(s.seed, "noise:" + id);
+        out.push({
+          artifactId: id, mechId: mech.mechId, chassis: mech.chassis, sound: sound,
+          reportedConfidence: Number((mech.calibration * signal + (1 - mech.calibration) * noise).toFixed(4)),
+          revealed: false, resolution: "pending"
+        });
+      }
+    });
+    return out;
+  }
+
+  function start(comp) {
+    var seed = 41000 + Math.floor(Math.random() * 100000);
+    state = {
+      matchId: "demo", seed: seed, composition: comp, round: 0,
+      attention: RULES.attentionPerRound, progress: 0, drift: 0,
+      status: "active", fleet: buildFleet(comp), pending: [], ledger: [], inspected: 0
+    };
+    state.pending = emit(state);
+    render();
+  }
+
+  function mechOf(id) {
+    for (var i = 0; i < state.fleet.length; i += 1) if (state.fleet[i].mechId === id) return state.fleet[i];
+    return null;
+  }
+  function costOf(artifact, verb) {
+    if (verb === "verify") return RULES.verifyCost;
+    if (verb === "seize") { var m = mechOf(artifact.mechId); return m ? m.seizeCost : Infinity; }
+    return 0;
+  }
+
+  function act(artifact, verb) {
+    if (state.status !== "active" || artifact.resolution !== "pending") return;
+    if (verb === "verify" && artifact.revealed) return;
+    var cost = costOf(artifact, verb);
+    if (cost > state.attention) return;
+    state.attention -= cost;
+    if (verb === "verify") { artifact.revealed = true; state.inspected += 1; }
+    else if (verb === "accept") artifact.resolution = "accepted";
+    else if (verb === "reject") artifact.resolution = "rejected";
+    else if (verb === "seize") { artifact.resolution = "seized"; state.progress += 1; }
+    render();
+  }
+
+  function closeRound() {
+    if (state.status !== "active") return;
+    var gained = 0, drifted = 0, unseen = 0;
+    state.pending.forEach(function (a) {
+      if (a.resolution === "pending") { a.resolution = "accepted"; unseen += 1; }
+      if (a.resolution !== "accepted") return;
+      if (a.sound) { state.progress += 1; gained += 1; } else { state.drift += 1; drifted += 1; }
+    });
+    state.round += 1;
+    state.ledger.push({ round: state.round, gained: gained, drifted: drifted, unseen: unseen });
+
+    if (state.progress >= RULES.objectiveTarget) state.status = "victory";
+    else if (state.drift >= RULES.driftLimit || state.round >= RULES.roundLimit) state.status = "defeat";
+
+    if (state.status === "active") { state.attention = RULES.attentionPerRound; state.pending = emit(state); }
+    else state.pending = [];
+    render();
+  }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+
+  function renderQueue() {
+    var queue = document.getElementById("queue");
+    queue.textContent = "";
+    if (!state.pending.length) {
+      var done = el("div", "ledger");
+      var p = el("p", "empty", "Mission over. Start a new one to play again.");
+      p.style.padding = "18px 16px";
+      p.style.color = "var(--muted)";
+      p.style.margin = "0";
+      queue.appendChild(p);
+      return;
+    }
+    state.pending.forEach(function (a) {
+      var settled = a.resolution !== "pending";
+      var row = el("div", "row" + (settled ? " settled" : "") + (a.revealed ? (a.sound ? " is-sound" : " is-unsound") : ""));
+
+      var who = el("div", "who");
+      who.appendChild(el("b", null, a.mechId));
+      who.appendChild(el("span", null, a.chassis));
+      row.appendChild(who);
+
+      var sig = el("div", "signal");
+      var top = el("div", "signal-top");
+      if (a.revealed) {
+        top.appendChild(el("span", "verdict " + (a.sound ? "sound" : "unsound"), a.sound ? "verified sound" : "verified unsound"));
+      } else {
+        top.appendChild(el("span", "signal-label", settled ? a.resolution : "claimed confidence"));
+      }
+      top.appendChild(el("span", "signal-value", a.reportedConfidence.toFixed(2)));
+      sig.appendChild(top);
+      var meter = el("div", "meter");
+      var fill = el("i");
+      fill.style.width = Math.round(a.reportedConfidence * 100) + "%";
+      meter.appendChild(fill);
+      sig.appendChild(meter);
+      row.appendChild(sig);
+
+      var acts = el("div", "acts");
+      if (!settled) {
+        [["verify", "Verify", RULES.verifyCost],
+         ["seize", "Seize", costOf(a, "seize")],
+         ["accept", "Accept", 0],
+         ["reject", "Reject", 0]].forEach(function (spec) {
+          if (spec[0] === "verify" && a.revealed) return;
+          var b = el("button", null);
+          b.appendChild(document.createTextNode(spec[1] + " "));
+          var c = el("span", "cost" + (spec[2] === 0 ? " free" : ""), spec[2] === 0 ? "free" : spec[2]);
+          b.appendChild(c);
+          b.disabled = spec[2] > state.attention || state.status !== "active";
+          b.setAttribute("aria-label", spec[1] + " " + a.mechId + ", cost " + spec[2]);
+          b.addEventListener("click", function () { act(a, spec[0]); });
+          acts.appendChild(b);
+        });
+      }
+      row.appendChild(acts);
+      queue.appendChild(row);
+    });
+  }
+
+  function renderRail() {
+    document.getElementById("att-value").textContent = state.attention;
+    var pips = document.getElementById("pips");
+    pips.textContent = "";
+    for (var i = 0; i < RULES.attentionPerRound; i += 1) {
+      pips.appendChild(el("div", "pip" + (i < state.attention ? " lit" : "")));
+    }
+    var waiting = state.pending.filter(function (a) { return a.resolution === "pending"; }).length;
+    document.getElementById("att-sub").textContent =
+      state.status === "active" ? waiting + " item" + (waiting === 1 ? "" : "s") + " waiting, " + state.attention + " left to spend" : "mission over";
+
+    document.getElementById("prog-value").textContent = state.progress;
+    document.getElementById("prog-bar").style.width = Math.min(100, (state.progress / RULES.objectiveTarget) * 100) + "%";
+    document.getElementById("prog-sub").textContent = state.progress + " of " + RULES.objectiveTarget + " to win";
+
+    document.getElementById("drift-value").textContent = state.drift;
+    document.getElementById("drift-bar").style.width = Math.min(100, (state.drift / RULES.driftLimit) * 100) + "%";
+    document.getElementById("drift-sub").textContent = state.drift + " of " + RULES.driftLimit + " before the mission is lost";
+
+    document.getElementById("queue-note").textContent =
+      state.status === "active" ? "round " + (state.round + 1) + " of " + RULES.roundLimit : "";
+
+    var commit = document.getElementById("commit");
+    commit.disabled = state.status !== "active";
+    commit.textContent = state.status === "active" ? "Close round" : "Mission over";
+    document.getElementById("warn").textContent =
+      state.status === "active" && waiting
+        ? waiting + " unreviewed item" + (waiting === 1 ? "" : "s") + " will be accepted unseen."
+        : "";
+  }
+
+  function renderLedger() {
+    var list = document.getElementById("ledger");
+    list.textContent = "";
+    if (!state.ledger.length) { list.appendChild(el("li", "empty", "No rounds closed yet.")); return; }
+    state.ledger.slice().reverse().forEach(function (entry) {
+      var li = el("li");
+      li.appendChild(el("span", "rnd", "R" + entry.round));
+      li.appendChild(el("span", null, entry.unseen + " accepted unseen"));
+      var d = el("span", "delta");
+      var up = el("span", "up", "+" + entry.gained);
+      var down = el("span", "down", "  −" + entry.drifted);
+      d.appendChild(up); d.appendChild(down);
+      li.appendChild(d);
+      list.appendChild(li);
+    });
+  }
+
+  function renderOutcome() {
+    var box = document.getElementById("outcome");
+    if (state.status === "active") { box.hidden = true; return; }
+    box.hidden = false;
+    var won = state.status === "victory";
+    var title = document.getElementById("outcome-title");
+    title.textContent = won ? "Objective complete" : (state.drift >= RULES.driftLimit ? "Lost to drift" : "Out of rounds");
+    title.className = won ? "victory" : "defeat";
+
+    document.getElementById("outcome-text").textContent =
+      "You closed " + state.round + " round" + (state.round === 1 ? "" : "s") + ", inspected " + state.inspected +
+      " item" + (state.inspected === 1 ? "" : "s") + ", reached " + state.progress + " progress and " + state.drift +
+      " drift. Here is how five scripted policies do on this same fleet, over 200 seeded runs each.";
+
+    var bars = document.getElementById("bars");
+    bars.textContent = "";
+    var rows = BASELINES[state.composition].slice();
+    rows.push(["you (this run)", won ? 1 : 0]);
+    rows.sort(function (a, b) { return b[1] - a[1]; });
+    rows.forEach(function (r) {
+      var isYou = r[0].indexOf("you") === 0;
+      var isFloor = r[0] === "accept-all";
+      var bar = el("div", "bar" + (isYou ? " you" : "") + (isFloor ? " floor" : ""));
+      bar.appendChild(el("div", "bar-name", r[0]));
+      var track = el("div", "bar-track");
+      var fill = el("div", "bar-fill");
+      fill.style.width = Math.round(r[1] * 100) + "%";
+      track.appendChild(fill);
+      bar.appendChild(track);
+      bar.appendChild(el("div", "bar-num", isYou ? (won ? "won" : "lost") : r[1].toFixed(3)));
+      bars.appendChild(bar);
+    });
+  }
+
+  function render() { renderQueue(); renderRail(); renderLedger(); renderOutcome(); }
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-comp]"), function (btn) {
+    btn.addEventListener("click", function () {
+      Array.prototype.forEach.call(document.querySelectorAll("[data-comp]"), function (b) {
+        b.setAttribute("aria-pressed", String(b === btn));
+      });
+      start(btn.getAttribute("data-comp"));
+    });
+  });
+  document.getElementById("commit").addEventListener("click", closeRound);
+  document.getElementById("restart").addEventListener("click", function () { start(state.composition); });
+
+  document.querySelector('[data-comp="balanced"]').setAttribute("aria-pressed", "true");
+  start("balanced");
+})();
+</script>
