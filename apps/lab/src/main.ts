@@ -1,6 +1,6 @@
 import { createMatrix, writeReport, writeShard } from "./lab.js";
 import { readFile } from "node:fs/promises";
-import { SimulationMatrixSchema } from "@mech/contracts";
+import { SimulationMatrixSchema } from "@landscape/contracts";
 
 function value(name: string): string | undefined {
   const argument = process.argv.find((candidate) => candidate.startsWith(`--${name}=`));

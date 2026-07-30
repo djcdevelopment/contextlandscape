@@ -20,7 +20,7 @@ These checks prove determinism, reachability, persistence, blinding gates, expor
 From `C:\work\contextlandscape`:
 
 ```powershell
-docker compose -p mech-commander-dev -f infra/compose.dev.yml up --build -d
+docker compose -p context-landscape-dev -f infra/compose.dev.yml up --build -d
 .\scripts\smoke.ps1
 .\scripts\research-smoke.ps1
 .\scripts\gameplay-lab-smoke.ps1

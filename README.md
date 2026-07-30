@@ -1,11 +1,11 @@
-# Mech Commander
+# Context Landscape
 
 [![mechanics-lab](https://github.com/djcdevelopment/contextlandscape/actions/workflows/mechanics-lab.yml/badge.svg)](https://github.com/djcdevelopment/contextlandscape/actions/workflows/mechanics-lab.yml)
 [![Node.js 24+](https://img.shields.io/badge/Node.js-24%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Docker](https://img.shields.io/badge/runtime-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-Mech Commander is a research prototype for an AI-orchestration autobattler. The player commands a small force through systems-engineering decisions—scout, establish a contract, implement, review, consolidate, or commit with a full send—while managing energy, heat, dispersion, confidence drift, and incomplete information.
+Context Landscape is a research prototype for an AI-orchestration autobattler. The player commands a small force through systems-engineering decisions—scout, establish a contract, implement, review, consolidate, or commit with a full send—while managing energy, heat, dispersion, confidence drift, and incomplete information.
 
 The repository combines a playable browser game with a deterministic simulation and experimentation platform. Its purpose is to discover whether the underlying decisions are legible and interesting before committing to the larger asynchronous PvP and social product.
 
@@ -28,10 +28,15 @@ The repository combines a playable browser game with a deterministic simulation 
 
 ## Why this exists
 
-The project started from two design documents:
+The project started from two design documents, both now archived under `docs/archive/`:
 
-- [Mech Commander AI Autobattler Living Design](Mech_Commander_AI_Autobattler_Living_Design.docx) describes the product vision, player fantasy, core loop, forces, progression, and social direction.
-- [Scenario Forge AI Battlefield Map Design](Scenario_Forge_AI_Battlefield_Map_Design.docx) describes the scenario grammar, battlefield structure, pressure systems, and content-generation direction.
+- [Original vision — autobattler](docs/archive/original-vision-autobattler.docx) described the product vision, player fantasy, core loop, forces, progression, and social direction.
+- [Original vision — Scenario Forge](docs/archive/original-vision-scenario-forge.docx) described the scenario grammar, battlefield structure, pressure systems, and content-generation direction.
+
+> **These are vision documents, not specifications.** They describe weapons, mounts, loadouts, terrain
+> types, commander upgrades, mission families, and campaign packs that this codebase does not
+> implement, and they predate the current project name and direction. Read
+> [docs/IMPLEMENTED.md](docs/IMPLEMENTED.md) for what actually exists.
 
 This prototype narrows those ideas into a falsifiable question: can systems-engineering tradeoffs become understandable battlefield decisions? The current implementation therefore prioritizes deterministic mechanics, replayable evidence, synthetic search, and short human review labs over accounts, monetization, realtime play, or production art.
 
@@ -82,8 +87,8 @@ A fresh clone can run `npm ci`, build, typecheck, and test without those reports
 ```powershell
 git clone https://github.com/djcdevelopment/contextlandscape.git
 Set-Location contextlandscape
-docker compose -p mech-commander-dev -f infra/compose.dev.yml up --build -d
-docker compose -p mech-commander-dev -f infra/compose.dev.yml ps
+docker compose -p context-landscape-dev -f infra/compose.dev.yml up --build -d
+docker compose -p context-landscape-dev -f infra/compose.dev.yml ps
 Invoke-RestMethod http://127.0.0.1:9080/health/ready
 ```
 
@@ -97,13 +102,13 @@ persistence : postgres
 Follow logs:
 
 ```powershell
-docker compose -p mech-commander-dev -f infra/compose.dev.yml logs -f app web
+docker compose -p context-landscape-dev -f infra/compose.dev.yml logs -f app web
 ```
 
 Stop the stack while preserving its PostgreSQL volume:
 
 ```powershell
-docker compose -p mech-commander-dev -f infra/compose.dev.yml down
+docker compose -p context-landscape-dev -f infra/compose.dev.yml down
 ```
 
 ### Gameplay-lab dataset
@@ -111,7 +116,7 @@ docker compose -p mech-commander-dev -f infra/compose.dev.yml down
 To regenerate the complete source campaign:
 
 ```powershell
-docker compose -p mech-commander-lab -f infra/compose.lab.yml build worker
+docker compose -p context-landscape-lab -f infra/compose.lab.yml build worker
 .\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -DryRun
 .\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -MinimumFreeGiB 50
 ```
@@ -273,17 +278,20 @@ No command automatically promotes a candidate tuning into a scenario.
 │   └── compose.release.yml  # immutable production runtime
 ├── scripts/                 # build, smoke, lab, retention, and promotion tools
 ├── data/lab/                # generated research artifacts; mostly gitignored
+├── docs/
+│   ├── IMPLEMENTED.md       # what actually exists, versus the archived vision
+│   └── archive/             # superseded original design documents
 ├── Dockerfile               # dev, verification, lab, and runtime stages
-└── *.md / *.docx            # product, research, operations, and review docs
+└── *.md                     # research, operations, and review docs
 ```
 
 ## Deployment
 
-The current public baseline is available at:
+The current baseline is deployed behind a private Tailscale network and is not publicly reachable; its address lives in the untracked `.env.omen` rather than in this repository.
 
-<https://am4.tail8e749c.ts.net/mech/>
+As of 2026-07-29, that route serves release `p0-rd-20260729-r5`. The newer gameplay-lab build is verified on OMEN but has not yet been promoted with the required AM4 Caddy allowlist changes, so the lab API families are not part of the current acceptance claim.
 
-As of 2026-07-29, that route serves release `p0-rd-20260729-r5`. The newer gameplay-lab build is verified on OMEN but has not yet been promoted with the required AM4 Caddy allowlist changes, so the public lab API families are not part of the current public acceptance claim.
+> **Route rename:** the served path changed from `/mech/` to `/landscape/`. The AM4 Caddy allowlist still matches the old path, so ingress must be updated in the same release window or the deployment will 404.
 
 Release properties:
 
@@ -298,10 +306,14 @@ Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for release promotion, public
 
 ## Documentation
 
-### Product sources
+### What is actually built
 
-- [Mech Commander AI Autobattler Living Design](Mech_Commander_AI_Autobattler_Living_Design.docx)
-- [Scenario Forge AI Battlefield Map Design](Scenario_Forge_AI_Battlefield_Map_Design.docx)
+- [Implemented surface](docs/IMPLEMENTED.md)
+
+### Archived vision sources
+
+- [Original vision — autobattler](docs/archive/original-vision-autobattler.docx)
+- [Original vision — Scenario Forge](docs/archive/original-vision-scenario-forge.docx)
 
 ### Player and operator guides
 
@@ -311,10 +323,11 @@ Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for release promotion, public
 
 ### Research and implementation
 
-- [Mech Commander R&D lab](R_AND_D_LAB.md)
+- [Context Landscape R&D lab](R_AND_D_LAB.md)
 - [Overnight experiment plan and outcome](OVERNIGHT_EXPERIMENT_PLAN.md)
 - [Synthetic-to-gameplay lab plan](GAMEPLAY_LAB_PLAN.md)
 - [Gameplay-lab implementation retrospective](GAMEPLAY_LAB_RETROSPECTIVE.md)
+- [Attempt-bank pilot retrospective](BANK_PILOT_RETROSPECTIVE.md)
 
 ## Data and security
 

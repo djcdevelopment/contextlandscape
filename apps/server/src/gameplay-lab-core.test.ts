@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import type { GameplayLabReviewRequest } from "@mech/contracts";
-import { gameplayLabById, gameplayLabs } from "@mech/scenarios";
+import type { GameplayLabReviewRequest } from "@landscape/contracts";
+import { gameplayLabById, gameplayLabs } from "@landscape/scenarios";
 import {
   bookmarkGameplayLabDecision,
   completeGameplayLabTrial,

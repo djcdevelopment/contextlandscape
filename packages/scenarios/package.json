@@ -1,5 +1,5 @@
 {
-  "name": "@mech/scenarios",
+  "name": "@landscape/scenarios",
   "version": "0.1.0",
   "type": "module",
   "exports": "./dist/index.js",
@@ -9,6 +9,6 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@mech/contracts": "0.1.0"
+    "@landscape/contracts": "0.1.0"
   }
 }

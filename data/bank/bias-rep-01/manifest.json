@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "bankId": "bias-rep-01",
+  "bankVersion": 1,
+  "problemCount": 5,
+  "tiers": [
+    {
+      "tierId": "scout",
+      "backend": "am4-oxen",
+      "attemptsPerCell": 15,
+      "timeoutS": 300
+    },
+    {
+      "tierId": "line",
+      "backend": "am4-moe",
+      "attemptsPerCell": 15,
+      "timeoutS": 120
+    }
+  ],
+  "briefingIds": [
+    "standard",
+    "good"
+  ],
+  "attemptCount": 300,
+  "shardCount": 1,
+  "contentHash": "fnv1a:ea75f8d7",
+  "generatedAt": "2026-07-30T09:42:56.460Z"
+}

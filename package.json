@@ -1,5 +1,5 @@
 {
-  "name": "mech-commander",
+  "name": "context-landscape",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -7,14 +7,14 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace=@mech/contracts && npm run build --workspace=@mech/scenarios && npm run build --workspace=@mech/engine && npm run build --workspace=@mech/simulator && npm run build --workspace=@mech/discord-adapter && npm run build --workspace=@mech/lab && npm run build --workspace=@mech/server && npm run build --workspace=@mech/web",
-    "typecheck": "npm run typecheck --workspace=@mech/contracts && npm run typecheck --workspace=@mech/scenarios && npm run typecheck --workspace=@mech/engine && npm run typecheck --workspace=@mech/simulator && npm run typecheck --workspace=@mech/discord-adapter && npm run typecheck --workspace=@mech/lab && npm run typecheck --workspace=@mech/server && npm run typecheck --workspace=@mech/web",
-    "test": "npm run test --workspace=@mech/engine && npm run test --workspace=@mech/lab && npm run test --workspace=@mech/server",
-    "dev:server": "npm run dev --workspace=@mech/server",
-    "dev:web": "npm run dev --workspace=@mech/web",
-    "simulate": "npm run simulate --workspace=@mech/simulator --",
-    "lab": "npm run lab --workspace=@mech/lab --",
-    "gameplay-lab:preflight": "npm run preflight --workspace=@mech/server"
+    "build": "npm run build --workspace=@landscape/contracts && npm run build --workspace=@landscape/scenarios && npm run build --workspace=@landscape/engine && npm run build --workspace=@landscape/simulator && npm run build --workspace=@landscape/discord-adapter && npm run build --workspace=@landscape/lab && npm run build --workspace=@landscape/bank && npm run build --workspace=@landscape/server && npm run build --workspace=@landscape/web",
+    "typecheck": "npm run typecheck --workspace=@landscape/contracts && npm run typecheck --workspace=@landscape/scenarios && npm run typecheck --workspace=@landscape/engine && npm run typecheck --workspace=@landscape/simulator && npm run typecheck --workspace=@landscape/discord-adapter && npm run typecheck --workspace=@landscape/lab && npm run typecheck --workspace=@landscape/bank && npm run typecheck --workspace=@landscape/server && npm run typecheck --workspace=@landscape/web",
+    "test": "npm run test --workspace=@landscape/engine && npm run test --workspace=@landscape/simulator && npm run test --workspace=@landscape/lab && npm run test --workspace=@landscape/bank && npm run test --workspace=@landscape/server",
+    "dev:server": "npm run dev --workspace=@landscape/server",
+    "dev:web": "npm run dev --workspace=@landscape/web",
+    "simulate": "npm run simulate --workspace=@landscape/simulator --",
+    "lab": "npm run lab --workspace=@landscape/lab --",
+    "gameplay-lab:preflight": "npm run preflight --workspace=@landscape/server"
   },
   "engines": {
     "node": ">=24"

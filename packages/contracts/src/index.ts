@@ -45,30 +45,6 @@ export const ScenarioDefinitionSchema = z.object({
 });
 export type ScenarioDefinition = z.infer<typeof ScenarioDefinitionSchema>;
 
-export const UnitDefinitionSchema = z.object({
-  unitId: z.string(),
-  chassis: z.enum(["scout", "line", "siege"]),
-  modelTier: z.string(),
-  baseStats: z.object({ initiative: z.number().int(), heatCapacity: z.number().int(), dispersionResistance: z.number().int() }),
-  contextCapacity: z.number().int().positive(),
-  commanderCost: z.number().int().nonnegative(),
-  compatibleMounts: z.array(z.string())
-});
-export type UnitDefinition = z.infer<typeof UnitDefinitionSchema>;
-
-export const LoadoutDefinitionSchema = z.object({
-  loadoutId: z.string(),
-  unitId: z.string(),
-  reasoningSetting: z.string(),
-  loadedContext: z.array(z.string()),
-  weapons: z.array(z.string()),
-  tools: z.array(z.string()),
-  doctrine: z.string(),
-  autonomy: z.enum(["single", "semi", "full"]),
-  attachedArtifacts: z.array(z.string())
-});
-export type LoadoutDefinition = z.infer<typeof LoadoutDefinitionSchema>;
-
 export const UnitStateSchema = z.object({
   unitId: z.string(),
   ownerId: z.string(),

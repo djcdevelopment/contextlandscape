@@ -3,7 +3,7 @@ import {
   type GameplayLabDefinition,
   type GameplayLabDoctrineCard,
   type GameplayLabVariant
-} from "@mech/contracts";
+} from "@landscape/contracts";
 
 const commonQuestions = [
   "What did you believe was the binding constraint?",

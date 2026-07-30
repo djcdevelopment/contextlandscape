@@ -3,8 +3,8 @@ param(
   [Parameter(Mandatory = $true)] [string] $Image,
   [Parameter(Mandatory = $true)] [string] $ReleaseId,
   [Parameter(Mandatory = $true)] [string] $SshTarget,
-  [string] $RemoteRoot = '/opt/mech-commander',
-  [string] $RemoteEnvironment = '/etc/mech-commander/environment',
+  [string] $RemoteRoot = '/opt/context-landscape',
+  [string] $RemoteEnvironment = '/etc/context-landscape/environment',
   [switch] $DryRun
 )
 
@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $compose = Join-Path $root 'infra/compose.release.yml'
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$archive = Join-Path ([IO.Path]::GetTempPath()) "mech-commander-$ReleaseId-$stamp.oci.tar"
+$archive = Join-Path ([IO.Path]::GetTempPath()) "context-landscape-$ReleaseId-$stamp.oci.tar"
 $remoteArchive = "/tmp/$(Split-Path -Leaf $archive)"
 
 Push-Location $root
@@ -55,8 +55,8 @@ sudo docker load --input "`$archive" >/dev/null
 loaded_id=`$(sudo docker image inspect --format '{{.Id}}' "`$image")
 test "`$loaded_id" = "`$expected_id"
 sudo install -m 0644 "`$compose_tmp" "`$root/compose.release.yml"
-if [ -f "`$environment" ]; then sudo sed -i '/^MECH_COMMANDER_IMAGE=/d; /^MECH_COMMANDER_RELEASE=/d' "`$environment"; fi
-printf 'MECH_COMMANDER_IMAGE=%s\nMECH_COMMANDER_RELEASE=%s\n' "`$image" "`$release" | sudo tee -a "`$environment" >/dev/null
+if [ -f "`$environment" ]; then sudo sed -i '/^CONTEXT_LANDSCAPE_IMAGE=/d; /^CONTEXT_LANDSCAPE_RELEASE=/d' "`$environment"; fi
+printf 'CONTEXT_LANDSCAPE_IMAGE=%s\nCONTEXT_LANDSCAPE_RELEASE=%s\n' "`$image" "`$release" | sudo tee -a "`$environment" >/dev/null
 sudo docker compose --env-file "`$environment" -f "`$root/compose.release.yml" config >/dev/null
 sudo docker compose --env-file "`$environment" -f "`$root/compose.release.yml" up -d --no-build
 until curl --fail --silent http://127.0.0.1:8080/health/ready | grep -q '"status":"ok"'; do sleep 2; done
