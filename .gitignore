@@ -13,3 +13,12 @@ data/lab/**
 !data/lab/sleep-01-summary.json
 !data/lab/sleep-01-analysis/
 !data/lab/sleep-01-analysis/*.svg
+# Raw attempt shards stay local; the compact reports and manifests are the evidence a
+# retrospective cites, so they are tracked the same way the sleep-01 summary is.
+data/bank/**
+!data/bank/pilot-3tier-01/
+!data/bank/pilot-3tier-01/manifest.json
+!data/bank/pilot-3tier-01/report.json
+!data/bank/bias-rep-01/
+!data/bank/bias-rep-01/manifest.json
+!data/bank/bias-rep-01/report.json

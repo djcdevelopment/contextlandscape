@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "bankId": "pilot-3tier-01",
+  "bankVersion": 1,
+  "problemCount": 12,
+  "tiers": [
+    {
+      "tierId": "scout",
+      "backend": "am4-oxen",
+      "attemptsPerCell": 5,
+      "timeoutS": 300
+    },
+    {
+      "tierId": "line",
+      "backend": "gcp-gemini",
+      "attemptsPerCell": 5,
+      "timeoutS": 120
+    },
+    {
+      "tierId": "siege",
+      "backend": "gcp-gemini-pro",
+      "attemptsPerCell": 3,
+      "timeoutS": 300
+    }
+  ],
+  "briefingIds": [
+    "poor",
+    "standard",
+    "good"
+  ],
+  "attemptCount": 468,
+  "shardCount": 1,
+  "contentHash": "fnv1a:7ead02a4",
+  "generatedAt": "2026-07-30T09:36:11.322Z"
+}

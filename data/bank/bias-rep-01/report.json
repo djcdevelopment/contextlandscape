@@ -1,0 +1,247 @@
+{
+  "bankId": "bias-rep-01",
+  "attempts": 300,
+  "graded": 150,
+  "backendErrorRate": 0.5,
+  "emptyOutputRate": 0,
+  "cells": [
+    {
+      "tierId": "scout",
+      "briefingId": "standard",
+      "attempts": 75,
+      "graded": 75,
+      "correct": 75,
+      "accuracy": 1,
+      "accuracy95": [
+        0.951,
+        1
+      ],
+      "backendErrors": 0,
+      "emptyOutputs": 0,
+      "unparseable": 0,
+      "extractable": 75,
+      "formatCompliance": 1,
+      "accuracyWhenExtractable": 1
+    },
+    {
+      "tierId": "scout",
+      "briefingId": "good",
+      "attempts": 75,
+      "graded": 75,
+      "correct": 75,
+      "accuracy": 1,
+      "accuracy95": [
+        0.951,
+        1
+      ],
+      "backendErrors": 0,
+      "emptyOutputs": 0,
+      "unparseable": 0,
+      "extractable": 75,
+      "formatCompliance": 1,
+      "accuracyWhenExtractable": 1
+    },
+    {
+      "tierId": "line",
+      "briefingId": "standard",
+      "attempts": 75,
+      "graded": 0,
+      "correct": 0,
+      "accuracy": 0,
+      "accuracy95": [
+        0,
+        0
+      ],
+      "backendErrors": 75,
+      "emptyOutputs": 0,
+      "unparseable": 0,
+      "extractable": 0,
+      "formatCompliance": 0,
+      "accuracyWhenExtractable": null
+    },
+    {
+      "tierId": "line",
+      "briefingId": "good",
+      "attempts": 75,
+      "graded": 0,
+      "correct": 0,
+      "accuracy": 0,
+      "accuracy95": [
+        0,
+        0
+      ],
+      "backendErrors": 75,
+      "emptyOutputs": 0,
+      "unparseable": 0,
+      "extractable": 0,
+      "formatCompliance": 0,
+      "accuracyWhenExtractable": null
+    }
+  ],
+  "tierAccuracyAtStandard": [
+    {
+      "tierId": "scout",
+      "accuracy": 1,
+      "graded": 75
+    },
+    {
+      "tierId": "line",
+      "accuracy": 0,
+      "graded": 0
+    }
+  ],
+  "briefingAccuracyMean": [
+    {
+      "briefingId": "standard",
+      "accuracy": 1,
+      "formatCompliance": 1,
+      "accuracyWhenExtractable": 1
+    },
+    {
+      "briefingId": "good",
+      "accuracy": 1,
+      "formatCompliance": 1,
+      "accuracyWhenExtractable": 1
+    }
+  ],
+  "problems": [
+    {
+      "problemId": "prb-detection-0001",
+      "admitted": false,
+      "reason": "every tier solves it",
+      "accuracyByTier": [
+        {
+          "tierId": "scout",
+          "graded": 15,
+          "accuracy": 1
+        },
+        {
+          "tierId": "line",
+          "graded": 0,
+          "accuracy": 0
+        }
+      ]
+    },
+    {
+      "problemId": "prb-detection-0002",
+      "admitted": false,
+      "reason": "every tier solves it",
+      "accuracyByTier": [
+        {
+          "tierId": "scout",
+          "graded": 15,
+          "accuracy": 1
+        },
+        {
+          "tierId": "line",
+          "graded": 0,
+          "accuracy": 0
+        }
+      ]
+    },
+    {
+      "problemId": "prb-verification-0001",
+      "admitted": false,
+      "reason": "every tier solves it",
+      "accuracyByTier": [
+        {
+          "tierId": "scout",
+          "graded": 15,
+          "accuracy": 1
+        },
+        {
+          "tierId": "line",
+          "graded": 0,
+          "accuracy": 0
+        }
+      ]
+    },
+    {
+      "problemId": "prb-ordering-0002",
+      "admitted": false,
+      "reason": "every tier solves it",
+      "accuracyByTier": [
+        {
+          "tierId": "scout",
+          "graded": 15,
+          "accuracy": 1
+        },
+        {
+          "tierId": "line",
+          "graded": 0,
+          "accuracy": 0
+        }
+      ]
+    },
+    {
+      "problemId": "prb-constraint-0001",
+      "admitted": false,
+      "reason": "every tier solves it",
+      "accuracyByTier": [
+        {
+          "tierId": "scout",
+          "graded": 15,
+          "accuracy": 1
+        },
+        {
+          "tierId": "line",
+          "graded": 0,
+          "accuracy": 0
+        }
+      ]
+    }
+  ],
+  "briefingTrap": [
+    {
+      "briefingId": "standard",
+      "trap": {
+        "graded": 75,
+        "accuracy": 1,
+        "trapCaptureRate": 0
+      },
+      "plain": {
+        "graded": 0,
+        "accuracy": 0
+      }
+    },
+    {
+      "briefingId": "good",
+      "trap": {
+        "graded": 75,
+        "accuracy": 1,
+        "trapCaptureRate": 0
+      },
+      "plain": {
+        "graded": 0,
+        "accuracy": 0
+      }
+    }
+  ],
+  "briefingBias": {
+    "detected": false,
+    "detail": "trap capture standard 0 -> good 0; plain accuracy standard 0 -> good 0"
+  },
+  "admittedCount": 0,
+  "gate": {
+    "discrimination": {
+      "pass": false,
+      "admittedRatio": 0
+    },
+    "tierMonotonic": {
+      "pass": false,
+      "complete": false,
+      "detail": "scout 1 < line 0 (incomplete: siege did not run)"
+    },
+    "briefingLift": {
+      "pass": false,
+      "formatOnly": false,
+      "detail": "accuracy: poor 0 < standard 1 < good 1; when extractable: n/a / 1 / 1"
+    },
+    "backendErrors": {
+      "pass": false,
+      "rate": 0.5
+    },
+    "pass": false
+  },
+  "contentHash": "fnv1a:ea75f8d7"
+}
