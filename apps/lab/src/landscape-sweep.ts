@@ -21,6 +21,8 @@ import {
   AttentionV2RuleShapeSchema,
   AttentionV2SparseBattleSampleSchema,
   AttentionV2SparseMatchupEdgeSchema,
+  AttentionV2StageModelCatalogSchema,
+  AttentionV2StageModelSelectionReportSchema,
   AttentionV2SweepBudgetSchema,
   AttentionV2SweepPlanSchema,
   BATTLE_VOLUME_CELLS,
@@ -38,6 +40,8 @@ import {
   type AttentionV2PlannerIdentity,
   type AttentionV2RuleShape,
   type AttentionV2RunPlannerIdentity,
+  type AttentionV2StageModelCatalog,
+  type AttentionV2StageModelSelectionReport,
   type AttentionV2SamplingWeight,
   type AttentionV2SparseBattleSample,
   type AttentionV2SparseMatchupEdge,
@@ -52,7 +56,7 @@ import { sha256Value, type Sha256Digest } from "./provenance.js";
 
 export const LANDSCAPE_SWEEP_PLANNER_VERSION = ATTENTION_V2_PLANNER_VERSION;
 export const LANDSCAPE_SWEEP_REQUIRED_RESOLVER = "attention-v2" as const;
-export const LANDSCAPE_SWEEP_EXECUTION_STATUS = "requires-v2-resolver" as const;
+export const LANDSCAPE_SWEEP_EXECUTION_STATUS = "requires-v2-campaign-runner" as const;
 export const ATTENTION_V2_SWEEP_MODEL_ROWS = 40 as const;
 export const ATTENTION_V2_SPARSE_DEGREE = 8 as const;
 export const ATTENTION_V2_SPARSE_BATTLE_SAMPLE_COUNT = 256 as const;
@@ -1068,7 +1072,73 @@ export function createAttentionV2SweepPlan(
   return plan;
 }
 
-export function verifyAttentionV2SweepPlan(plan: AttentionV2SweepPlan, skeleton: LandscapeSweepSkeleton): void {
+export type AttentionV2MaterializedStageInput = {
+  catalog: AttentionV2StageModelCatalog;
+  selectionReport: AttentionV2StageModelSelectionReport;
+};
+
+export type AttentionV2SweepVerificationOptions = {
+  materializedStages?: readonly AttentionV2MaterializedStageInput[];
+  parentPlan?: AttentionV2SweepPlan;
+};
+
+function stageModelSetScaffold(modelSet: AttentionV2StageModelSetRef) {
+  return {
+    stage: modelSet.stage,
+    modelCount: modelSet.modelCount,
+    selectionProtocolHash: modelSet.selectionProtocolHash,
+    rootModelCatalogHash: modelSet.rootModelCatalogHash,
+    dependencies: modelSet.dependencies.map((dependency) => ({
+      upstreamStage: dependency.upstreamStage,
+      relation: dependency.relation
+    }))
+  };
+}
+
+export function verifyAttentionV2StageModelSelectionReport(
+  report: AttentionV2StageModelSelectionReport
+): void {
+  AttentionV2StageModelSelectionReportSchema.parse(report);
+  assertDigest("selection report", report.selectionReportHash, sha256Value(withoutHash(report, "selectionReportHash")));
+}
+
+export function verifyAttentionV2StageModelCatalog(
+  catalog: AttentionV2StageModelCatalog,
+  expectedPlanHash?: Sha256Digest
+): void {
+  AttentionV2StageModelCatalogSchema.parse(catalog);
+  if (expectedPlanHash && catalog.planHash !== expectedPlanHash) throw new Error(`${catalog.stage} catalog is bound to the wrong plan`);
+  for (const member of catalog.members) {
+    assertDigest(`${catalog.stage} ${member.modelId} rule shape`, member.ruleShapeHash, sha256Value(member.ruleShape));
+    assertDigest(`${catalog.stage} ${member.modelId} model`, member.modelHash, sha256Value({
+      schemaVersion: 1,
+      modelVersion: member.modelVersion,
+      modelId: member.modelId,
+      ruleShapeHash: member.ruleShapeHash
+    }));
+    assertDigest(`${catalog.stage} ${member.modelId} member`, member.memberHash, sha256Value(withoutHash(member, "memberHash")));
+  }
+  const expectedModelSetHash = sha256Value({
+    schemaVersion: 1,
+    stage: catalog.stage,
+    members: catalog.members.map((member) => ({ modelId: member.modelId, modelHash: member.modelHash }))
+  });
+  assertDigest(`${catalog.stage} model set`, catalog.modelSetHash, expectedModelSetHash);
+  assertDigest(`${catalog.stage} catalog`, catalog.catalogHash, sha256Value(withoutHash(catalog, "catalogHash")));
+  if (catalog.selectionReportHash !== null) {
+    for (const dependency of catalog.dependencies) {
+      if (dependency.upstreamSelectionReportHash !== catalog.selectionReportHash) {
+        throw new Error(`${catalog.stage} dependency does not match its selection report`);
+      }
+    }
+  }
+}
+
+export function verifyAttentionV2SweepPlan(
+  plan: AttentionV2SweepPlan,
+  skeleton: LandscapeSweepSkeleton,
+  options: AttentionV2SweepVerificationOptions = {}
+): void {
   AttentionV2SweepPlanSchema.parse(plan);
   verifyAttentionV2SweepSkeleton(skeleton);
   assertDigest("plan", plan.planHash, sha256Value(withoutHash(plan, "planHash")));
@@ -1081,7 +1151,38 @@ export function verifyAttentionV2SweepPlan(plan: AttentionV2SweepPlan, skeleton:
     throw new Error("plan planner identity does not match the frozen sweep skeleton");
   }
   const expectedModelSets = stageModelSets(plan.budget, skeleton.modelCatalog);
-  assertDigest("stage model sets", sha256Value(plan.stageModelSets), sha256Value(expectedModelSets));
+  const materialized = new Map((options.materializedStages ?? []).map((entry) => [entry.catalog.stage, entry]));
+  for (let index = 0; index < plan.stageModelSets.length; index += 1) {
+    const actual = plan.stageModelSets[index];
+    const expected = expectedModelSets[index];
+    if (sha256Value(stageModelSetScaffold(actual)) !== sha256Value(stageModelSetScaffold(expected))) {
+      throw new Error(`stage model set scaffold mismatch for ${actual.stage}`);
+    }
+    if (actual.materializationStatus === "pending-selection") {
+      if (materialized.has(actual.stage)) throw new Error(`${actual.stage} has materialized inputs but the plan still marks it pending`);
+      continue;
+    }
+    if (actual.stage === "shape-screen") continue;
+    const input = materialized.get(actual.stage);
+    if (!input) throw new Error(`${actual.stage} requires a verified materialized model catalog`);
+    verifyAttentionV2StageModelSelectionReport(input.selectionReport);
+    verifyAttentionV2StageModelCatalog(input.catalog, plan.planHash as Sha256Digest);
+    if (input.catalog.modelSetHash !== actual.modelSetHash || input.catalog.catalogHash !== actual.catalogHash || input.catalog.selectionReportHash !== actual.selectionReportHash) {
+      throw new Error(`${actual.stage} plan reference does not match its materialized catalog`);
+    }
+    const dependency = actual.dependencies[0];
+    const upstream = dependency ? plan.stageModelSets.find((candidate) => candidate.stage === dependency.upstreamStage) : undefined;
+    if (!upstream || upstream.materializationStatus !== "materialized") throw new Error(`${actual.stage} upstream model set is not materialized`);
+    if (dependency.upstreamModelSetHash !== upstream.modelSetHash || dependency.upstreamSelectionReportHash !== actual.selectionReportHash) {
+      throw new Error(`${actual.stage} lineage hashes do not resolve to the parent set`);
+    }
+    if (dependency.relation === "exact-reuse" && actual.modelSetHash !== upstream.modelSetHash) {
+      throw new Error(`${actual.stage} exact-reuse lineage changed membership`);
+    }
+  }
+  if (plan.parentPlanHash !== null) {
+    if (!options.parentPlan || plan.parentPlanHash !== options.parentPlan.planHash) throw new Error("child plan parentPlanHash does not resolve to the supplied parent plan");
+  }
   for (const block of plan.worldBlocks) assertDigest(`world block ${block.stage}`, block.blockHash, sha256Value(withoutHash(block, "blockHash")));
 }
 
@@ -1105,9 +1206,10 @@ export type CompiledAttentionV2RunPlanner = Readonly<{
 
 export function compileAttentionV2RunPlanner(
   plan: AttentionV2SweepPlan,
-  skeleton: LandscapeSweepSkeleton
+  skeleton: LandscapeSweepSkeleton,
+  options: AttentionV2SweepVerificationOptions = {}
 ): CompiledAttentionV2RunPlanner {
-  verifyAttentionV2SweepPlan(plan, skeleton);
+  verifyAttentionV2SweepPlan(plan, skeleton, options);
   const sealedPlan = AttentionV2SweepPlanSchema.parse(plan);
   const planId = sealedPlan.planId;
   const planHash = sealedPlan.planHash;
@@ -1119,6 +1221,9 @@ export function compileAttentionV2RunPlanner(
   const modelIds = new Map<AttentionV2SweepStage, ReadonlySet<string>>([
     ["shape-screen", new Set(skeleton.modelCatalog.models.map((model) => model.modelId))]
   ]);
+  for (const input of options.materializedStages ?? []) {
+    modelIds.set(input.catalog.stage, new Set(input.catalog.members.map((member) => member.modelId)));
+  }
   const edgeCatalogHashes = new Map(skeleton.edgeCatalogs.map((catalog) => [catalog.stage, catalog.catalogHash]));
   const edgeIndexes = new Map(skeleton.edgeCatalogs.map((catalog) => [
     catalog.stage,

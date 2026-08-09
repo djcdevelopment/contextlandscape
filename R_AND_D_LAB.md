@@ -126,9 +126,9 @@ paired-world hashes and validates exact multiplicative run arithmetic. The lean 
 153,570,624 profiles are sizing envelopes; the fully materialized standard design contains 30,008,992
 runs. Only the 40-row shape screen is initially materialized; every later model set requires a new,
 parent-linked plan backed by completed selection evidence. Every plan currently carries
-`executionStatus: "requires-v2-resolver"`. This is intentional:
-`duel-capacity-v2` structural alternatives must become real reducer behavior before a Docker smoke or
-canonical sweep can start. See [`design/commander-landscape-sweep.md`](design/commander-landscape-sweep.md).
+`executionStatus: "requires-v2-campaign-runner"`. The shape-screen resolver smoke is executable, but
+the durable v2 campaign runner and post-screen selection lineage must be wired before a canonical
+sweep can start. See [`design/commander-landscape-sweep.md`](design/commander-landscape-sweep.md).
 
 For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 

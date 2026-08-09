@@ -327,7 +327,7 @@ describe("attention-v2 commander landscape planner", () => {
 
   it("summarizes envelopes without claiming they have runnable catalogs", () => {
     expect(summarizeAttentionV2Sweep("standard")).toMatchObject({
-      executionStatus: "requires-v2-resolver",
+      executionStatus: "requires-v2-campaign-runner",
       materialization: "materialized-standard",
       modelRows: 40,
       commanders: 6_400,

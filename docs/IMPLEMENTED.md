@@ -73,7 +73,8 @@ regression-tested; the apparent result did not survive it.
 - `packages/contracts/src/attention-v2.ts` and `apps/lab/src/landscape-sweep.ts` — versioned 6,400-profile
   doctrine catalog, connected sparse matchup graph, balanced battle-sample catalog, frozen folds, and
   exact lean/standard/deep run budgets. Stage model sets carry explicit parent-linked selection lineage;
-  only the shape screen is materialized today. Plans are deliberately non-executable until the v2 resolver exists.
+  only the shape screen is materialized today. A bounded v2 resolver smoke exists; plans remain locked
+  until the durable campaign runner and post-screen selection lineage exist.
 - `packages/engine/src/attention.ts` — versioned deterministic two-player attention reducer with a
   10×10 spatial layer, simultaneous movement, stationary Scout/Line/Siege trade-offs, shared capacity
   claims, Perfect Focus, Overclock, Macro Flare, blinded projections, and policy-independent random
@@ -114,7 +115,7 @@ implemented**:
 | Discord | `packages/discord-adapter` is two pure functions building embed objects. No bot, no transport, no caller. |
 | Challenges / PvP | Endpoints exist, but there is no second-player turn structure or per-player projection split. |
 | Progression, profiles, accounts, matchmaking, ranked, economy beyond energy | None. |
-| Structural `duel-capacity-v2` resolver and broad sweep results | Contracts and the sparse 30,008,992-run standard plan exist, but every plan is marked `requires-v2-resolver`; no canonical v2 sweep has run. |
+| Structural `duel-capacity-v2` resolver and broad sweep results | The resolver and bounded shape-screen smoke exist; the sparse 30,008,992-run standard plan remains `requires-v2-campaign-runner`, and no canonical v2 sweep has run. |
 
 ## Known limits of the evidence
 

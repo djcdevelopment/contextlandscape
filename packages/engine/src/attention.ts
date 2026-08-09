@@ -12,6 +12,7 @@ import type {
   AttentionMovementIntent,
   AttentionPlayerState,
   AttentionProjection,
+  AttentionRuntimeExtensions,
   AttentionScenario,
   AttentionSimulationCounters,
   AttentionUnitState,
@@ -37,7 +38,7 @@ type InternalProfile = {
 };
 
 type InternalModel = {
-  modelVersion: typeof ATTENTION_MODEL_VERSION;
+  modelVersion: "duel-capacity-v1" | "duel-capacity-v2";
   boardWidth: number;
   boardHeight: number;
   baseAttention: number;
@@ -72,6 +73,16 @@ type InternalModel = {
   flareRange: number;
   flareMaxUses: number;
   profiles: Record<AttentionChassis, InternalProfile>;
+  extensions: AttentionRuntimeExtensions;
+};
+
+const defaultRuntimeExtensions: AttentionRuntimeExtensions = {
+  objectiveCoupling: "binary-front",
+  stationaryQualification: "resolved-zero",
+  capacityTopology: "shared-exclusive",
+  abilityUnlockBasis: "personal-claim-count",
+  abilityPackage: "complete",
+  unresolvedDisposition: "auto-accept"
 };
 
 type InternalScenario = {
@@ -180,7 +191,8 @@ const internalDefaultModel: InternalModel = {
     scout: { chassis: "scout", throughput: 3, seizeCost: 1, calibration: 0.2, movementRange: 3 },
     line: { chassis: "line", throughput: 2, seizeCost: 2, calibration: 0.6, movementRange: 2 },
     siege: { chassis: "siege", throughput: 1, seizeCost: 3, calibration: 0.9, movementRange: 1 }
-  }
+  },
+  extensions: defaultRuntimeExtensions
 };
 
 const internalDefaultScenario: InternalScenario = {
@@ -349,7 +361,8 @@ function modelOf(context: AttentionRuntimeContext): InternalModel {
       scout: { chassis: "scout", ...source.chassis.scout },
       line: { chassis: "line", ...source.chassis.line },
       siege: { chassis: "siege", ...source.chassis.siege }
-    }
+    },
+    extensions: source.extensions ?? defaultRuntimeExtensions
   };
 }
 
@@ -475,7 +488,10 @@ function objectiveEligible(match: AttentionMatch, state: InternalState, unitStat
     .sort((left, right) => right.round - left.round);
   const entry = candidates[0] ?? scenario.frontSchedule.find((candidate) => candidate.playerSlot === slot);
   if (!entry) throw new Error(`Scenario ${scenario.scenarioId} has no active front for player slot ${slot}`);
-  return !modelOf(match.context).requireObjectiveRange || distance(unitState.position, entry.center) <= entry.radius;
+  const model = modelOf(match.context);
+  if (model.extensions.objectiveCoupling === "global") return true;
+  const radius = model.extensions.objectiveCoupling === "distance-weighted-front" ? entry.radius + 1 : entry.radius;
+  return !model.requireObjectiveRange || distance(unitState.position, entry.center) <= radius;
 }
 
 function spawnPositions(context: AttentionRuntimeContext, player: number): AttentionCoordinate[] {
@@ -494,8 +510,10 @@ export function createAttentionMatch(setup: AttentionMatchSetup): AttentionMatch
   };
   const model = modelOf(context);
   const scenario = scenarioOf(context);
-  if (model.modelVersion !== ATTENTION_MODEL_VERSION) throw new Error(`Unsupported attention model ${model.modelVersion}`);
-  if (model.boardWidth !== 10 || model.boardHeight !== 10) throw new Error("duel-capacity-v1 requires a 10x10 board");
+  if (model.modelVersion !== ATTENTION_MODEL_VERSION && model.modelVersion !== "duel-capacity-v2") {
+    throw new Error(`Unsupported attention model ${model.modelVersion}`);
+  }
+  if (model.boardWidth !== 10 || model.boardHeight !== 10) throw new Error("attention duel models require a 10x10 board");
   if (scenario.initialCapacitySlot > model.capacityCosts.length) {
     throw new Error(`Scenario ${scenario.scenarioId} initial capacity slot exceeds the capacity track`);
   }
@@ -559,7 +577,7 @@ export function createAttentionMatch(setup: AttentionMatchSetup): AttentionMatch
 
   const state: AttentionMatchState = {
     schemaVersion: 1,
-    modelVersion: ATTENTION_MODEL_VERSION,
+    modelVersion: model.modelVersion,
     matchId: setup.matchId,
     scenarioId: scenario.scenarioId,
     scenarioVersion: scenario.version,
@@ -751,6 +769,20 @@ export function resolveAttentionMovement(
   for (const mech of state.units) {
     if (mech.chassis !== "line" || mech.movementSpent !== 0) continue;
     const owner = state.players.find((player) => player.playerId === mech.ownerPlayerId)!;
+    const stationaryQualified = model.extensions.stationaryQualification === "resolved-zero"
+      ? true
+      : model.extensions.stationaryQualification === "voluntary-hold"
+        ? mech.stationaryStreak >= 2
+        : mech.stationaryStreak >= model.targetLockStreakThreshold;
+    if (!stationaryQualified) {
+      events.push(event(state, "attention.target-lock.generated", mech.unitId, {
+        playerId: owner.playerId,
+        tokens: 0,
+        stationaryStreak: mech.stationaryStreak,
+        qualified: false
+      }));
+      continue;
+    }
     const windfall = mech.stationaryStreak % model.targetLockStreakThreshold === 0
       ? model.targetLockThresholdTokens
       : 0;
@@ -838,22 +870,57 @@ export function resolveAttentionCapacity(
     }).sort((left, right) => comparePriority(state, match.context, left, right));
     const winner = eligible[0];
     if (winner) {
-      const player = state.players.find((candidate) => candidate.playerId === winner.playerId)!;
       const award = model.capacityAwards[slot];
-      player.attention -= cost;
-      player.capacityBonus += award;
-      player.claimCount += 1;
-      state.capacityTrack.claims.push({
-        slotIndex: slot,
-        playerId: player.playerId,
-        round: state.round,
-        attentionPaid: cost,
-        capacityAward: award
-      });
+      const beneficiaries = model.extensions.capacityTopology === "shared-exclusive"
+        ? [winner]
+        : eligible;
+      const paid = new Set<string>();
+      for (const [index, beneficiary] of beneficiaries.entries()) {
+        const player = state.players.find((candidate) => candidate.playerId === beneficiary.playerId)!;
+        const attentionPaid = index === 0 || model.extensions.capacityTopology === "independent-tracks" ? cost : 0;
+        if (player.attention < attentionPaid) {
+          events.push(event(state, "attention.capacity.rejected", beneficiary.playerId, {
+            intent: beneficiary,
+            reason: "attention",
+            cost: attentionPaid,
+            topology: model.extensions.capacityTopology
+          }));
+          continue;
+        }
+        player.attention -= attentionPaid;
+        player.capacityBonus += award;
+        player.claimCount += 1;
+        paid.add(player.playerId);
+        state.capacityTrack.claims.push({
+          slotIndex: slot,
+          playerId: player.playerId,
+          round: state.round,
+          attentionPaid,
+          capacityAward: award
+        });
+        events.push(event(state, "attention.capacity.claimed", player.playerId, {
+          slot: slot + 1,
+          cost: attentionPaid,
+          award,
+          topology: model.extensions.capacityTopology,
+          copied: index > 0 && model.extensions.capacityTopology === "pioneer-copy"
+        }));
+      }
       state.capacityTrack.nextSlot += 1;
-      events.push(event(state, "attention.capacity.claimed", player.playerId, { slot: slot + 1, cost, award }));
-      for (const loser of eligible.slice(1)) {
-        events.push(event(state, "attention.capacity.rejected", loser.playerId, { intent: loser, reason: "priority_conflict", cost }));
+      if (model.extensions.capacityTopology === "shared-exclusive") {
+        for (const loser of eligible.slice(1)) {
+          events.push(event(state, "attention.capacity.rejected", loser.playerId, { intent: loser, reason: "priority_conflict", cost }));
+        }
+      } else {
+        for (const candidate of eligible) {
+          if (!paid.has(candidate.playerId)) {
+            events.push(event(state, "attention.capacity.rejected", candidate.playerId, {
+              intent: candidate,
+              reason: "capacity_copy_unavailable",
+              topology: model.extensions.capacityTopology
+            }));
+          }
+        }
       }
     }
   }
@@ -873,6 +940,12 @@ function ownedPendingArtifact(state: InternalState, playerId: string, artifactId
   ) ?? null;
 }
 
+function abilityRank(state: InternalState, player: AttentionPlayerState, model: InternalModel): number {
+  if (model.extensions.abilityUnlockBasis === "global-rank") return state.capacityTrack.nextSlot;
+  if (model.extensions.abilityUnlockBasis === "owned-rank") return player.capacityBonus;
+  return player.claimCount;
+}
+
 function applyCommand(match: AttentionMatch, intent: AttentionCommandIntent): AttentionTransition {
   const current = stateOf(match);
   if (current.phase !== "command") throw new Error(`Cannot command during ${current.phase}`);
@@ -887,7 +960,7 @@ function applyCommand(match: AttentionMatch, intent: AttentionCommandIntent): At
   }
 
   if (intent.kind === "overclock") {
-    if (player.claimCount < model.overclockUnlockRank) events.push(rejectCommand(state, intent, "ability_locked"));
+    if (abilityRank(state, player, model) < model.overclockUnlockRank) events.push(rejectCommand(state, intent, "ability_locked"));
     else if (model.overclockMaxUses === 0 || player.overclockUsed) events.push(rejectCommand(state, intent, "uses_exhausted"));
     else {
       player.overclockUsed = true;
@@ -898,7 +971,7 @@ function applyCommand(match: AttentionMatch, intent: AttentionCommandIntent): At
   }
 
   if (intent.kind === "macro-flare") {
-    if (player.claimCount < model.flareUnlockRank) events.push(rejectCommand(state, intent, "ability_locked"));
+    if (abilityRank(state, player, model) < model.flareUnlockRank) events.push(rejectCommand(state, intent, "ability_locked"));
     else if (model.flareMaxUses === 0 || player.flareUsed) events.push(rejectCommand(state, intent, "uses_exhausted"));
     else if (!inBounds(model, intent.center)) events.push(rejectCommand(state, intent, "out_of_bounds"));
     else if (!state.units.some((unitState) =>
@@ -921,7 +994,7 @@ function applyCommand(match: AttentionMatch, intent: AttentionCommandIntent): At
   if (!artifact) return { match: withState(match, state), events: [rejectCommand(state, intent, "artifact_unavailable")] };
 
   if (intent.kind === "perfect-focus") {
-    if (player.claimCount < model.focusUnlockRank) events.push(rejectCommand(state, intent, "ability_locked"));
+    if (abilityRank(state, player, model) < model.focusUnlockRank) events.push(rejectCommand(state, intent, "ability_locked"));
     else if (player.focusUses >= model.focusMaxUses) events.push(rejectCommand(state, intent, "uses_exhausted"));
     else if (state.round < player.focusNextReadyRound) events.push(rejectCommand(state, intent, "cooldown"));
     else if (artifact.guarantee !== null) events.push(rejectCommand(state, intent, "already_guaranteed"));

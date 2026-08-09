@@ -517,8 +517,18 @@ export type MatchProjection = MatchState & {
 
 // Attention-economy command model. This is deliberately separate from the
 // legacy seven-action contracts above so archived simulations keep their shape.
-export const AttentionModelVersionSchema = z.literal("duel-capacity-v1");
+export const AttentionModelVersionSchema = z.enum(["duel-capacity-v1", "duel-capacity-v2"]);
 export type AttentionModelVersion = z.infer<typeof AttentionModelVersionSchema>;
+
+export const AttentionRuntimeExtensionsSchema = z.object({
+  objectiveCoupling: z.enum(["global", "binary-front", "distance-weighted-front"]),
+  stationaryQualification: z.enum(["resolved-zero", "voluntary-hold", "committed-streak"]),
+  capacityTopology: z.enum(["shared-exclusive", "pioneer-copy", "independent-tracks"]),
+  abilityUnlockBasis: z.enum(["personal-claim-count", "owned-rank", "global-rank"]),
+  abilityPackage: z.enum(["utility-only", "complete", "role-separated"]),
+  unresolvedDisposition: z.enum(["auto-accept", "bounded-backlog", "confidence-default"])
+}).strict();
+export type AttentionRuntimeExtensions = z.infer<typeof AttentionRuntimeExtensionsSchema>;
 
 export const AttentionChassisSchema = z.enum(["scout", "line", "siege"]);
 export type AttentionChassis = z.infer<typeof AttentionChassisSchema>;
@@ -607,7 +617,8 @@ export const AttentionModelDefinitionSchema = z.object({
       outputMultiplier: z.number().int().positive(),
       maxUses: z.number().int().min(0).max(1)
     }).strict()
-  }).strict()
+  }).strict(),
+  extensions: AttentionRuntimeExtensionsSchema.optional()
 }).strict().superRefine((model, context) => {
   for (const [index, slot] of model.capacity.slots.entries()) {
     if (slot.rank !== index + 1) {

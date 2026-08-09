@@ -14,7 +14,9 @@ The design has two linked landscapes. They share identities and evidence, but th
 The sparse world contracts, coordinate helpers, viewer-scoped API, commander Canvas vertical slice,
 6,400-profile catalog, connected matchup graph, battle-sample catalog, frozen folds, and exact sweep
 budgets are implemented and tested. The plans are not runnable manifests: each is schema-locked to
-`executionStatus: "requires-v2-resolver"` until all 18 structural factors have genuine reducer semantics.
+`executionStatus: "requires-v2-campaign-runner"` until the bounded campaign runner, durable v2
+manifests, and post-screen selection lineage are wired. The shape-screen resolver smoke is already
+executable; this status prevents a smoke path from being mistaken for the full canonical sweep.
 No v2 outcome evidence exists yet.
 
 ## Commander landscape

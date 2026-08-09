@@ -745,7 +745,7 @@ export const AttentionV2SweepPlanSchema = z.object({
   stageModelSets: z.array(AttentionV2StageModelSetRefSchema).length(6),
   folds: z.array(AttentionV2FoldAssignmentSchema).length(4),
   worldBlocks: z.array(AttentionV2PairedWorldBlockSchema).length(6),
-  executionStatus: z.literal("requires-v2-resolver")
+  executionStatus: z.literal("requires-v2-campaign-runner")
 }).strict().superRefine((plan, context) => {
   if (plan.budget.profile !== "standard") {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["budget", "profile"], message: "only the fully materialized standard design can produce a sweep plan" });
