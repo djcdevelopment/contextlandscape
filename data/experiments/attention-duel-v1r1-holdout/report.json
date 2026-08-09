@@ -1,0 +1,833 @@
+{
+  "schemaVersion": 1,
+  "matrixKind": "attention-command",
+  "modelVersion": "duel-capacity-v1",
+  "matrixId": "attention-duel-v1r1-holdout",
+  "campaignKind": "holdout",
+  "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+  "provenance": {
+    "provenanceVersion": 1,
+    "canonical": true,
+    "repository": "djcdevelopment/contextlandscape",
+    "sourceRevision": "005090cc4c3fe2d323cc6a6b77e1a7fd22d389e6",
+    "sourceTree": "9e07f0d39f8fdad3ab53f2ed29c9dde783c7fb53",
+    "workspaceDirty": false,
+    "engineVersion": "1.0.0",
+    "commandModelVersion": "duel-capacity-v1",
+    "contractVersion": 1,
+    "modelHash": "sha256:42e047a0c6b233b17151d6d1fd5b7bd2316dacafc0f45ac213eb3b1840b5b37d",
+    "scenarioSetHash": "sha256:775e79d5134fd90b3c55226b1e2c9c739bfcf3b58e1aeb1660cc86424f525d9c",
+    "policySetHash": "sha256:64f2d3f4e2428d6d280bbb937e7c92261aa9e64ae7a98aee911de7b77446c64e",
+    "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+    "nodeVersion": "v24.19.0",
+    "platform": "linux",
+    "architecture": "x64",
+    "imageDigest": "sha256:b37456564291e0173327f2b83cd76727c1f50fd3d5c679862e8f024743f1a3f8"
+  },
+  "generatedAt": "2026-08-09T12:48:48.098Z",
+  "runs": 50000,
+  "traceMode": "summary",
+  "shards": [
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 0,
+      "recordCount": 4168,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:2cd4740dbd57a90b6d07424eb7e71bcd9fdb4c063a1e1dc86f610e8d97f557a7"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 1,
+      "recordCount": 4168,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:5d2f54f35d55b191afb941c07ef9c3f5c1923835bedcaec0a1c6c92e9ea69370"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 2,
+      "recordCount": 4168,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:de9f70fb4ddbc54d3c439a5300f5720dce73480f1e75c9470ca8db5faa42894d"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 3,
+      "recordCount": 4168,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:6234f203db865e76744873feb508f9dee288a2f128e8b27986207d816bea7019"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 4,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:941c8676a106440ef3309d567a104bb41ee93b25494aab6fdd702091ca5bc0d4"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 5,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:e93346bb0e5c824bff8682278872e674775a302b290ea0075f19a22fd9ef3020"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 6,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:e638f02424cf1056f38435ef2b80866927adbeb0f6dd4efdc3cc6d92ed4bdcb3"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 7,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:c0e621867637e85eda56ad3429501a2cc17fbc366aef855f0a155946e12a9440"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 8,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:5a14f1bc597949da08a9228ef749238b968e90c247b27662ac1c7ec27d4ebadf"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 9,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:1dc52c23b9c6c47b6082cffcb12b078d4cb8eaf0999410c12f8a3ccf7ae60127"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 10,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:23e9a447dd9001c5089fd34285ad05d5b8ad07c3854bf0d775a61b8f2d11e488"
+    },
+    {
+      "schemaVersion": 1,
+      "matrixKind": "attention-command",
+      "matrixId": "attention-duel-v1r1-holdout",
+      "shardIndex": 11,
+      "recordCount": 4166,
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "provenanceId": "sha256:3af34a0365ed5f05cfd1104c9a31d66aa632ffc7bc81c0287474ad4b6c0e19c8",
+      "shardHash": "sha256:309b95dd16d3f58b0519e0d19ffc46efd65f6c218f2026fe4c4136eb7bfd224f"
+    }
+  ],
+  "cells": [
+    {
+      "matchupId": "gate-escort-efficiency",
+      "scenarioId": "escort-corridor",
+      "playerOneCompositionId": "escort",
+      "playerTwoCompositionId": "balanced",
+      "variantId": "default",
+      "playerOnePolicyId": "accept-all",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 1.8012,
+      "terminalReasons": {
+        "drift": 3729,
+        "objective": 1210,
+        "simultaneous": 61
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 1240,
+          "winRate": 0.248,
+          "winRate95": [
+            0.23602870085389713,
+            0.2599712991461029
+          ],
+          "averageProgress": 10.0818,
+          "averageDrift": 4.3278,
+          "driftPer12Progress": 5.1512229958935905,
+          "averageAttentionSpent": 0,
+          "averageAttentionToArtifactRatio": 0.375,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 5.4036
+        },
+        {
+          "playerSlot": 2,
+          "wins": 3760,
+          "winRate": 0.752,
+          "winRate95": [
+            0.7400287008538972,
+            0.7639712991461028
+          ],
+          "averageProgress": 7.5564,
+          "averageDrift": 0.74,
+          "driftPer12Progress": 1.1751627759250436,
+          "averageAttentionSpent": 5.4036,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 3.8012,
+          "averageStationaryTurns": 1.6024
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-escort-efficiency",
+      "scenarioId": "escort-corridor",
+      "playerOneCompositionId": "escort",
+      "playerTwoCompositionId": "balanced",
+      "variantId": "default",
+      "playerOnePolicyId": "line-escort-lock",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 66,
+      "averageRounds": 2.497,
+      "terminalReasons": {
+        "objective": 2984,
+        "simultaneous": 1772,
+        "drift": 244
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 3682,
+          "winRate": 0.743,
+          "winRate95": [
+            0.730991687972743,
+            0.7550083120272569
+          ],
+          "averageProgress": 12.915,
+          "averageDrift": 1.5082,
+          "driftPer12Progress": 1.4013472706155632,
+          "averageAttentionSpent": 7.491,
+          "averageAttentionToArtifactRatio": 0.375,
+          "averageMovementDistance": 1.0036,
+          "averageStationaryTurns": 6.9854
+        },
+        {
+          "playerSlot": 2,
+          "wins": 1252,
+          "winRate": 0.257,
+          "winRate95": [
+            0.24499168797274307,
+            0.26900831202725695
+          ],
+          "averageProgress": 10.4888,
+          "averageDrift": 0.853,
+          "driftPer12Progress": 0.975898100831363,
+          "averageAttentionSpent": 7.9966,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 5.5006,
+          "averageStationaryTurns": 2.4884
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-flare-drift",
+      "scenarioId": "flare-pocket",
+      "playerOneCompositionId": "balanced",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantId": "capacity-gate",
+      "playerOnePolicyId": "capacity-follower-flare",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 3.144,
+      "terminalReasons": {
+        "drift": 4317,
+        "objective": 586,
+        "simultaneous": 97
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 3558,
+          "winRate": 0.7116,
+          "winRate95": [
+            0.6990419525301496,
+            0.7241580474698505
+          ],
+          "averageProgress": 7.9688,
+          "averageDrift": 2.2392,
+          "driftPer12Progress": 3.371950607368738,
+          "averageAttentionSpent": 20.8408,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 9.432
+        },
+        {
+          "playerSlot": 2,
+          "wins": 1442,
+          "winRate": 0.2884,
+          "winRate95": [
+            0.27584195253014954,
+            0.30095804746985044
+          ],
+          "averageProgress": 22.2128,
+          "averageDrift": 4.3376,
+          "driftPer12Progress": 2.343297558164662,
+          "averageAttentionSpent": 9.432,
+          "averageAttentionToArtifactRatio": 0.257306666666679,
+          "averageMovementDistance": 3.0418,
+          "averageStationaryTurns": 6.3902
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-flare-drift",
+      "scenarioId": "flare-pocket",
+      "playerOneCompositionId": "balanced",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantId": "capacity-gate",
+      "playerOnePolicyId": "capacity-follower-no-flare",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 3.1476,
+      "terminalReasons": {
+        "objective": 1495,
+        "drift": 3408,
+        "simultaneous": 97
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 2649,
+          "winRate": 0.5298,
+          "winRate95": [
+            0.5159642147672392,
+            0.5436357852327609
+          ],
+          "averageProgress": 7.9688,
+          "averageDrift": 2.2392,
+          "driftPer12Progress": 3.371950607368738,
+          "averageAttentionSpent": 20.8624,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 9.4428
+        },
+        {
+          "playerSlot": 2,
+          "wins": 2351,
+          "winRate": 0.4702,
+          "winRate95": [
+            0.4563642147672392,
+            0.4840357852327608
+          ],
+          "averageProgress": 19.8546,
+          "averageDrift": 3.3846,
+          "driftPer12Progress": 2.0456317427699373,
+          "averageAttentionSpent": 9.4428,
+          "averageAttentionToArtifactRatio": 0.3333333333333134,
+          "averageMovementDistance": 3.0526,
+          "averageStationaryTurns": 6.3902
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-movement-value",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "balanced",
+      "playerTwoCompositionId": "balanced",
+      "variantId": "default",
+      "playerOnePolicyId": "front-mobile-verify",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 294,
+      "averageRounds": 3.079,
+      "terminalReasons": {
+        "objective": 2415,
+        "simultaneous": 2579,
+        "drift": 6
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 1833,
+          "winRate": 0.396,
+          "winRate95": [
+            0.38286593326030494,
+            0.4091340667396951
+          ],
+          "averageProgress": 12.1892,
+          "averageDrift": 0.5996,
+          "driftPer12Progress": 0.5902930463032848,
+          "averageAttentionSpent": 11.316,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 4.8826,
+          "averageStationaryTurns": 6.2956
+        },
+        {
+          "playerSlot": 2,
+          "wins": 2873,
+          "winRate": 0.604,
+          "winRate95": [
+            0.5908659332603049,
+            0.6171340667396951
+          ],
+          "averageProgress": 12.9378,
+          "averageDrift": 0.593,
+          "driftPer12Progress": 0.5500162315076752,
+          "averageAttentionSpent": 11.2076,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 5.853,
+          "averageStationaryTurns": 5.3252
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-movement-value",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "balanced",
+      "playerTwoCompositionId": "balanced",
+      "variantId": "default",
+      "playerOnePolicyId": "verify-lowest-confidence",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 3.2444,
+      "terminalReasons": {
+        "objective": 4957,
+        "drift": 41,
+        "simultaneous": 2
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 119,
+          "winRate": 0.0238,
+          "winRate95": [
+            0.0195746333242742,
+            0.028025366675725805
+          ],
+          "averageProgress": 8.4124,
+          "averageDrift": 0.5938,
+          "driftPer12Progress": 0.8470353288003424,
+          "averageAttentionSpent": 11.9776,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 9.7332
+        },
+        {
+          "playerSlot": 2,
+          "wins": 4881,
+          "winRate": 0.9762,
+          "winRate95": [
+            0.9719746333242741,
+            0.9804253666757258
+          ],
+          "averageProgress": 13.6226,
+          "averageDrift": 0.6618,
+          "driftPer12Progress": 0.5829724134893486,
+          "averageAttentionSpent": 11.7114,
+          "averageAttentionToArtifactRatio": 0.5,
+          "averageMovementDistance": 5.8912,
+          "averageStationaryTurns": 5.7984
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-scout-specialization",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "scout-homogeneous",
+      "playerTwoCompositionId": "siege-homogeneous",
+      "variantId": "default",
+      "playerOnePolicyId": "recon-lock-reject",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 2.6888,
+      "terminalReasons": {
+        "objective": 4996,
+        "drift": 4
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 4996,
+          "winRate": 0.9992,
+          "winRate95": [
+            0.9984162496842147,
+            0.9999837503157852
+          ],
+          "averageProgress": 14.9196,
+          "averageDrift": 0.464,
+          "driftPer12Progress": 0.3732003538968873,
+          "averageAttentionSpent": 7.9862,
+          "averageAttentionToArtifactRatio": 0.3333333333333134,
+          "averageMovementDistance": 4.7444,
+          "averageStationaryTurns": 6.033
+        },
+        {
+          "playerSlot": 2,
+          "wins": 4,
+          "winRate": 0.0008,
+          "winRate95": [
+            0.00001624968421473042,
+            0.0015837503157852695
+          ],
+          "averageProgress": 5.1676,
+          "averageDrift": 0,
+          "driftPer12Progress": 0,
+          "averageAttentionSpent": 8.0664,
+          "averageAttentionToArtifactRatio": 1,
+          "averageMovementDistance": 3.0568,
+          "averageStationaryTurns": 5.0096
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-scout-specialization",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "scout-homogeneous",
+      "playerTwoCompositionId": "siege-homogeneous",
+      "variantId": "default",
+      "playerOnePolicyId": "verify-lowest-confidence",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 2.4896,
+      "terminalReasons": {
+        "objective": 3804,
+        "simultaneous": 44,
+        "drift": 1134,
+        "round-limit": 18
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 3575,
+          "winRate": 0.715,
+          "winRate95": [
+            0.7024864084998815,
+            0.7275135915001184
+          ],
+          "averageProgress": 12.3354,
+          "averageDrift": 2.1532,
+          "driftPer12Progress": 2.094654409261151,
+          "averageAttentionSpent": 7.4688,
+          "averageAttentionToArtifactRatio": 0.3333333333333134,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 7.4688
+        },
+        {
+          "playerSlot": 2,
+          "wins": 1425,
+          "winRate": 0.285,
+          "winRate95": [
+            0.2724864084998816,
+            0.29751359150011836
+          ],
+          "averageProgress": 4.9368,
+          "averageDrift": 0,
+          "driftPer12Progress": 0,
+          "averageAttentionSpent": 7.4688,
+          "averageAttentionToArtifactRatio": 1,
+          "averageMovementDistance": 2.4592,
+          "averageStationaryTurns": 5.0096
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-siege-specialization",
+      "scenarioId": "static-front",
+      "playerOneCompositionId": "siege-homogeneous",
+      "playerTwoCompositionId": "siege-homogeneous",
+      "variantId": "default",
+      "playerOnePolicyId": "uplink-seize",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 0,
+      "averageRounds": 4.6296,
+      "terminalReasons": {
+        "objective": 3997,
+        "simultaneous": 945,
+        "drift": 58
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 4576,
+          "winRate": 0.9152,
+          "winRate95": [
+            0.9074774193146418,
+            0.9229225806853583
+          ],
+          "averageProgress": 12.8104,
+          "averageDrift": 1.0784,
+          "driftPer12Progress": 1.0101792293761318,
+          "averageAttentionSpent": 24.7776,
+          "averageAttentionToArtifactRatio": 1,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 13.8888
+        },
+        {
+          "playerSlot": 2,
+          "wins": 424,
+          "winRate": 0.0848,
+          "winRate95": [
+            0.07707741931464178,
+            0.09252258068535822
+          ],
+          "averageProgress": 9.7192,
+          "averageDrift": 0,
+          "driftPer12Progress": 0,
+          "averageAttentionSpent": 13.8888,
+          "averageAttentionToArtifactRatio": 1,
+          "averageMovementDistance": 1,
+          "averageStationaryTurns": 12.8888
+        }
+      ]
+    },
+    {
+      "matchupId": "gate-siege-specialization",
+      "scenarioId": "static-front",
+      "playerOneCompositionId": "siege-homogeneous",
+      "playerTwoCompositionId": "siege-homogeneous",
+      "variantId": "default",
+      "playerOnePolicyId": "verify-lowest-confidence",
+      "playerTwoPolicyId": "front-mobile-verify",
+      "runs": 5000,
+      "draws": 592,
+      "averageRounds": 5.5442,
+      "terminalReasons": {
+        "objective": 3491,
+        "simultaneous": 1509
+      },
+      "players": [
+        {
+          "playerSlot": 1,
+          "wins": 2193,
+          "winRate": 0.4978,
+          "winRate95": [
+            0.4847860974870802,
+            0.5108139025129199
+          ],
+          "averageProgress": 11.6408,
+          "averageDrift": 0,
+          "driftPer12Progress": 0,
+          "averageAttentionSpent": 16.6326,
+          "averageAttentionToArtifactRatio": 1,
+          "averageMovementDistance": 0,
+          "averageStationaryTurns": 16.6326
+        },
+        {
+          "playerSlot": 2,
+          "wins": 2215,
+          "winRate": 0.5022,
+          "winRate95": [
+            0.48918609748708014,
+            0.5152139025129199
+          ],
+          "averageProgress": 11.6388,
+          "averageDrift": 0,
+          "driftPer12Progress": 0,
+          "averageAttentionSpent": 16.6326,
+          "averageAttentionToArtifactRatio": 1,
+          "averageMovementDistance": 1,
+          "averageStationaryTurns": 15.6326
+        }
+      ]
+    }
+  ],
+  "pairwise": [
+    {
+      "comparisonId": "gate-escort-efficiency|default|p1|accept-all|line-escort-lock",
+      "matchupId": "gate-escort-efficiency",
+      "variantId": "default",
+      "playerSlot": 1,
+      "leftPolicyId": "accept-all",
+      "rightPolicyId": "line-escort-lock",
+      "pairedRuns": 5000,
+      "winRateDelta": 0.495,
+      "confidenceInterval95": [
+        0.4812320559931637,
+        0.5087679440068363
+      ]
+    },
+    {
+      "comparisonId": "gate-flare-drift|capacity-gate|p1|capacity-follower-flare|capacity-follower-no-flare",
+      "matchupId": "gate-flare-drift",
+      "variantId": "capacity-gate",
+      "playerSlot": 1,
+      "leftPolicyId": "capacity-follower-flare",
+      "rightPolicyId": "capacity-follower-no-flare",
+      "pairedRuns": 5000,
+      "winRateDelta": -0.1818,
+      "confidenceInterval95": [
+        -0.19249136606311473,
+        -0.17110863393688525
+      ]
+    },
+    {
+      "comparisonId": "gate-movement-value|default|p1|front-mobile-verify|verify-lowest-confidence",
+      "matchupId": "gate-movement-value",
+      "variantId": "default",
+      "playerSlot": 1,
+      "leftPolicyId": "front-mobile-verify",
+      "rightPolicyId": "verify-lowest-confidence",
+      "pairedRuns": 5000,
+      "winRateDelta": -0.3722,
+      "confidenceInterval95": [
+        -0.38517167369727473,
+        -0.3592283263027252
+      ]
+    },
+    {
+      "comparisonId": "gate-scout-specialization|default|p1|recon-lock-reject|verify-lowest-confidence",
+      "matchupId": "gate-scout-specialization",
+      "variantId": "default",
+      "playerSlot": 1,
+      "leftPolicyId": "recon-lock-reject",
+      "rightPolicyId": "verify-lowest-confidence",
+      "pairedRuns": 5000,
+      "winRateDelta": -0.2842,
+      "confidenceInterval95": [
+        -0.2967030050464212,
+        -0.2716969949535788
+      ]
+    },
+    {
+      "comparisonId": "gate-siege-specialization|default|p1|uplink-seize|verify-lowest-confidence",
+      "matchupId": "gate-siege-specialization",
+      "variantId": "default",
+      "playerSlot": 1,
+      "leftPolicyId": "uplink-seize",
+      "rightPolicyId": "verify-lowest-confidence",
+      "pairedRuns": 5000,
+      "winRateDelta": -0.4174,
+      "confidenceInterval95": [
+        -0.43034231891839747,
+        -0.4044576810816025
+      ]
+    }
+  ],
+  "interactions": [],
+  "gates": [
+    {
+      "gateId": "scout-specialization",
+      "kind": "specialized-policy-advantage",
+      "status": "pass",
+      "threshold": 0.15,
+      "observed": 0.2842,
+      "confidenceInterval95": [
+        0.2716969949535788,
+        0.2967030050464212
+      ],
+      "sampleSize": 5000,
+      "details": {
+        "matchupId": "gate-scout-specialization",
+        "baselinePolicyId": "verify-lowest-confidence",
+        "candidatePolicyId": "recon-lock-reject",
+        "criterion": "lower-bound"
+      }
+    },
+    {
+      "gateId": "siege-specialization",
+      "kind": "specialized-policy-advantage",
+      "status": "pass",
+      "threshold": 0.15,
+      "observed": 0.4174,
+      "confidenceInterval95": [
+        0.4044576810816025,
+        0.43034231891839747
+      ],
+      "sampleSize": 5000,
+      "details": {
+        "matchupId": "gate-siege-specialization",
+        "baselinePolicyId": "verify-lowest-confidence",
+        "candidatePolicyId": "uplink-seize",
+        "criterion": "lower-bound"
+      }
+    },
+    {
+      "gateId": "movement-value",
+      "kind": "movement-value",
+      "status": "pass",
+      "threshold": 0.1,
+      "observed": 0.3722,
+      "confidenceInterval95": [
+        0.3592283263027252,
+        0.38517167369727473
+      ],
+      "sampleSize": 5000,
+      "details": {
+        "matchupId": "gate-movement-value",
+        "baselinePolicyId": "verify-lowest-confidence",
+        "candidatePolicyId": "front-mobile-verify",
+        "criterion": "lower-bound"
+      }
+    },
+    {
+      "gateId": "flare-drift-defeat",
+      "kind": "flare-drift-defeat-rate",
+      "status": "fail",
+      "threshold": 0.8,
+      "observed": 0.22343037530690985,
+      "confidenceInterval95": [
+        0.20851816882571692,
+        0.239086882891781
+      ],
+      "sampleSize": 2851,
+      "details": {
+        "matchupId": "gate-flare-drift",
+        "maximumAttentionToArtifactRatio": 0.25,
+        "criterion": "wilson-lower-bound"
+      }
+    },
+    {
+      "gateId": "stationary-line-escort",
+      "kind": "escort-drift-efficiency",
+      "status": "pass",
+      "threshold": 1.5,
+      "observed": 1.4013472706155632,
+      "confidenceInterval95": [
+        1.3687383379101186,
+        1.4347243165174244
+      ],
+      "sampleSize": 5000,
+      "details": {
+        "matchupId": "gate-escort-efficiency",
+        "controlPolicyId": "accept-all",
+        "controlObserved": 5.1512229958935905,
+        "controlConfidenceInterval95": [
+          5.0708009172146635,
+          5.234974455267642
+        ],
+        "controlLowerThreshold": 3,
+        "criterion": "specialized-upper-and-control-lower"
+      }
+    }
+  ],
+  "reportHash": "sha256:523763ea89a1af1aa2e96337fb37cfe4d6a2867e49f9f4f9a82509aa0270c09b"
+}
