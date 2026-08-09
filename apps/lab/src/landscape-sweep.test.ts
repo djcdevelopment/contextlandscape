@@ -5,6 +5,7 @@ import {
   AttentionV2FactorCatalogSchema,
   AttentionV2ModelCatalogSchema,
   AttentionV2RunPlannerIdentitySchema,
+  AttentionV2StageModelCatalogSchema,
   AttentionV2SweepBudgetSchema,
   AttentionV2SweepPlanSchema,
   type AttentionV2RuleShape,
@@ -24,6 +25,7 @@ import {
   createAttentionV2RunPlannerIdentity,
   createAttentionV2SweepPlan,
   createAttentionV2SweepSkeleton,
+  materializeAttentionV2StageModel,
   summarizeAttentionV2Sweep,
   verifyAttentionV2SweepSkeleton,
   verifyAttentionV2SweepPlan,
@@ -340,4 +342,68 @@ describe("attention-v2 commander landscape planner", () => {
     expect(summarizeAttentionV2Sweep("lean").materialization).toBe("sizing-envelope");
     expect(summarizeAttentionV2Sweep("deep").materialization).toBe("sizing-envelope");
   });
+
+  it("materializes a post-screen catalog only from explicit selected parents and evidence", () => {
+    const plan = createAttentionV2SweepPlan(options(), skeleton);
+    const shapeSet = plan.stageModelSets.find((set) => set.stage === "shape-screen")!;
+    const shapeMembers = skeleton.modelCatalog.models.map((model) => {
+      const ruleShapeHash = sha256Value(model.ruleShape);
+      const modelHash = sha256Value({ schemaVersion: 1, modelVersion: model.modelVersion, modelId: model.modelId, ruleShapeHash });
+      const draft = {
+        schemaVersion: 1 as const,
+        modelVersion: model.modelVersion,
+        modelId: model.modelId,
+        modelHash,
+        ruleShape: model.ruleShape,
+        ruleShapeHash,
+        sourceKind: "catalog-row" as const,
+        parentModelId: null,
+        parentModelSetHash: null,
+        derivationHash: null
+      };
+      return { ...draft, memberHash: sha256Value(draft) };
+    });
+    const shapeModelSetHash = sha256Value({ schemaVersion: 1, stage: "shape-screen", members: shapeMembers.map((member) => ({ modelId: member.modelId, modelHash: member.modelHash })) });
+    const shapeCatalogDraft = {
+      schemaVersion: 1,
+      plannerVersion: LANDSCAPE_SWEEP_PLANNER_VERSION,
+      modelVersion: skeleton.modelCatalog.modelVersion,
+      planHash: plan.planHash,
+      stage: "shape-screen",
+      rootModelCatalogHash: skeleton.modelCatalog.catalogHash,
+      modelSetId: skeleton.modelCatalog.catalogId,
+      modelSetHash: shapeModelSetHash,
+      selectionProtocolHash: shapeSet.selectionProtocolHash as Sha256Digest,
+      selectionReportHash: null,
+      dependencies: [],
+      modelCount: 40,
+      members: shapeMembers,
+      frozen: true
+    };
+    const shapeCatalog = AttentionV2StageModelCatalogSchema.parse({ ...shapeCatalogDraft, catalogHash: sha256Value(shapeCatalogDraft) });
+    const selected = skeleton.modelCatalog.models.slice(0, 6).map((model) => ({ modelId: model.modelId, modelHash: shapeMembers.find((member) => member.modelId === model.modelId)!.modelHash }));
+    const survivor = materializeAttentionV2StageModel(plan, {
+      stage: "survivor-refinement",
+      fold: plan.folds.find((fold) => fold.stages.includes("survivor-refinement"))!.fold,
+      selectionProtocolHash: plan.stageModelSets.find((set) => set.stage === "survivor-refinement")!.selectionProtocolHash as Sha256Digest,
+      completedEvidenceReportHashes: [sha256Value("shape-screen-report")],
+      selectedSourceModels: selected,
+      upstream: { catalog: shapeCatalog },
+      members: selected.flatMap((parent) => {
+        const source = skeleton.modelCatalog.models.find((model) => model.modelId === parent.modelId)!;
+        return Array.from({ length: 4 }, (_, variant) => ({
+          modelId: `${parent.modelId}-local-${variant}`,
+          ruleShape: source.ruleShape,
+          sourceKind: "local-variant" as const,
+          parentModelId: parent.modelId,
+          parentModelSetHash: shapeCatalog.modelSetHash as Sha256Digest,
+          derivationHash: sha256Value({ parentModelId: parent.modelId, variant })
+        }));
+      })
+    });
+    expect(survivor.catalog.stage).toBe("survivor-refinement");
+    expect(survivor.catalog.members).toHaveLength(24);
+    expect(survivor.selectionReport.selectedSourceModels).toEqual(selected);
+    expect(() => verifyAttentionV2SweepPlan(plan, skeleton, { materializedStages: [survivor] })).toThrow(/plan still marks it pending/);
+  }, 30_000);
 });

@@ -41,6 +41,8 @@ import {
   type AttentionV2RuleShape,
   type AttentionV2RunPlannerIdentity,
   type AttentionV2StageModelCatalog,
+  type AttentionV2StageModelMember,
+  type AttentionV2StageModelSourceKind,
   type AttentionV2StageModelSelectionReport,
   type AttentionV2SamplingWeight,
   type AttentionV2SparseBattleSample,
@@ -1076,6 +1078,123 @@ export type AttentionV2MaterializedStageInput = {
   catalog: AttentionV2StageModelCatalog;
   selectionReport: AttentionV2StageModelSelectionReport;
 };
+
+export type AttentionV2StageModelMemberInput = {
+  modelId: string;
+  ruleShape: AttentionV2RuleShape;
+  sourceKind: AttentionV2StageModelSourceKind;
+  parentModelId: string | null;
+  parentModelSetHash: Sha256Digest | null;
+  derivationHash: Sha256Digest | null;
+};
+
+export type AttentionV2StageMaterializationInput = {
+  stage: Exclude<AttentionV2SweepStage, "shape-screen">;
+  fold: AttentionV2SweepFold;
+  selectionProtocolHash: Sha256Digest;
+  completedEvidenceReportHashes: readonly Sha256Digest[];
+  selectedSourceModels: readonly { modelId: string; modelHash: Sha256Digest }[];
+  members: readonly AttentionV2StageModelMemberInput[];
+  upstream: {
+    catalog: AttentionV2StageModelCatalog;
+    selectionReport?: AttentionV2StageModelSelectionReport;
+  };
+};
+
+/**
+ * Materialize one post-screen model set without silently selecting anything.
+ * Selection is an explicit input; this function only binds the supplied
+ * evidence, parent membership, rule shapes, and content hashes into the
+ * contract-native catalog/report pair.
+ */
+export function materializeAttentionV2StageModel(
+  plan: AttentionV2SweepPlan,
+  input: AttentionV2StageMaterializationInput
+): AttentionV2MaterializedStageInput {
+  const target = plan.stageModelSets.find((modelSet) => modelSet.stage === input.stage);
+  if (!target || target.materializationStatus !== "pending-selection") {
+    throw new Error(`${input.stage} is not a pending stage in this plan`);
+  }
+  const upstream = input.upstream.catalog;
+  verifyAttentionV2StageModelCatalog(upstream, plan.planHash as Sha256Digest);
+  if (upstream.stage !== "shape-screen") {
+    if (!input.upstream.selectionReport) throw new Error(`${input.stage} requires the upstream selection report`);
+    verifyAttentionV2StageModelSelectionReport(input.upstream.selectionReport);
+  }
+  if (upstream.stage !== target.dependencies[0].upstreamStage) {
+    throw new Error(`${input.stage} upstream catalog stage does not match the plan dependency`);
+  }
+  if (input.selectedSourceModels.length === 0 || new Set(input.selectedSourceModels.map((model) => model.modelId)).size !== input.selectedSourceModels.length) {
+    throw new Error("selected source models must be nonempty and unique");
+  }
+  const upstreamMembers = new Map(upstream.members.map((member) => [member.modelId, member]));
+  for (const selected of input.selectedSourceModels) {
+    const source = upstreamMembers.get(selected.modelId);
+    if (!source || source.modelHash !== selected.modelHash) throw new Error(`selected source model ${selected.modelId} is not in the verified upstream catalog`);
+  }
+  const members: AttentionV2StageModelMember[] = input.members.map((member) => {
+    if (!member.modelId || !member.ruleShape) throw new Error("stage model members require modelId and ruleShape");
+    const ruleShapeHash = sha256Value(member.ruleShape);
+    const modelHash = sha256Value({ schemaVersion: 1, modelVersion: ATTENTION_V2_MODEL_VERSION, modelId: member.modelId, ruleShapeHash });
+    const draft = {
+      schemaVersion: 1 as const,
+      modelVersion: ATTENTION_V2_MODEL_VERSION,
+      modelId: member.modelId,
+      modelHash,
+      ruleShape: member.ruleShape,
+      ruleShapeHash,
+      sourceKind: member.sourceKind,
+      parentModelId: member.parentModelId,
+      parentModelSetHash: member.parentModelSetHash,
+      derivationHash: member.derivationHash
+    };
+    return { ...draft, memberHash: sha256Value(draft) };
+  });
+  const modelSetHash = sha256Value({ schemaVersion: 1, stage: input.stage, members: members.map((member) => ({ modelId: member.modelId, modelHash: member.modelHash })) });
+  const reportDraft = {
+    schemaVersion: 1 as const,
+    plannerVersion: LANDSCAPE_SWEEP_PLANNER_VERSION,
+    modelVersion: ATTENTION_V2_MODEL_VERSION,
+    planHash: plan.planHash,
+    sourceStage: target.dependencies[0].upstreamStage,
+    targetStage: input.stage,
+    sourceModelSetHash: upstream.modelSetHash,
+    completedEvidenceReportHashes: [...input.completedEvidenceReportHashes],
+    selectionProtocolHash: input.selectionProtocolHash,
+    selectedSourceModels: input.selectedSourceModels.map((model) => ({ ...model })),
+    outputModelSetHash: modelSetHash,
+    fold: input.fold,
+    completionStatus: "complete" as const,
+    predictionOnlyPromotion: false as const
+  };
+  const selectionReport = AttentionV2StageModelSelectionReportSchema.parse({ ...reportDraft, selectionReportHash: sha256Value(reportDraft) });
+  const dependency = {
+    upstreamStage: target.dependencies[0].upstreamStage,
+    relation: target.dependencies[0].relation,
+    upstreamModelSetHash: upstream.modelSetHash,
+    upstreamSelectionReportHash: selectionReport.selectionReportHash
+  };
+  const catalogDraft = {
+    schemaVersion: 1 as const,
+    plannerVersion: LANDSCAPE_SWEEP_PLANNER_VERSION,
+    modelVersion: ATTENTION_V2_MODEL_VERSION,
+    planHash: plan.planHash,
+    stage: input.stage,
+    rootModelCatalogHash: plan.modelCatalog.catalogHash,
+    modelSetId: `attention-v2-${input.stage}-${modelSetHash.slice(7, 23)}`,
+    modelSetHash,
+    selectionProtocolHash: input.selectionProtocolHash,
+    selectionReportHash: selectionReport.selectionReportHash,
+    dependencies: [dependency],
+    modelCount: members.length,
+    members,
+    frozen: true as const
+  };
+  const catalog = AttentionV2StageModelCatalogSchema.parse({ ...catalogDraft, catalogHash: sha256Value(catalogDraft) });
+  verifyAttentionV2StageModelSelectionReport(selectionReport);
+  verifyAttentionV2StageModelCatalog(catalog, plan.planHash as Sha256Digest);
+  return { catalog, selectionReport };
+}
 
 export type AttentionV2SweepVerificationOptions = {
   materializedStages?: readonly AttentionV2MaterializedStageInput[];
