@@ -112,6 +112,8 @@ Run the canonical suite with one source revision and one Docker image digest:
 
 The launcher freezes all three manifests before starting any shard, resumes only hash-valid completed shards, then writes and strictly audits each report. A failed holdout gate is evidence to revise the mechanic or policy; it is never rewritten or silently relabeled as a pass.
 
+The canonical v1r1 campaign completed 674,000 runs. Scout specialization, Siege specialization, movement value, and stationary Line escort passed; Macro Flare's predeclared 80% causal drift-defeat gate failed at 22.34%. The reviewed decision preserves that failure, accepts the four passing mechanics as regression constraints, and pre-registers a fresh paired effect-size experiment in [`design/attention-duel-v1r1-decision.md`](design/attention-duel-v1r1-decision.md).
+
 For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 
 To fan one matrix out across eight Docker workers and automatically aggregate the result:

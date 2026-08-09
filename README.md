@@ -269,6 +269,8 @@ For the canonical 480,000-run stationary screen, 144,000-run capacity screen, an
 
 Each run stores the manifest/provenance link, policy-independent random-stream ID, terminal outcome, SHA state/outcome hashes, and bounded summary counters. The compact report adds paired confidence intervals, interaction effects, acceptance gates, shard hashes, and a self-hash; `--audit`, `--left/--right`, and `--record` work for both legacy and attention matrices.
 
+The completed 674,000-run v1r1 campaign accepted the Scout, Siege, movement, and stationary escort behaviors as the research baseline. Macro Flare remained useful but failed its predeclared causal drift-defeat gate, so its tuning is still experimental. See the immutable evidence and next-experiment pre-registration in the [v1r1 research decision](design/attention-duel-v1r1-decision.md).
+
 ### Sharded Docker matrix
 
 ```powershell

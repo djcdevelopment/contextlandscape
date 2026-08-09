@@ -71,6 +71,9 @@ regression-tested; the apparent result did not survive it.
   streams. `apps/simulator/src/attention-policies.ts` provides serializable projection-only policies;
   `apps/lab/src/attention-lab.ts` executes the paired stationary/capacity/holdout matrices and links
   their outcomes to immutable build provenance.
+  The canonical v1r1 evidence accepts Scout specialization, Siege specialization, movement value, and
+  stationary Line escort as the research baseline. Macro Flare remains experimental after failing its
+  predeclared causal drift-defeat gate; see [the v1r1 research decision](../design/attention-duel-v1r1-decision.md).
 - `apps/server` — Fastify API with PostgreSQL or in-memory persistence, idempotent commands,
   optimistic concurrency, per-match and per-session locks, and **server-side blinding** of lab
   treatments.

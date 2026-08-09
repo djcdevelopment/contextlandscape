@@ -165,3 +165,7 @@ When implementing these changes in `apps/simulator/src/command-policies.test.ts`
 
 ---
 *Document prepared for Agentic Builder Handoff. All mathematical bounds are tuned to maintain grounding on the resource constraints of packages/engine/src/command.ts.*
+
+## 6. Post-implementation status
+
+On 2026-08-09, the canonical 674,000-run v1r1 campaign passed the Scout, Siege, movement, and stationary escort gates. The original Macro Flare threshold above remains unchanged and is recorded as failed: 22.34% causal drift defeat versus the predeclared 80% target. The reviewed interpretation and fresh-seed follow-up protocol are locked in [the v1r1 research decision](attention-duel-v1r1-decision.md).

@@ -1,6 +1,6 @@
 # Attention Engine Implementation Strategy
 
-Status: implemented on `feature/attention-duel-matrix`; canonical campaign execution follows the source commit.
+Status: implemented and canonically evaluated on `feature/attention-duel-matrix`; the reviewed outcome is locked in [`design/attention-duel-v1r1-decision.md`](../design/attention-duel-v1r1-decision.md).
 
 ## Goal
 
@@ -38,6 +38,10 @@ Turn the attention-mechanics specification into a versioned, deterministic model
 | `holdout` | 50,000 | Evaluate predeclared gates on a disjoint seed range. |
 
 Holdout gates use 95% bounds for Scout and Siege specialization, movement value, Flare-induced drift defeat under attention overload, and stationary escort drift efficiency. A point estimate alone cannot pass a gate.
+
+## Canonical outcome
+
+The 674,000-run v1r1 campaign accepted Scout specialization, Siege specialization, movement value, and stationary Line escort as the research baseline. Macro Flare failed its predeclared 80% causal drift-defeat gate and remains experimental. The immutable result, exact hashes, interpretation, and pre-registration for a fresh Flare experiment are recorded in [`design/attention-duel-v1r1-decision.md`](../design/attention-duel-v1r1-decision.md).
 
 ## Historical lookup
 
