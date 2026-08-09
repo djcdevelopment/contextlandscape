@@ -8,6 +8,7 @@ import type {
   Reconstruction,
   UnitState
 } from "@landscape/contracts";
+import { CommanderView } from "./commander/CommanderView.js";
 import "./style.css";
 
 const actions = ["scout", "build_contract", "implement", "review", "defend", "full_send", "consolidate"] as const;
@@ -801,4 +802,5 @@ function Metric({ label, value }: { label: string; value: string }) {
   return <div className="metric"><span>{label}</span><strong>{value}</strong></div>;
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const requestedView = new URLSearchParams(window.location.search).get("view");
+createRoot(document.getElementById("root")!).render(requestedView === "commander" ? <CommanderView /> : <App />);

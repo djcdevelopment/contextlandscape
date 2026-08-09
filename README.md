@@ -45,10 +45,12 @@ This prototype narrows those ideas into a falsifiable question: can systems-engi
 | Surface | Implemented state |
 | --- | --- |
 | Playable game | React/Vite 10×10 board, selectable cells, explicit unit orders, transaction console, and post-battle reconstruction |
+| Commander landscape | Opt-in sparse Canvas view of a 6,400×6,400 theater with 32×32 chunk LOD and 32×32×32 battle drill-down |
 | Scenario pack | Four versioned single-player scenarios with distinct lessons and rules profiles |
 | Rules engine | Deterministic TypeScript state transitions, seeded runs, idempotent commands, replay manifests, and event/projection hashes |
 | Persistence | PostgreSQL for matches, commands, events, observations, challenges, and gameplay-lab sessions; in-memory mode for portable runtime checks |
 | Synthetic research | Seeded doctrine simulator plus a resumable, sharded Docker worker with train/holdout comparisons and recommendation-only candidate patches |
+| Broad v2 research | Versioned 6,400-profile doctrine catalog, fold-specific sparse matchup graphs, physical battle-sample catalog, exact sizing envelopes, and a materialized standard sweep plan; execution is locked pending the real v2 rule resolver |
 | Gameplay research | Five blinded lab packs, 24 playable variants, gated pre/post-reconstruction reviews, joined exports, and executable follow-up matrices |
 | CI | Typecheck, tests, a bounded mechanics matrix, report generation, and recommendation validation on pushes, pull requests, and a nightly schedule |
 
@@ -59,6 +61,7 @@ Known boundaries:
 - no real population-level balance claim has been made;
 - the first human gameplay-lab cycle is still in progress;
 - composition needs mechanically distinct loadouts, initiative interactions, or multi-order slots before another large balance campaign;
+- the 30,008,992-run standard commander-landscape sweep is planned and content-addressed, but cannot run until every structural `duel-capacity-v2` factor has real reducer behavior;
 - Discord, profiles, matchmaking, ranked play, and durable progression are future product work.
 
 ## Quick start
@@ -92,7 +95,9 @@ docker compose -p context-landscape-dev -f infra/compose.dev.yml ps
 Invoke-RestMethod http://127.0.0.1:9080/health/ready
 ```
 
-Open <http://localhost:5173>. A healthy development response reports:
+Open <http://localhost:5173>. The opt-in commander vertical slice is at
+<http://localhost:5173/?view=commander>; it uses the live sparse landscape API when available and a
+deterministic sparse fixture otherwise. A healthy development response reports:
 
 ```text
 status      : ok

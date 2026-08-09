@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+export * from "./landscape.js";
+export * from "./attention-v2.js";
+
 export const ActionSchema = z.enum([
   "scout",
   "build_contract",

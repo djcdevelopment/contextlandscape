@@ -114,6 +114,22 @@ The launcher freezes all three manifests before starting any shard, resumes only
 
 The canonical v1r1 campaign completed 674,000 runs. Scout specialization, Siege specialization, movement value, and stationary Line escort passed; Macro Flare's predeclared 80% causal drift-defeat gate failed at 22.34%. The reviewed decision preserves that failure, accepts the four passing mechanics as regression constraints, and pre-registers a fresh paired effect-size experiment in [`design/attention-duel-v1r1-decision.md`](design/attention-duel-v1r1-decision.md).
 
+### Broad commander-landscape sweep
+
+The next phase separates the physical commander theater from the doctrine outcome atlas. The theater
+is a sparse 6,400×6,400 strategic plane whose active cells may expose 32×32×32 battle volumes. The
+atlas contains exactly 6,400 normalized commander profiles and samples their 40,960,000 possible
+directed matchups through a frozen, connected degree-eight graph with both seats and self-play.
+
+The contract-native planner freezes commander, model-row, fold-specific edge, battle-sample, and
+paired-world hashes and validates exact multiplicative run arithmetic. The lean 5,949,088 and deep
+153,570,624 profiles are sizing envelopes; the fully materialized standard design contains 30,008,992
+runs. Only the 40-row shape screen is initially materialized; every later model set requires a new,
+parent-linked plan backed by completed selection evidence. Every plan currently carries
+`executionStatus: "requires-v2-resolver"`. This is intentional:
+`duel-capacity-v2` structural alternatives must become real reducer behavior before a Docker smoke or
+canonical sweep can start. See [`design/commander-landscape-sweep.md`](design/commander-landscape-sweep.md).
+
 For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 
 To fan one matrix out across eight Docker workers and automatically aggregate the result:

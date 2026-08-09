@@ -67,3 +67,7 @@ The next experiment tests whether Macro Flare is a meaningful strategic swing wi
 - Record `keep` only if the primary gate and every guard pass; otherwise record `revise` or `reject` without rewriting the evidence.
 
 The observed v1r1 effect motivated these thresholds but does not count as their validation. Only the fresh, frozen holdout can do that.
+
+## Broad-sweep addendum
+
+Later on 2026-08-09, the standalone Flare experiment was embedded as a confirmation panel inside the broader [`commander-landscape-sweep`](commander-landscape-sweep.md). This changes the execution order, not the immutable v1r1 result or the fresh-seed Flare criteria above.
