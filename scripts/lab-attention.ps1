@@ -311,7 +311,10 @@ try {
         ) -ScriptBlock {
           param($workdir, $composeProject, $manifestPath, $shardCount, $shardIndex, $revision, $tree, $dirty, $image, $canonical)
           Set-Location $workdir
-          $ErrorActionPreference = 'Stop'
+          # Docker Compose writes normal container lifecycle messages to stderr. Windows PowerShell
+          # converts those lines to non-terminating ErrorRecords, so native success is determined by
+          # LASTEXITCODE below rather than ErrorActionPreference.
+          $ErrorActionPreference = 'SilentlyContinue'
           $arguments = @(
             '-p', $composeProject, '-f', 'infra/compose.lab.yml', 'run', '--rm',
             '-e', "LAB_SOURCE_REVISION=$revision", '-e', "LAB_SOURCE_TREE=$tree", '-e', "LAB_WORKSPACE_DIRTY=$dirty",
@@ -320,8 +323,9 @@ try {
             "--shards=$shardCount", "--shard=$shardIndex", "--canonical=$canonical"
           )
           $output = (& docker compose @arguments 2>&1 | Out-String)
+          $nativeExitCode = $LASTEXITCODE
           Write-Output $output
-          if ($LASTEXITCODE -ne 0) { throw "attention shard $shardIndex failed" }
+          if ($nativeExitCode -ne 0) { throw "attention shard $shardIndex failed with exit code $nativeExitCode" }
         }
       }
       if ($campaignJobs.Count -gt 0) {

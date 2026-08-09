@@ -179,7 +179,13 @@ async function runAttentionCommand(
   const outputDir = value("out") ?? defaultOutputDirectory();
   if (value("prepare") === "true") {
     const path = await ensureAttentionManifest(matrix, outputDir);
-    console.log(JSON.stringify({ matrix, manifest: path, runs: expectedAttentionRunCount(matrix) }, null, 2));
+    console.log(JSON.stringify({
+      matrixId: matrix.matrixId,
+      campaignKind: matrix.campaignKind,
+      manifest: path,
+      manifestHash: matrix.provenance.manifestHash,
+      runs: expectedAttentionRunCount(matrix)
+    }, null, 2));
     return;
   }
   if (value("all-shards") === "true") {
