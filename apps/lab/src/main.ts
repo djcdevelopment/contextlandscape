@@ -9,7 +9,7 @@ import {
   writeShard
 } from "./lab.js";
 import { readFile } from "node:fs/promises";
-import { SimulationMatrixSchema } from "@landscape/contracts";
+import { AttentionV2SweepPlanSchema, SimulationMatrixSchema } from "@landscape/contracts";
 import {
   auditAttentionMatrix,
   compareAttentionMatrices,
@@ -22,6 +22,16 @@ import {
   writeAttentionShard
 } from "./attention-lab.js";
 import { createAttentionCampaignDraft } from "./attention-campaigns.js";
+import {
+  createAttentionV2SweepPlan,
+  createAttentionV2SweepSkeleton
+} from "./landscape-sweep.js";
+import {
+  writeAttentionV2ShapeScreenReport,
+  writeAttentionV2ShapeScreenShard
+} from "./attention-v2-runner.js";
+import { writeImmutableJson } from "./artifact-io.js";
+import type { Sha256Digest } from "./provenance.js";
 
 function value(name: string): string | undefined {
   const argument = process.argv.find((candidate) => candidate.startsWith(`--${name}=`));
@@ -89,6 +99,11 @@ async function main(): Promise<void> {
     return;
   }
   const manifestPath = value("manifest");
+  const landscapeSweep = value("landscape-sweep");
+  if (landscapeSweep) {
+    await runLandscapeSweepCommand(landscapeSweep);
+    return;
+  }
   const attentionCampaign = value("attention-campaign");
   const scenario = value("scenario");
   const canonical = value("canonical") === "true";
@@ -132,6 +147,65 @@ async function main(): Promise<void> {
   if (shardIndex < 0 || shardIndex >= matrix.shardCount) throw new Error(`shard must be between 0 and ${matrix.shardCount - 1}`);
   const path = await writeShard(matrix, shardIndex, outputDir);
   console.log(JSON.stringify({ matrix, shardIndex, path }, null, 2));
+}
+
+async function runLandscapeSweepCommand(mode: string): Promise<void> {
+  if (mode !== "shape-screen" && mode !== "report") throw new Error("--landscape-sweep must be shape-screen or report");
+  const outputDir = value("out") ?? defaultOutputDirectory();
+  const frozenManifest = value("manifest");
+  if (mode === "report" && frozenManifest) {
+    const plan = AttentionV2SweepPlanSchema.parse(
+      JSON.parse(await readFile(normalizeDataPath(frozenManifest), "utf8")) as unknown
+    );
+    const matrixDir = `${outputDir}/${plan.planId}`;
+    console.log(`wrote ${await writeAttentionV2ShapeScreenReport(matrixDir)}`);
+    return;
+  }
+  const parentV1ManifestHash = requiredDigest("parent-manifest");
+  const parentV1ReportHash = requiredDigest("parent-report");
+  const parentV1ModelHash = requiredDigest("parent-model");
+  const createdAt = value("created-at") ?? new Date().toISOString();
+  const seedStart = optionalInteger("seed-start") ?? 10_000;
+  const skeleton = createAttentionV2SweepSkeleton(parentV1ModelHash);
+  const plan = createAttentionV2SweepPlan({
+    parentV1ManifestHash,
+    parentV1ReportHash,
+    parentV1ModelHash,
+    createdAt,
+    seedStart,
+    budgetProfile: "standard"
+  }, skeleton);
+  if (value("dry-run") === "true") {
+    console.log(JSON.stringify({
+      planId: plan.planId,
+      planHash: plan.planHash,
+      stage: "shape-screen",
+      plannedRuns: plan.budget.stages.find((stage) => stage.stage === "shape-screen")?.plannedRuns,
+      executionStatus: plan.executionStatus
+    }, null, 2));
+    return;
+  }
+  const matrixDir = `${outputDir}/${plan.planId}`;
+  if (value("prepare") === "true") {
+    await writeImmutableJson(`${matrixDir}/manifest.json`, plan);
+    console.log(JSON.stringify({ planId: plan.planId, planHash: plan.planHash, manifest: `${matrixDir}/manifest.json` }, null, 2));
+    return;
+  }
+  if (mode === "report") {
+    console.log(`wrote ${await writeAttentionV2ShapeScreenReport(matrixDir)}`);
+    return;
+  }
+  const shardIndex = optionalInteger("shard") ?? 0;
+  const shardCount = optionalInteger("shards") ?? 1;
+  const maxRuns = optionalInteger("max-runs");
+  const path = await writeAttentionV2ShapeScreenShard(plan, skeleton, shardIndex, outputDir, { shardCount, maxRuns });
+  console.log(JSON.stringify({ planId: plan.planId, planHash: plan.planHash, shardIndex, shardCount, path }, null, 2));
+}
+
+function requiredDigest(name: string): Sha256Digest {
+  const raw = value(name);
+  if (!raw || !/^sha256:[0-9a-f]{64}$/.test(raw)) throw new Error(`--${name} must be a sha256 digest`);
+  return raw as Sha256Digest;
 }
 
 async function runAttentionCommand(

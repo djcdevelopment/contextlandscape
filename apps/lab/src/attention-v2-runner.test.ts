@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createAttentionV2SweepPlan, createAttentionV2SweepSkeleton } from "./landscape-sweep.js";
-import { runAttentionV2Smoke } from "./attention-v2-runner.js";
+import { runAttentionV2Smoke, writeAttentionV2ShapeScreenReport, writeAttentionV2ShapeScreenShard } from "./attention-v2-runner.js";
 import { sha256Value } from "./provenance.js";
 
 const parentV1ModelHash = sha256Value("duel-capacity-v1-model");
@@ -40,4 +43,18 @@ describe("attention-v2 execution bridge", () => {
       seed: plan.worldBlocks[1].seedStart
     })).toThrow(/Only materialized shape-screen/);
   });
+
+  it("writes immutable gzip shards and refuses a partial report", async () => {
+    const root = await mkdtemp(join(tmpdir(), "attention-v2-runner-"));
+    try {
+      const shardPath = await writeAttentionV2ShapeScreenShard(plan, skeleton, 0, root, { maxRuns: 1 });
+      expect(shardPath.endsWith("shard-0000.jsonl.gz")).toBe(true);
+      const marker = JSON.parse(await readFile(shardPath.replace(".jsonl.gz", ".complete"), "utf8")) as { completionStatus: string; recordCount: number };
+      expect(marker).toMatchObject({ completionStatus: "partial", recordCount: 1 });
+      await expect(writeAttentionV2ShapeScreenShard(plan, skeleton, 0, root, { maxRuns: 1 })).resolves.toBe(shardPath);
+      await expect(writeAttentionV2ShapeScreenReport(join(root, plan.planId))).rejects.toThrow(/incomplete/);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }, 30_000);
 });

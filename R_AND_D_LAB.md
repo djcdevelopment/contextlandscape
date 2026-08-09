@@ -128,7 +128,8 @@ runs. Only the 40-row shape screen is initially materialized; every later model 
 parent-linked plan backed by completed selection evidence. Every plan currently carries
 `executionStatus: "requires-v2-campaign-runner"`. The shape-screen resolver smoke is executable, but
 the durable v2 campaign runner and post-screen selection lineage must be wired before a canonical
-sweep can start. See [`design/commander-landscape-sweep.md`](design/commander-landscape-sweep.md).
+sweep can start. The runner now writes an immutable plan manifest, gzip JSONL shards, completion markers,
+and a report that refuses partial evidence. See [`design/commander-landscape-sweep.md`](design/commander-landscape-sweep.md).
 
 For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 

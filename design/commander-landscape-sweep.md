@@ -128,6 +128,11 @@ catalog, upstream model-set membership, and selection report. The dependency cha
 refinement → drill-down → exact finalist reuse in the sentinel → holdout → confirmation, so a later
 stage cannot silently substitute candidates or execute before its parent set is complete.
 
+The shape-screen runner is resumable and content-addressed: it writes one immutable `manifest.json`,
+gzip JSONL shards, per-shard completion markers, and a compact report. A partial marker may be rebuilt
+from the same deterministic prefix; a complete marker or manifest cannot be overwritten with different
+content. Reports refuse partial or hash-mismatched shards.
+
 ## Viability criteria
 
 Stage 1 advances no more than six Pareto-nondominated model families. A survivor must:

@@ -73,8 +73,8 @@ regression-tested; the apparent result did not survive it.
 - `packages/contracts/src/attention-v2.ts` and `apps/lab/src/landscape-sweep.ts` — versioned 6,400-profile
   doctrine catalog, connected sparse matchup graph, balanced battle-sample catalog, frozen folds, and
   exact lean/standard/deep run budgets. Stage model sets carry explicit parent-linked selection lineage;
-  only the shape screen is materialized today. A bounded v2 resolver smoke exists; plans remain locked
-  until the durable campaign runner and post-screen selection lineage exist.
+  only the shape screen is materialized today. A bounded v2 resolver smoke and resumable gzip-JSONL
+  shard writer exist; plans remain locked until full campaign orchestration and post-screen selection lineage exist.
 - `packages/engine/src/attention.ts` — versioned deterministic two-player attention reducer with a
   10×10 spatial layer, simultaneous movement, stationary Scout/Line/Siege trade-offs, shared capacity
   claims, Perfect Focus, Overclock, Macro Flare, blinded projections, and policy-independent random

@@ -854,6 +854,69 @@ export const AttentionV2RunPlannerIdentitySchema = z.object({
 }).strict();
 export type AttentionV2RunPlannerIdentity = z.infer<typeof AttentionV2RunPlannerIdentitySchema>;
 
+export const AttentionV2RunRecordSchema = z.object({
+  schemaVersion: z.literal(1),
+  planId: z.string().min(1),
+  planHash: digest,
+  stage: z.literal("shape-screen"),
+  identity: AttentionV2RunPlannerIdentitySchema,
+  modelId: z.string().min(1),
+  policyOneId: z.string().min(1),
+  policyTwoId: z.string().min(1),
+  status: z.literal("complete"),
+  winnerPlayerSlot: z.union([z.literal(1), z.literal(2)]).nullable(),
+  terminalReason: z.enum(["objective", "drift", "round-limit", "simultaneous", "forfeit"]),
+  rounds: z.number().int().nonnegative(),
+  traceHash: digest,
+  stateHash: digest,
+  outcomeHash: digest
+}).strict().superRefine((record, context) => {
+  if (record.identity.planId !== record.planId || record.identity.planHash !== record.planHash || record.identity.modelId !== record.modelId) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["identity"], message: "run identity must match its enclosing record" });
+  }
+});
+export type AttentionV2RunRecord = z.infer<typeof AttentionV2RunRecordSchema>;
+
+export const AttentionV2ShardCompletionSchema = z.object({
+  schemaVersion: z.literal(1),
+  planId: z.string().min(1),
+  planHash: digest,
+  stage: z.literal("shape-screen"),
+  shardIndex: z.number().int().nonnegative(),
+  expectedRecordCount: z.number().int().positive(),
+  recordCount: z.number().int().nonnegative(),
+  completionStatus: z.enum(["partial", "complete"]),
+  shardHash: digest
+}).strict().superRefine((marker, context) => {
+  if (marker.completionStatus === "complete" && marker.recordCount !== marker.expectedRecordCount) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["recordCount"], message: "complete shards must contain their exact expected record count" });
+  }
+  if (marker.completionStatus === "partial" && marker.recordCount >= marker.expectedRecordCount) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["completionStatus"], message: "partial shards must be below their expected record count" });
+  }
+});
+export type AttentionV2ShardCompletion = z.infer<typeof AttentionV2ShardCompletionSchema>;
+
+export const AttentionV2ShapeScreenReportSchema = z.object({
+  schemaVersion: z.literal(1),
+  planId: z.string().min(1),
+  planHash: digest,
+  stage: z.literal("shape-screen"),
+  plannedRuns: z.number().int().positive(),
+  observedRuns: z.number().int().nonnegative(),
+  completionStatus: z.enum(["partial", "complete"]),
+  shards: z.array(AttentionV2ShardCompletionSchema).min(1),
+  reportHash: digest
+}).strict().superRefine((report, context) => {
+  if (report.completionStatus === "complete" && report.observedRuns !== report.plannedRuns) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["observedRuns"], message: "complete reports must contain the entire planned shape-screen budget" });
+  }
+  if (report.observedRuns !== report.shards.reduce((sum, shard) => sum + shard.recordCount, 0)) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["observedRuns"], message: "report run count must equal its shard markers" });
+  }
+});
+export type AttentionV2ShapeScreenReport = z.infer<typeof AttentionV2ShapeScreenReportSchema>;
+
 export const AttentionV2ReportPlannerIdentitySchema = z.object({
   schemaVersion: z.literal(1),
   plannerVersion: z.literal(ATTENTION_V2_PLANNER_VERSION),
