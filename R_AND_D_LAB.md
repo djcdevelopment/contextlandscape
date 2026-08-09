@@ -57,25 +57,67 @@ npm run lab -- --report=data/lab/tuning-check
 .\scripts\lab-gate.ps1 -ReportPath data/lab/tuning-check/report.json -MinimumRuns 100
 ```
 
-The report includes per-cell win rate with a 95% interval, objective progress, energy spent, rejection rate, heat, dispersion, lesson separation between intended and non-intended policies, pairwise relative comparisons, non-dominated (Pareto) policies, and ranked tuning recommendations. Every run carries the engine/scenario version, seed, composition, tuning, policy, event hash, and projection hash.
+The report includes per-cell win rate with a 95% interval, objective progress, energy spent, rejection rate, heat, dispersion, lesson separation between intended and non-intended policies, pairwise relative comparisons, non-dominated (Pareto) policies, and ranked tuning recommendations. Every new run also links to a sealed v2 manifest through its manifest hash and provenance ID.
 
-For an unattended Docker worker on OMEN or AM4:
+### Build and experiment provenance
+
+New matrices are content-addressed from source to report. A sealed manifest records the Git revision and tree, clean/dirty state, engine and model versions, canonical hashes of the selected scenarios and policies, runtime identity, and optional worker image digest. Each shard completion marker records its compressed-file hash and manifest hash. Reports and candidate patches repeat the provenance and link back to the same manifest.
+
+Use a canonical run for evidence that may be retained or compared historically. It refuses a dirty or unidentified checkout:
 
 ```powershell
-docker compose -f infra/compose.lab.yml build worker
-docker compose -f infra/compose.lab.yml run --rm `
-  -e LAB_MATRIX_ID=overnight-01 `
-  -e LAB_RUNS=1000 `
-  -e LAB_POLICIES=32 `
-  -e LAB_SHARDS=1 `
-  worker
-docker compose -f infra/compose.lab.yml run --rm worker node apps/lab/dist/main.js --report=data/lab/overnight-01
+npm run lab -- --matrix=canonical-check --runs=25 --policies=12 --shards=1 --all-shards=true --canonical=true
+npm run lab -- --audit=data/lab/canonical-check --strict=true
 ```
+
+Exploratory dirty-worktree runs are allowed without `--canonical=true`, but are labeled noncanonical and cannot be silently promoted into the historical ledger. Legacy v1 matrices remain readable and report as `legacy-unverifiable`; current code never guesses a Git revision for them.
+
+Compare two completed matrices by both build shape and aligned outcome cells:
+
+```powershell
+npm run lab -- --left=data/lab/train-01 --right=data/lab/holdout-01
+```
+
+After reviewing a canonical result, explicitly add its compact record to the tracked ledger. Raw shards remain ignored:
+
+```powershell
+npm run lab -- --record=data/lab/train-01 --stage=train --hypothesis="Stationary traits break composition invariance"
+```
+
+The ledger lives at `data/experiments/ledger.json`. Recording also copies the sealed manifest, compact report, and candidate recommendations into `data/experiments/<matrix-id>/`, so historical comparisons survive raw-shard retention and fresh clones. Record campaign matrices after the full campaign completes so these tracked evidence changes do not dirty the checkout between canonical train and holdout runs.
+
+### Attention economy experiment suite
+
+`duel-capacity-v1` is a separate, versioned two-player model for the attention-command mechanics in `design/attention-mechanics-spec.md`. It keeps hidden truth in the reducer, gives policies only public projections, and keys artifact truth/noise by scenario and seed rather than policy or match ID. This makes policy comparisons paired counterfactuals: both arms see the same latent world.
+
+The committed campaign catalog contains:
+
+- `stationary-train`: 480,000 runs over stationary effects, compositions, scenarios, and ablations.
+- `capacity-train`: 144,000 runs over shared capacity strategies and ability ablations.
+- `holdout`: 50,000 runs on a disjoint seed range with predeclared 95% acceptance gates.
+
+Preview them without creating a manifest:
+
+```powershell
+npm run lab -- --attention-campaign=stationary-train --dry-run=true
+npm run lab -- --attention-campaign=capacity-train --dry-run=true
+npm run lab -- --attention-campaign=holdout --dry-run=true
+```
+
+Run the canonical suite with one source revision and one Docker image digest:
+
+```powershell
+.\scripts\lab-attention.ps1 -Canonical -Shards 12 -MinimumFreeGiB 20
+```
+
+The launcher freezes all three manifests before starting any shard, resumes only hash-valid completed shards, then writes and strictly audits each report. A failed holdout gate is evidence to revise the mechanic or policy; it is never rewritten or silently relabeled as a pass.
+
+For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 
 To fan one matrix out across eight Docker workers and automatically aggregate the result:
 
 ```powershell
-.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8
+.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8 -Canonical
 ```
 
 For the document-driven sleep campaign, see [OVERNIGHT_EXPERIMENT_PLAN.md](OVERNIGHT_EXPERIMENT_PLAN.md) and run:
@@ -84,7 +126,7 @@ For the document-driven sleep campaign, see [OVERNIGHT_EXPERIMENT_PLAN.md](OVERN
 .\scripts\lab-sleep.ps1 -CampaignId sleep-01 -Shards 12 -MinimumFreeGiB 50
 ```
 
-For scale-out, launch the same worker once per shard with the same matrix ID and `LAB_SHARDS=N`, setting `LAB_SHARD=0..N-1`. Shards are independent and resumable; only the final report needs all shard files. The lab image is private and does not expose the public match service.
+For scale-out, materialize one manifest before launching workers and pass that file to every shard. Never let parallel workers independently construct a manifest: timestamps and build identity are part of its hash. Shards are independent and resumable; v2 aggregation requires exactly the declared shard set and verifies every marker, file hash, record count, matrix ID, engine version, and provenance link. The lab image is private and does not expose the public match service.
 
 Keep raw artifacts bounded with a dry-run-first retention command:
 

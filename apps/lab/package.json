@@ -7,11 +7,12 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "lab": "node dist/main.js"
+    "lab": "npm run build --workspace=@landscape/contracts && npm run build --workspace=@landscape/scenarios && npm run build --workspace=@landscape/engine && npm run build --workspace=@landscape/simulator && tsx src/main.ts"
   },
   "dependencies": {
     "@landscape/contracts": "0.1.0",
     "@landscape/engine": "0.1.0",
-    "@landscape/scenarios": "0.1.0"
+    "@landscape/scenarios": "0.1.0",
+    "@landscape/simulator": "0.1.0"
   }
 }

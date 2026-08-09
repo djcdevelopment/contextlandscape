@@ -53,6 +53,7 @@ function winThreshold(profile: string): number {
 }
 
 export * from "./command.js";
+export * from "./attention.js";
 
 export type ReplayBatch = { orders: Order[]; playerId?: string };
 export type UnitComposition = "balanced" | "scout-heavy" | "line-heavy" | "siege-heavy";

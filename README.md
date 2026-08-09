@@ -241,10 +241,38 @@ npm run lab -- --report=data/lab/local-check
 .\scripts\lab-gate.ps1 -ReportPath data/lab/local-check/report.json -MinimumRuns 25
 ```
 
+New matrices seal the Git/build identity, model/scenario/policy hashes, and manifest hash into every shard and report. Add `--canonical=true` to reject dirty or unidentified source, then audit or compare completed evidence:
+
+```powershell
+npm run lab -- --audit=data/lab/local-check
+npm run lab -- --left=data/lab/train-01 --right=data/lab/holdout-01
+npm run lab -- --record=data/lab/train-01 --stage=train --hypothesis="Describe the tested edge"
+```
+
+The last command explicitly promotes a reviewed canonical result into `data/experiments/ledger.json` and archives its sealed manifest, compact report, and recommendations under `data/experiments/<matrix-id>/`; raw shards remain untracked and disposable. Legacy v1 matrices remain readable but are reported as historically unverifiable.
+
+### Attention-command matrix
+
+The versioned `duel-capacity-v1` model runs two-player, common-random-world counterfactuals for movement, stationary chassis effects, the shared capacity track, and scale-scope abilities. Inspect the frozen campaign sizes without writing artifacts:
+
+```powershell
+npm run lab -- --attention-campaign=stationary-train --dry-run=true
+npm run lab -- --attention-campaign=capacity-train --dry-run=true
+npm run lab -- --attention-campaign=holdout --dry-run=true
+```
+
+For the canonical 480,000-run stationary screen, 144,000-run capacity screen, and independent 50,000-run holdout, use one pinned Docker build across all shards:
+
+```powershell
+.\scripts\lab-attention.ps1 -Canonical
+```
+
+Each run stores the manifest/provenance link, policy-independent random-stream ID, terminal outcome, SHA state/outcome hashes, and bounded summary counters. The compact report adds paired confidence intervals, interaction effects, acceptance gates, shard hashes, and a self-hash; `--audit`, `--left/--right`, and `--record` work for both legacy and attention matrices.
+
 ### Sharded Docker matrix
 
 ```powershell
-.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8
+.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8 -Canonical
 ```
 
 ### Human-selected follow-up

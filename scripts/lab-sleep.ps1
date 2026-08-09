@@ -3,7 +3,8 @@ param(
   [string] $CampaignId = "sleep-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss'))",
   [int] $Shards = 12,
   [int] $MinimumFreeGiB = 50,
-  [switch] $DryRun
+  [switch] $DryRun,
+  [switch] $Canonical
 )
 
 $ErrorActionPreference = 'Stop'
@@ -36,7 +37,7 @@ try {
     if ($freeGiB -lt $MinimumFreeGiB) { throw "Stopping campaign with only $freeGiB GiB free" }
     $matrixId = "$CampaignId-$($experiment.Name)"
     Write-Host "START $matrixId freeGiB=$freeGiB" -ForegroundColor Cyan
-    & "$PSScriptRoot/lab-night.ps1" -MatrixId $matrixId -Runs $experiment.Runs -Policies $experiment.Policies -Tunings $experiment.Tunings -Shards $Shards -SeedStart $experiment.SeedStart -Scenario $experiment.Scenario
+    & "$PSScriptRoot/lab-night.ps1" -MatrixId $matrixId -Runs $experiment.Runs -Policies $experiment.Policies -Tunings $experiment.Tunings -Shards $Shards -SeedStart $experiment.SeedStart -Scenario $experiment.Scenario -Canonical:$Canonical
     $scenarioCount = if ($experiment.Scenario) { 1 } else { 4 }
     $expectedRuns = $scenarioCount * 4 * $experiment.Runs * $experiment.Policies * $experiment.Tunings
     & "$PSScriptRoot/lab-gate.ps1" -ReportPath "data/lab/$matrixId/report.json" -MinimumRuns $expectedRuns
@@ -48,6 +49,10 @@ try {
       cells = $report.cells.Count
       paretoPolicies = $report.paretoFrontier.Count
       recommendations = $report.recommendations.Count
+      manifestHash = $report.manifestHash
+      reportHash = $report.reportHash
+      sourceRevision = $report.provenance.sourceRevision
+      modelHash = $report.provenance.modelHash
       reportPath = "data/lab/$matrixId/report.json"
       candidatePath = "data/lab/$matrixId/candidate-patches.json"
     }

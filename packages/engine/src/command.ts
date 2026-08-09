@@ -157,9 +157,13 @@ export function emitArtifacts(state: CommandState): Artifact[] {
   for (const mech of state.fleet) {
     for (let index = 0; index < mech.throughput; index += 1) {
       const artifactId = `${state.matchId}:r${state.round}:${mech.mechId}:${index}`;
-      const sound = unit(state.seed, `sound:${artifactId}`) < state.rules.soundnessRate;
+      // `matchId` identifies a particular replay, not the underlying stochastic world. Policy
+      // runners deliberately use distinct match ids, so keying draws through `artifactId` would
+      // give each policy different latent work for the same seed and invalidate paired comparisons.
+      const drawKey = `r${state.round}:${mech.mechId}:${index}`;
+      const sound = unit(state.seed, `sound:${drawKey}`) < state.rules.soundnessRate;
       const signal = sound ? 0.75 : 0.25;
-      const noise = unit(state.seed, `noise:${artifactId}`);
+      const noise = unit(state.seed, `noise:${drawKey}`);
       const reportedConfidence = Number(
         (mech.calibration * signal + (1 - mech.calibration) * noise).toFixed(4)
       );

@@ -61,7 +61,16 @@ regression-tested; the apparent result did not survive it.
 ### Research rig
 
 - `apps/lab` — sharded, resumable synthetic matrix worker with a streaming reducer, Wilson intervals,
-  Pareto frontier, pressure sensitivity, and recommendation-only candidate patches.
+  Pareto frontier, pressure sensitivity, recommendation-only candidate patches, and v2 provenance
+  that content-addresses the source revision, model, scenario/policy sets, manifest, shards, and report.
+  Canonical runs require clean identified source; legacy v1 evidence remains readable but is explicitly
+  reported as historically unverifiable.
+- `packages/engine/src/attention.ts` — versioned deterministic two-player attention reducer with a
+  10×10 spatial layer, simultaneous movement, stationary Scout/Line/Siege trade-offs, shared capacity
+  claims, Perfect Focus, Overclock, Macro Flare, blinded projections, and policy-independent random
+  streams. `apps/simulator/src/attention-policies.ts` provides serializable projection-only policies;
+  `apps/lab/src/attention-lab.ts` executes the paired stationary/capacity/holdout matrices and links
+  their outcomes to immutable build provenance.
 - `apps/server` — Fastify API with PostgreSQL or in-memory persistence, idempotent commands,
   optimistic concurrency, per-match and per-session locks, and **server-side blinding** of lab
   treatments.

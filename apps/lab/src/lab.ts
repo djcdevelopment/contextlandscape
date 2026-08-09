@@ -1,12 +1,41 @@
 import { createGzip, createGunzip } from "node:zlib";
+import { randomUUID } from "node:crypto";
 import { createReadStream, createWriteStream } from "node:fs";
-import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, writeFile } from "node:fs/promises";
 import { once } from "node:events";
 import { createInterface } from "node:readline";
-import type { Order, RulesTuningInput, ScenarioDefinition, SimulationMatrix, SimulationRun } from "@landscape/contracts";
-import { SimulationMatrixSchema, SimulationRunSchema } from "@landscape/contracts";
+import { dirname, relative, resolve } from "node:path";
+import type {
+  BuildProvenance,
+  ExperimentLedger,
+  ExperimentLedgerEntry,
+  Order,
+  RulesTuningInput,
+  ScenarioDefinition,
+  SimulationMatrix,
+  SimulationMatrixV1,
+  SimulationMatrixV2,
+  SimulationRun
+} from "@landscape/contracts";
+import {
+  ExperimentLedgerEntrySchema,
+  ExperimentLedgerSchema,
+  SimulationMatrixSchema,
+  SimulationMatrixV1Schema,
+  SimulationMatrixV2Schema,
+  SimulationRunSchema
+} from "@landscape/contracts";
 import { ENGINE_VERSION, createMatchState, runReplay, type UnitComposition } from "@landscape/engine";
 import { scenarios } from "@landscape/scenarios";
+import {
+  assertCanonicalSource,
+  canonicalJson,
+  captureGitSource,
+  hashManifest,
+  sha256File,
+  sha256Value,
+  type Sha256Digest
+} from "./provenance.js";
 
 export const compositions: UnitComposition[] = ["balanced", "scout-heavy", "line-heavy", "siege-heavy"];
 
@@ -22,8 +51,28 @@ export type LabOptions = {
   shardIndex: number;
   outputDir: string;
   tuningOverrides: LabTuning[];
+  canonical: boolean;
 };
 export type LabTuning = RulesTuningInput & { tuningId: string };
+
+export type ProvenanceOptions = {
+  canonical?: boolean;
+  cwd?: string;
+  env?: NodeJS.ProcessEnv;
+  repository?: string;
+  imageDigest?: string;
+  commandModelVersion?: string;
+};
+
+export type ShardCompletion = {
+  schemaVersion: 1;
+  matrixId: string;
+  shardIndex: number;
+  recordCount: number;
+  shardHash: Sha256Digest;
+  manifestHash: string | null;
+  provenanceId: string | null;
+};
 
 export function tuningChanges(tuningId: string): Record<string, unknown> {
   switch (tuningId) {
@@ -151,16 +200,16 @@ export function applySeedPressure(scenario: ScenarioDefinition, tuning: LabTunin
   };
 }
 
-export function createMatrix(options: Partial<LabOptions> = {}): SimulationMatrix {
+export function createMatrix(options: Partial<LabOptions> = {}): SimulationMatrixV1 {
   const selected = options.scenarioIds?.length ? options.scenarioIds : scenarios.map((scenario) => scenario.scenarioId);
-  return SimulationMatrixSchema.parse({
+  return SimulationMatrixV1Schema.parse({
     schemaVersion: 1,
     matrixId: options.matrixId ?? `matrix-${new Date().toISOString().replace(/[:.]/g, "-")}`,
     engineVersion: ENGINE_VERSION,
     scenarioIds: selected,
     compositionIds: compositions,
     tuningCount: options.tuningOverrides?.length ?? options.tuningCount ?? 1,
-    tuningOverrides: options.tuningOverrides,
+    ...(options.tuningOverrides ? { tuningOverrides: options.tuningOverrides } : {}),
     policyCount: options.policyCount ?? 12,
     runsPerCell: options.runsPerCell ?? 25,
     seedStart: options.seedStart ?? 0,
@@ -169,9 +218,151 @@ export function createMatrix(options: Partial<LabOptions> = {}): SimulationMatri
   });
 }
 
+function policySetFor(matrix: SimulationMatrix): Array<{ scenarioId: string; policies: LabPolicy[] }> {
+  return scenarios
+    .filter((scenario) => matrix.scenarioIds.includes(scenario.scenarioId))
+    .map((scenario) => ({
+      scenarioId: scenario.scenarioId,
+      policies: generatedPolicies(scenario, matrix.policyCount, matrix.policyOverrides)
+    }));
+}
+
+function matrixModelFingerprints(matrix: SimulationMatrix, commandModelVersion: string) {
+  const selectedScenarios = scenarios.filter((scenario) => matrix.scenarioIds.includes(scenario.scenarioId));
+  const scenarioSetHash = sha256Value(selectedScenarios);
+  const policySetHash = sha256Value(policySetFor(matrix));
+  const modelHash = sha256Value({
+    commandModelVersion,
+    engineVersion: ENGINE_VERSION,
+    scenarioSetHash
+  });
+  return { selectedScenarios, scenarioSetHash, policySetHash, modelHash };
+}
+
+/**
+ * Upgrade an input/draft manifest into the immutable execution contract used by new campaigns.
+ * Legacy manifests stay readable, but current code never executes one without first sealing it.
+ */
+export async function sealExecutionMatrix(
+  input: SimulationMatrix,
+  options: ProvenanceOptions = {}
+): Promise<SimulationMatrixV2> {
+  if (input.engineVersion !== ENGINE_VERSION) {
+    throw new Error(`Matrix engine ${input.engineVersion} cannot run on engine ${ENGINE_VERSION}`);
+  }
+  if (input.schemaVersion === 2) {
+    const expected = hashManifest(input);
+    if (input.provenance.manifestHash !== expected) {
+      throw new Error(`Matrix ${input.matrixId} manifest hash mismatch`);
+    }
+    const source = await captureGitSource({ cwd: options.cwd, env: options.env });
+    if (input.provenance.canonical || options.canonical) {
+      if (!input.provenance.canonical) throw new Error(`Matrix ${input.matrixId} is not canonical`);
+      assertCanonicalSource(source);
+    }
+    if (source.available &&
+      (source.sourceRevision !== input.provenance.sourceRevision || source.sourceTree !== input.provenance.sourceTree)) {
+      throw new Error(`Matrix ${input.matrixId} does not match the current source revision`);
+    }
+    if (
+      input.provenance.nodeVersion !== process.version ||
+      input.provenance.platform !== process.platform ||
+      input.provenance.architecture !== process.arch
+    ) {
+      throw new Error(`Matrix ${input.matrixId} does not match the current runtime`);
+    }
+    const runningImage = options.imageDigest ?? options.env?.LAB_IMAGE_DIGEST ?? process.env.LAB_IMAGE_DIGEST;
+    if (input.provenance.imageDigest && !runningImage) {
+      throw new Error(`Matrix ${input.matrixId} requires its pinned worker image digest`);
+    }
+    if (input.provenance.imageDigest && input.provenance.imageDigest !== runningImage) {
+      throw new Error(`Matrix ${input.matrixId} does not match the current worker image`);
+    }
+    const fingerprints = matrixModelFingerprints(input, input.provenance.commandModelVersion);
+    if (
+      fingerprints.scenarioSetHash !== input.provenance.scenarioSetHash ||
+      fingerprints.policySetHash !== input.provenance.policySetHash ||
+      fingerprints.modelHash !== input.provenance.modelHash
+    ) {
+      throw new Error(`Matrix ${input.matrixId} does not match the current model, scenarios, or policies`);
+    }
+    return input;
+  }
+
+  const env = options.env ?? process.env;
+  const canonical = options.canonical ?? false;
+  const source = await captureGitSource({ cwd: options.cwd, env });
+  if (canonical) assertCanonicalSource(source);
+  const selectedScenarios = scenarios.filter((scenario) => input.scenarioIds.includes(scenario.scenarioId));
+  if (selectedScenarios.length !== input.scenarioIds.length || new Set(input.scenarioIds).size !== input.scenarioIds.length) {
+    const known = new Set(selectedScenarios.map((scenario) => scenario.scenarioId));
+    throw new Error(`Matrix scenarios must be known and unique: ${input.scenarioIds.find((scenarioId) => !known.has(scenarioId)) ?? "duplicate id"}`);
+  }
+  if (input.compositionIds.some((compositionId) => !compositions.includes(compositionId as UnitComposition)) ||
+      new Set(input.compositionIds).size !== input.compositionIds.length) {
+    throw new Error("Matrix compositions must be known and unique");
+  }
+  const commandModelVersion = options.commandModelVersion ?? "scenario-engine-v1";
+  const { scenarioSetHash, policySetHash, modelHash } = matrixModelFingerprints(input, commandModelVersion);
+  const unavailableReason = source.available ? null : source.reason;
+  const provenanceDraft: BuildProvenance = {
+    provenanceVersion: 1,
+    canonical,
+    repository: options.repository ?? env.LAB_REPOSITORY ?? "djcdevelopment/contextlandscape",
+    sourceRevision: source.available ? source.sourceRevision : `unavailable:${unavailableReason}`,
+    sourceTree: source.available ? source.sourceTree : `unavailable:${unavailableReason}`,
+    workspaceDirty: source.available ? source.workspaceDirty : true,
+    engineVersion: ENGINE_VERSION,
+    commandModelVersion,
+    contractVersion: 1,
+    modelHash,
+    scenarioSetHash,
+    policySetHash,
+    manifestHash: "unsealed",
+    nodeVersion: process.version,
+    platform: process.platform,
+    architecture: process.arch,
+    ...((options.imageDigest ?? env.LAB_IMAGE_DIGEST)
+      ? { imageDigest: options.imageDigest ?? env.LAB_IMAGE_DIGEST }
+      : {})
+  };
+  const draft = {
+    ...input,
+    schemaVersion: 2 as const,
+    provenance: provenanceDraft
+  };
+  const sealed = {
+    ...draft,
+    provenance: { ...provenanceDraft, manifestHash: hashManifest(draft) }
+  };
+  return SimulationMatrixV2Schema.parse(sealed);
+}
+
+export async function createExecutionMatrix(
+  options: Partial<LabOptions> = {},
+  provenance: ProvenanceOptions = {}
+): Promise<SimulationMatrixV2> {
+  return sealExecutionMatrix(createMatrix(options), {
+    ...provenance,
+    canonical: provenance.canonical ?? options.canonical ?? false
+  });
+}
+
+export function matrixProvenanceId(matrix: SimulationMatrix): string | null {
+  return matrix.schemaVersion === 2 ? sha256Value(matrix.provenance) : null;
+}
+
 export function runMatrix(matrix: SimulationMatrix, shardIndex: number, outputDir: string): SimulationRun[] {
+  if (matrix.engineVersion !== ENGINE_VERSION) {
+    throw new Error(`Matrix engine ${matrix.engineVersion} cannot run on engine ${ENGINE_VERSION}`);
+  }
+  if (matrix.schemaVersion === 2 && matrix.provenance.manifestHash !== hashManifest(matrix)) {
+    throw new Error(`Matrix ${matrix.matrixId} manifest hash mismatch`);
+  }
   const selectedScenarios = scenarios.filter((scenario) => matrix.scenarioIds.includes(scenario.scenarioId));
   const records: SimulationRun[] = [];
+  const provenanceId = matrixProvenanceId(matrix);
+  const manifestHash = matrix.schemaVersion === 2 ? matrix.provenance.manifestHash : null;
   let ordinal = 0;
   for (const scenario of selectedScenarios) {
       for (const compositionId of matrix.compositionIds as UnitComposition[]) {
@@ -189,6 +380,8 @@ export function runMatrix(matrix: SimulationMatrix, shardIndex: number, outputDi
             schemaVersion: 1,
             runId: `run-${matrix.matrixId}-${ordinal}`,
             matrixId: matrix.matrixId,
+            ...(provenanceId ? { provenanceId } : {}),
+            ...(manifestHash ? { manifestHash } : {}),
             scenarioId: scenario.scenarioId,
             scenarioVersion: scenario.version,
             engineVersion: result.manifest.engineVersion,
@@ -229,14 +422,59 @@ async function writeGzipLines(path: string, lines: string[]): Promise<void> {
   await once(output, "close");
 }
 
-export async function writeShard(matrix: SimulationMatrix, shardIndex: number, outputDir: string): Promise<string> {
-  const matrixDir = `${outputDir}/${matrix.matrixId}`;
+export function resolveMatrixDirectory(outputDir: string, matrixId: string): string {
+  const root = resolve(outputDir);
+  const target = resolve(root, matrixId);
+  const withinRoot = relative(root, target);
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(matrixId) || withinRoot.startsWith("..") || resolve(root, withinRoot) !== target) {
+    throw new Error(`Unsafe matrix id: ${matrixId}`);
+  }
+  return target;
+}
+
+async function readMatrixManifest(path: string): Promise<SimulationMatrix> {
+  return SimulationMatrixSchema.parse(JSON.parse(await readFile(path, "utf8")));
+}
+
+/** Write once, then require byte-equivalent canonical content from every shard. */
+export async function ensureMatrixManifest(matrix: SimulationMatrix, outputDir: string): Promise<string> {
+  const matrixDir = resolveMatrixDirectory(outputDir, matrix.matrixId);
   await mkdir(matrixDir, { recursive: true });
-  await writeFile(`${matrixDir}/manifest.json`, JSON.stringify(matrix, null, 2));
+  const path = resolve(matrixDir, "manifest.json");
+  try {
+    await writeFile(path, `${JSON.stringify(matrix, null, 2)}\n`, { flag: "wx" });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    const existing = await readMatrixManifest(path);
+    if (canonicalJson(existing) !== canonicalJson(matrix)) {
+      throw new Error(`Matrix ${matrix.matrixId} already has a different frozen manifest`);
+    }
+  }
+  return path;
+}
+
+export async function writeShard(matrix: SimulationMatrix, shardIndex: number, outputDir: string): Promise<string> {
+  if (!Number.isInteger(shardIndex) || shardIndex < 0 || shardIndex >= matrix.shardCount) {
+    throw new Error(`shard must be between 0 and ${matrix.shardCount - 1}`);
+  }
+  const matrixDir = resolveMatrixDirectory(outputDir, matrix.matrixId);
+  await ensureMatrixManifest(matrix, outputDir);
   const records = runMatrix(matrix, shardIndex, outputDir);
-  const shardPath = `${matrixDir}/shard-${String(shardIndex).padStart(4, "0")}.jsonl.gz`;
-  await writeGzipLines(shardPath, records.map((record) => JSON.stringify(record)));
-  await writeFile(`${matrixDir}/shard-${String(shardIndex).padStart(4, "0")}.complete`, `${records.length}\n`);
+  const stem = `shard-${String(shardIndex).padStart(4, "0")}`;
+  const shardPath = resolve(matrixDir, `${stem}.jsonl.gz`);
+  const partialPath = resolve(matrixDir, `${stem}.${process.pid}.${randomUUID()}.partial`);
+  await writeGzipLines(partialPath, records.map((record) => JSON.stringify(record)));
+  await rename(partialPath, shardPath);
+  const completion: ShardCompletion = {
+    schemaVersion: 1,
+    matrixId: matrix.matrixId,
+    shardIndex,
+    recordCount: records.length,
+    shardHash: await sha256File(shardPath),
+    manifestHash: matrix.schemaVersion === 2 ? matrix.provenance.manifestHash : null,
+    provenanceId: matrixProvenanceId(matrix)
+  };
+  await writeFile(resolve(matrixDir, `${stem}.complete`), `${JSON.stringify(completion, null, 2)}\n`);
   return shardPath;
 }
 
@@ -463,28 +701,180 @@ export function aggregateRuns(records: SimulationRun[]): AggregateReport {
   return accumulator.finish();
 }
 
-async function* streamReportRecords(matrixDir: string): AsyncGenerator<SimulationRun> {
-  const names = (await readdir(matrixDir)).filter((name) => name.endsWith(".jsonl.gz")).sort();
-  for (const name of names) {
+export type VerifiedMatrixArtifacts = {
+  matrix: SimulationMatrix;
+  matrixDir: string;
+  shardNames: string[];
+  completions: Map<string, ShardCompletion>;
+};
+
+function expectedShardRecordCount(matrix: SimulationMatrix, shardIndex: number): number {
+  const total = scenarios
+    .filter((scenario) => matrix.scenarioIds.includes(scenario.scenarioId))
+    .reduce((sum, scenario) => sum +
+      matrix.compositionIds.length *
+      tuningSets(scenario, matrix.tuningCount, matrix.tuningOverrides).length *
+      generatedPolicies(scenario, matrix.policyCount, matrix.policyOverrides).length *
+      matrix.runsPerCell, 0);
+  return shardIndex >= total ? 0 : Math.floor((total - 1 - shardIndex) / matrix.shardCount) + 1;
+}
+
+export async function verifyMatrixArtifacts(matrixDirInput: string): Promise<VerifiedMatrixArtifacts> {
+  const matrixDir = resolve(matrixDirInput);
+  const matrix = await readMatrixManifest(resolve(matrixDir, "manifest.json"));
+  if (matrix.schemaVersion === 2 && matrix.provenance.manifestHash !== hashManifest(matrix)) {
+    throw new Error(`Matrix ${matrix.matrixId} manifest hash mismatch`);
+  }
+  const names = await readdir(matrixDir);
+  const shardNames = names.filter((name) => /^shard-\d{4}\.jsonl\.gz$/.test(name)).sort();
+  const completions = new Map<string, ShardCompletion>();
+  if (matrix.schemaVersion === 1 && shardNames.length === 0) {
+    throw new Error(`Legacy matrix ${matrix.matrixId} has no shards`);
+  }
+  if (matrix.schemaVersion === 2) {
+    const expected = Array.from({ length: matrix.shardCount }, (_, index) => `shard-${String(index).padStart(4, "0")}.jsonl.gz`);
+    if (canonicalJson(shardNames) !== canonicalJson(expected)) {
+      throw new Error(`Matrix ${matrix.matrixId} does not have exactly ${matrix.shardCount} shards`);
+    }
+    const expectedProvenanceId = matrixProvenanceId(matrix);
+    for (let index = 0; index < matrix.shardCount; index += 1) {
+      const stem = `shard-${String(index).padStart(4, "0")}`;
+      const markerPath = resolve(matrixDir, `${stem}.complete`);
+      let marker: ShardCompletion;
+      try {
+        marker = JSON.parse(await readFile(markerPath, "utf8")) as ShardCompletion;
+      } catch {
+        throw new Error(`Matrix ${matrix.matrixId} has an invalid completion marker for shard ${index}`);
+      }
+      const shardPath = resolve(matrixDir, `${stem}.jsonl.gz`);
+      if (
+        marker.schemaVersion !== 1 ||
+        marker.matrixId !== matrix.matrixId ||
+        marker.shardIndex !== index ||
+        marker.recordCount !== expectedShardRecordCount(matrix, index) ||
+        marker.manifestHash !== matrix.provenance.manifestHash ||
+        marker.provenanceId !== expectedProvenanceId ||
+        marker.shardHash !== await sha256File(shardPath)
+      ) {
+        throw new Error(`Matrix ${matrix.matrixId} failed integrity checks for shard ${index}`);
+      }
+      completions.set(`${stem}.jsonl.gz`, marker);
+    }
+  }
+  return { matrix, matrixDir, shardNames, completions };
+}
+
+async function* streamReportRecords(artifacts: VerifiedMatrixArtifacts): AsyncGenerator<SimulationRun> {
+  const expectedProvenanceId = matrixProvenanceId(artifacts.matrix);
+  for (const name of artifacts.shardNames) {
+    let recordCount = 0;
     const lines = createInterface({
-      input: createReadStream(`${matrixDir}/${name}`).pipe(createGunzip()),
+      input: createReadStream(resolve(artifacts.matrixDir, name)).pipe(createGunzip()),
       crlfDelay: Infinity
     });
     for await (const line of lines) {
-      if (line) yield SimulationRunSchema.parse(JSON.parse(line));
+      if (!line) continue;
+      const record = SimulationRunSchema.parse(JSON.parse(line));
+      if (record.matrixId !== artifacts.matrix.matrixId || record.engineVersion !== artifacts.matrix.engineVersion) {
+        throw new Error(`Shard ${name} contains a record from a different matrix or engine`);
+      }
+      if (
+        artifacts.matrix.schemaVersion === 2 &&
+        (record.manifestHash !== artifacts.matrix.provenance.manifestHash || record.provenanceId !== expectedProvenanceId)
+      ) {
+        throw new Error(`Shard ${name} contains a record with different provenance`);
+      }
+      recordCount += 1;
+      yield record;
+    }
+    const completion = artifacts.completions.get(name);
+    if (completion && completion.recordCount !== recordCount) {
+      throw new Error(`Shard ${name} record count does not match its completion marker`);
     }
   }
 }
 
 export async function readReportRecords(matrixDir: string): Promise<SimulationRun[]> {
   const records: SimulationRun[] = [];
-  for await (const record of streamReportRecords(matrixDir)) records.push(record);
+  const artifacts = await verifyMatrixArtifacts(matrixDir);
+  for await (const record of streamReportRecords(artifacts)) records.push(record);
   return records;
 }
 
+async function writeAtomicJson(path: string, value: unknown): Promise<void> {
+  const temporaryPath = `${path}.${process.pid}.${randomUUID()}.tmp`;
+  await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`);
+  await rename(temporaryPath, path);
+}
+
+async function writeImmutableJson(path: string, value: unknown): Promise<void> {
+  try {
+    await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, { flag: "wx" });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    const existing = JSON.parse(await readFile(path, "utf8"));
+    if (canonicalJson(existing) !== canonicalJson(value)) {
+      throw new Error(`Historical evidence already exists with different content: ${path}`);
+    }
+  }
+}
+
+async function writeReportSidecars(
+  artifacts: VerifiedMatrixArtifacts,
+  reportDocument: Record<string, unknown> & { reportHash: string; recommendations: unknown[]; runs: number; generatedAt: string }
+): Promise<void> {
+  const manifestHash = artifacts.matrix.schemaVersion === 2 ? artifacts.matrix.provenance.manifestHash : null;
+  const provenance = artifacts.matrix.schemaVersion === 2 ? artifacts.matrix.provenance : null;
+  await writeAtomicJson(resolve(artifacts.matrixDir, "candidate-patches.json"), {
+    schemaVersion: 2,
+    matrixId: artifacts.matrix.matrixId,
+    manifestHash,
+    provenance,
+    sourceReportHash: reportDocument.reportHash,
+    recommendations: reportDocument.recommendations
+  });
+  const ledgerEntry: ExperimentLedgerEntry = {
+    schemaVersion: 1,
+    matrixId: artifacts.matrix.matrixId,
+    createdAt: artifacts.matrix.createdAt,
+    completedAt: reportDocument.generatedAt,
+    stage: "exploratory",
+    sourceRevision: provenance?.sourceRevision ?? "unavailable:legacy-v1",
+    modelHash: provenance?.modelHash ?? "unavailable:legacy-v1",
+    manifestHash: manifestHash ?? "unavailable:legacy-v1",
+    reportHash: reportDocument.reportHash,
+    manifestPath: resolve(artifacts.matrixDir, "manifest.json"),
+    reportPath: resolve(artifacts.matrixDir, "report.json"),
+    runs: reportDocument.runs
+  };
+  await writeAtomicJson(resolve(artifacts.matrixDir, "provenance-record.json"), ledgerEntry);
+}
+
 export async function writeReport(matrixDir: string): Promise<string> {
+  const artifacts = await verifyMatrixArtifacts(matrixDir);
+  const path = resolve(artifacts.matrixDir, "report.json");
+  try {
+    const existing = JSON.parse(await readFile(path, "utf8")) as Record<string, unknown>;
+    if (artifacts.matrix.schemaVersion === 1) return path;
+    const { reportHash, ...hashable } = existing;
+    if (
+      typeof reportHash === "string" &&
+      reportHash === sha256Value(hashable) &&
+      existing.manifestHash === artifacts.matrix.provenance.manifestHash &&
+      existing.runs === [...artifacts.completions.values()].reduce((sum, marker) => sum + marker.recordCount, 0) &&
+      canonicalJson(existing.shards) === canonicalJson([...artifacts.completions.values()])
+    ) {
+      await writeReportSidecars(artifacts, existing as Record<string, unknown> & {
+        reportHash: string; recommendations: unknown[]; runs: number; generatedAt: string;
+      });
+      return path;
+    }
+    throw new Error(`Matrix ${artifacts.matrix.matrixId} already has a report that failed integrity checks`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
   const accumulator = createRunAccumulator();
-  for await (const record of streamReportRecords(matrixDir)) accumulator.add(record);
+  for await (const record of streamReportRecords(artifacts)) accumulator.add(record);
   const report = accumulator.finish();
   const recommendations = [...new Set(report.cells.map((cell) => `${cell.scenarioId}|${cell.tuningId}`))].map((key) => {
     const [scenarioId, tuningId] = key.split("|");
@@ -498,8 +888,293 @@ export async function writeReport(matrixDir: string): Promise<string> {
     const dominancePenalty = Math.max(0, Math.max(...subset.map((cell) => cell.winRate), 0) - 0.95);
     return { scenarioId, tuningId, changes: tuningChanges(tuningId), score: Number((lessonSeparation + viablePolicies * 0.05 - dominancePenalty).toFixed(3)), lessonSeparation: Number(lessonSeparation.toFixed(3)), viablePolicies };
   }).sort((a, b) => b.score - a.score);
-  const path = `${matrixDir}/report.json`;
-  await writeFile(path, JSON.stringify({ generatedAt: new Date().toISOString(), runs: accumulator.stats.runs, ...report, recommendations }, null, 2));
-  await writeFile(`${matrixDir}/candidate-patches.json`, JSON.stringify({ schemaVersion: 1, matrixId: accumulator.stats.matrixId, recommendations }, null, 2));
+  const generatedAt = new Date().toISOString();
+  const reportDraft = {
+    schemaVersion: artifacts.matrix.schemaVersion === 2 ? 2 : 1,
+    matrixId: artifacts.matrix.matrixId,
+    engineVersion: artifacts.matrix.engineVersion,
+    manifestHash: artifacts.matrix.schemaVersion === 2 ? artifacts.matrix.provenance.manifestHash : null,
+    provenance: artifacts.matrix.schemaVersion === 2 ? artifacts.matrix.provenance : null,
+    generatedAt,
+    runs: accumulator.stats.runs,
+    shards: [...artifacts.completions.values()],
+    ...report,
+    recommendations
+  };
+  const reportHash = sha256Value(reportDraft);
+  const reportDocument = { ...reportDraft, reportHash };
+  await writeReportSidecars(artifacts, reportDocument);
+  await writeAtomicJson(path, reportDocument);
   return path;
+}
+
+export type MatrixAudit = {
+  matrixId: string;
+  status: "exact" | "source-mismatch" | "execution-mismatch" | "noncanonical" | "legacy-unverifiable" | "integrity-failed" | "incomplete";
+  artifactIntegrity: "verified" | "unverifiable" | "failed";
+  sourceMatch: boolean | null;
+  modelMatch: boolean | null;
+  executionMatch: boolean | null;
+  shardIntegrity: "verified" | "unavailable" | "failed";
+  reportIntegrity: "verified" | "missing" | "failed" | "unverifiable";
+  issues: string[];
+};
+
+export async function auditMatrix(matrixDirInput: string, options: ProvenanceOptions = {}): Promise<MatrixAudit> {
+  const matrixDir = resolve(matrixDirInput);
+  let matrix: SimulationMatrix;
+  try {
+    matrix = await readMatrixManifest(resolve(matrixDir, "manifest.json"));
+    if (matrix.schemaVersion === 2 && matrix.provenance.manifestHash !== hashManifest(matrix)) {
+      throw new Error(`Matrix ${matrix.matrixId} manifest hash mismatch`);
+    }
+  } catch (error) {
+    let matrixId = "unknown";
+    try { matrixId = (await readMatrixManifest(resolve(matrixDir, "manifest.json"))).matrixId; } catch { /* reported below */ }
+    return {
+      matrixId,
+      status: "integrity-failed",
+      artifactIntegrity: "failed",
+      sourceMatch: null,
+      modelMatch: null,
+      executionMatch: null,
+      shardIntegrity: "failed",
+      reportIntegrity: "unverifiable",
+      issues: [error instanceof Error ? error.message : String(error)]
+    };
+  }
+
+  if (matrix.schemaVersion === 1) {
+    return {
+      matrixId: matrix.matrixId,
+      status: "legacy-unverifiable",
+      artifactIntegrity: "unverifiable",
+      sourceMatch: null,
+      modelMatch: null,
+      executionMatch: null,
+      shardIntegrity: "unavailable",
+      reportIntegrity: "unverifiable",
+      issues: ["Legacy v1 manifests do not identify an exact source revision or content-addressed artifacts"]
+    };
+  }
+
+  const issues: string[] = [];
+  const source = await captureGitSource({ cwd: options.cwd, env: options.env });
+  const sourceMatch = source.available &&
+    !source.workspaceDirty &&
+    source.sourceRevision === matrix.provenance.sourceRevision &&
+    source.sourceTree === matrix.provenance.sourceTree;
+  if (!sourceMatch) issues.push(source.available ? "Current source does not exactly match the matrix source" : `Current source is unavailable (${source.reason})`);
+  const fingerprints = matrixModelFingerprints(matrix, matrix.provenance.commandModelVersion);
+  const modelMatch = fingerprints.scenarioSetHash === matrix.provenance.scenarioSetHash &&
+    fingerprints.policySetHash === matrix.provenance.policySetHash &&
+    fingerprints.modelHash === matrix.provenance.modelHash;
+  if (!modelMatch) issues.push("Current model, scenarios, or policy set does not match the matrix");
+  const runningImage = options.imageDigest ?? options.env?.LAB_IMAGE_DIGEST ?? process.env.LAB_IMAGE_DIGEST;
+  const executionMatch = matrix.provenance.nodeVersion === process.version &&
+    matrix.provenance.platform === process.platform &&
+    matrix.provenance.architecture === process.arch &&
+    (!matrix.provenance.imageDigest || runningImage === matrix.provenance.imageDigest);
+  if (!executionMatch) issues.push("Current runtime or worker image does not match the matrix execution environment");
+
+  let reportIntegrity: MatrixAudit["reportIntegrity"] = "missing";
+  let report: Record<string, unknown> | null = null;
+  try {
+    report = JSON.parse(await readFile(resolve(matrixDir, "report.json"), "utf8")) as Record<string, unknown>;
+    const { reportHash, ...hashable } = report;
+    const embeddedShards = Array.isArray(report.shards) ? report.shards as ShardCompletion[] : [];
+    const embeddedRuns = embeddedShards.reduce((sum, marker) => sum + (Number.isInteger(marker.recordCount) ? marker.recordCount : 0), 0);
+    reportIntegrity = typeof reportHash === "string" && reportHash === sha256Value(hashable) &&
+      report.manifestHash === matrix.provenance.manifestHash &&
+      canonicalJson(report.provenance) === canonicalJson(matrix.provenance) &&
+      embeddedShards.length === matrix.shardCount &&
+      report.runs === embeddedRuns
+      ? "verified" : "failed";
+    if (reportIntegrity === "failed") issues.push("Aggregate report failed its content hash or manifest link");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      reportIntegrity = "failed";
+      issues.push("Aggregate report could not be parsed");
+    }
+  }
+
+  let shardIntegrity: MatrixAudit["shardIntegrity"] = "unavailable";
+  const shardNames = (await readdir(matrixDir)).filter((name) => /^shard-\d{4}\.jsonl\.gz$/.test(name));
+  if (shardNames.length > 0) {
+    try {
+      const artifacts = await verifyMatrixArtifacts(matrixDir);
+      for await (const _record of streamReportRecords(artifacts)) { /* validation only */ }
+      if (report && canonicalJson(report.shards) !== canonicalJson([...artifacts.completions.values()])) {
+        throw new Error("Aggregate report shard metadata does not match retained shard artifacts");
+      }
+      shardIntegrity = "verified";
+    } catch (error) {
+      shardIntegrity = "failed";
+      issues.push(error instanceof Error ? error.message : String(error));
+    }
+  } else {
+    issues.push("Raw shards are not retained; manifest and compact report remain verifiable");
+  }
+
+  const artifactIntegrity = reportIntegrity === "failed" || shardIntegrity === "failed" ? "failed" as const : "verified" as const;
+  const status = artifactIntegrity === "failed"
+    ? "integrity-failed"
+    : reportIntegrity === "missing"
+      ? "incomplete"
+    : !matrix.provenance.canonical
+      ? "noncanonical"
+      : !executionMatch
+        ? "execution-mismatch"
+      : sourceMatch && modelMatch
+        ? "exact"
+        : "source-mismatch";
+  return {
+    matrixId: matrix.matrixId,
+    status,
+    artifactIntegrity,
+    sourceMatch,
+    modelMatch,
+    executionMatch,
+    shardIntegrity,
+    reportIntegrity,
+    issues
+  };
+}
+
+export async function compareMatrices(leftDir: string, rightDir: string) {
+  const [leftAudit, rightAudit] = await Promise.all([auditMatrix(leftDir), auditMatrix(rightDir)]);
+  if (leftAudit.artifactIntegrity === "failed" || leftAudit.reportIntegrity === "failed") {
+    throw new Error(`Left matrix failed integrity checks: ${leftAudit.issues.join("; ")}`);
+  }
+  if (rightAudit.artifactIntegrity === "failed" || rightAudit.reportIntegrity === "failed") {
+    throw new Error(`Right matrix failed integrity checks: ${rightAudit.issues.join("; ")}`);
+  }
+  const leftMatrix = await readMatrixManifest(resolve(leftDir, "manifest.json"));
+  const rightMatrix = await readMatrixManifest(resolve(rightDir, "manifest.json"));
+  const loadReport = async (directory: string) => JSON.parse(await readFile(resolve(directory, "report.json"), "utf8")) as {
+    cells?: Array<{ scenarioId: string; compositionId: string; tuningId: string; policyId: string; winRate: number; averageProgress: number }>;
+  };
+  const [leftReport, rightReport] = await Promise.all([loadReport(leftDir), loadReport(rightDir)]);
+  const key = (cell: { scenarioId: string; compositionId: string; tuningId: string; policyId: string }) =>
+    `${cell.scenarioId}|${cell.compositionId}|${cell.tuningId}|${cell.policyId}`;
+  const leftCells = new Map((leftReport.cells ?? []).map((cell) => [key(cell), cell]));
+  const rightCells = new Map((rightReport.cells ?? []).map((cell) => [key(cell), cell]));
+  const allKeys = [...new Set([...leftCells.keys(), ...rightCells.keys()])].sort();
+  return {
+    leftMatrixId: leftMatrix.matrixId,
+    rightMatrixId: rightMatrix.matrixId,
+    audits: { left: leftAudit, right: rightAudit },
+    build: {
+      leftEngineVersion: leftMatrix.engineVersion,
+      rightEngineVersion: rightMatrix.engineVersion,
+      leftSourceRevision: leftMatrix.schemaVersion === 2 ? leftMatrix.provenance.sourceRevision : null,
+      rightSourceRevision: rightMatrix.schemaVersion === 2 ? rightMatrix.provenance.sourceRevision : null,
+      modelChanged: leftMatrix.schemaVersion !== 2 || rightMatrix.schemaVersion !== 2
+        ? null
+        : leftMatrix.provenance.modelHash !== rightMatrix.provenance.modelHash,
+      scenarioSetChanged: leftMatrix.schemaVersion !== 2 || rightMatrix.schemaVersion !== 2
+        ? null
+        : leftMatrix.provenance.scenarioSetHash !== rightMatrix.provenance.scenarioSetHash,
+      policySetChanged: leftMatrix.schemaVersion !== 2 || rightMatrix.schemaVersion !== 2
+        ? null
+        : leftMatrix.provenance.policySetHash !== rightMatrix.provenance.policySetHash
+    },
+    dimensions: {
+      scenarios: [leftMatrix.scenarioIds, rightMatrix.scenarioIds],
+      compositions: [leftMatrix.compositionIds, rightMatrix.compositionIds],
+      policyCount: [leftMatrix.policyCount, rightMatrix.policyCount],
+      tuningCount: [leftMatrix.tuningCount, rightMatrix.tuningCount],
+      runsPerCell: [leftMatrix.runsPerCell, rightMatrix.runsPerCell],
+      seedStart: [leftMatrix.seedStart, rightMatrix.seedStart]
+    },
+    cells: allKeys.map((cellKey) => {
+      const left = leftCells.get(cellKey);
+      const right = rightCells.get(cellKey);
+      return {
+        cellKey,
+        status: left && right ? "shared" : left ? "removed" : "added",
+        leftWinRate: left?.winRate ?? null,
+        rightWinRate: right?.winRate ?? null,
+        winRateDelta: left && right ? Number((right.winRate - left.winRate).toFixed(3)) : null,
+        progressDelta: left && right ? Number((right.averageProgress - left.averageProgress).toFixed(2)) : null
+      };
+    })
+  };
+}
+
+export type RecordExperimentOptions = {
+  stage?: ExperimentLedgerEntry["stage"];
+  parentMatrixId?: string;
+  hypothesis?: string;
+  disposition?: string;
+  allowNoncanonical?: boolean;
+};
+
+/** Explicitly promote a completed matrix's compact provenance record into the tracked ledger. */
+export async function recordExperiment(
+  matrixDirInput: string,
+  ledgerPathInput: string,
+  options: RecordExperimentOptions = {}
+): Promise<ExperimentLedgerEntry> {
+  const matrixDir = resolve(matrixDirInput);
+  const audit = await auditMatrix(matrixDir);
+  if (audit.artifactIntegrity !== "verified" || audit.reportIntegrity !== "verified") {
+    throw new Error(`Cannot record matrix ${audit.matrixId}: ${audit.status}`);
+  }
+  const artifacts = await verifyMatrixArtifacts(matrixDir);
+  if (artifacts.matrix.schemaVersion !== 2) throw new Error(`Cannot record legacy matrix ${artifacts.matrix.matrixId}`);
+  if (!artifacts.matrix.provenance.canonical && !options.allowNoncanonical) {
+    throw new Error(`Cannot record noncanonical matrix ${artifacts.matrix.matrixId} without an explicit override`);
+  }
+  const report = JSON.parse(await readFile(resolve(matrixDir, "report.json"), "utf8")) as {
+    generatedAt: string; reportHash: string; runs: number;
+  };
+  const ledgerPath = resolve(ledgerPathInput);
+  const archiveDir = resolveMatrixDirectory(dirname(ledgerPath), artifacts.matrix.matrixId);
+  const archivedManifestPath = resolve(archiveDir, "manifest.json");
+  const archivedReportPath = resolve(archiveDir, "report.json");
+  const entry = ExperimentLedgerEntrySchema.parse({
+    schemaVersion: 1,
+    matrixId: artifacts.matrix.matrixId,
+    createdAt: artifacts.matrix.createdAt,
+    completedAt: report.generatedAt,
+    stage: options.stage ?? "exploratory",
+    ...(options.parentMatrixId ? { parentMatrixId: options.parentMatrixId } : {}),
+    ...(options.hypothesis ? { hypothesis: options.hypothesis } : {}),
+    ...(options.disposition ? { disposition: options.disposition } : {}),
+    sourceRevision: artifacts.matrix.provenance.sourceRevision,
+    modelHash: artifacts.matrix.provenance.modelHash,
+    manifestHash: artifacts.matrix.provenance.manifestHash,
+    reportHash: report.reportHash,
+    manifestPath: relative(dirname(ledgerPath), archivedManifestPath).replaceAll("\\", "/"),
+    reportPath: relative(dirname(ledgerPath), archivedReportPath).replaceAll("\\", "/"),
+    runs: report.runs
+  });
+  let ledger: ExperimentLedger = { schemaVersion: 1, experiments: [] };
+  try {
+    ledger = ExperimentLedgerSchema.parse(JSON.parse(await readFile(ledgerPath, "utf8")));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  const existing = ledger.experiments.find((candidate) => candidate.matrixId === entry.matrixId);
+  if (existing && (existing.manifestHash !== entry.manifestHash || existing.reportHash !== entry.reportHash)) {
+    throw new Error(`Ledger already contains a conflicting record for ${entry.matrixId}`);
+  }
+  await mkdir(archiveDir, { recursive: true });
+  await writeImmutableJson(archivedManifestPath, artifacts.matrix);
+  await writeImmutableJson(archivedReportPath, report);
+  try {
+    const candidates = JSON.parse(await readFile(resolve(matrixDir, "candidate-patches.json"), "utf8"));
+    await writeImmutableJson(resolve(archiveDir, "candidate-patches.json"), candidates);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  const experiments = [...ledger.experiments.filter((candidate) => candidate.matrixId !== entry.matrixId), entry]
+    .sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.matrixId.localeCompare(right.matrixId));
+  await mkdir(dirname(ledgerPath), { recursive: true });
+  const temporaryPath = `${ledgerPath}.${process.pid}.tmp`;
+  const nextLedger = ExperimentLedgerSchema.parse({ schemaVersion: 1, experiments });
+  await writeFile(temporaryPath, `${JSON.stringify(nextLedger, null, 2)}\n`);
+  await rename(temporaryPath, ledgerPath);
+  return entry;
 }
