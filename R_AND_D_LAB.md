@@ -138,6 +138,19 @@ records passed a 32,768-run module-discrimination suite and a 256,000-run cross-
 new standard screen was launched. The audit reached every required mechanic, replayed 64 fixed cells
 exactly, and remained below its preregistered draw and round-limit thresholds.
 
+The corrected screen then completed all 9,216,000 enriched records over 40 rule models, 6,400 causal
+commander programs, 57,600 oriented edges, and four common seeds. The
+[corrected assessment](data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md) found 555.17
+softmax-effective commanders, 7.20 effective compositions, 2.09% draws, complete required-mechanic
+reachability, and strong rule×doctrine interactions. It also found evidence that pooled summaries hide
+important structure: exact reversals averaged 0.1563 absolute seat effect, self-play reached 10.57%
+draws and 16.42% round-limit terminals, and every model had at least one sparse 8/8 commander maximum.
+Rows 22, 8, 25, 1, 29, and 15 therefore advance only to the hash-bound
+[causal-refinement plan](data/lab/attention-v2-corrected-shape-screen-analysis/NEXT_CAMPAIGN.md). The set
+includes an explicit counterplay-collapse boundary comparator; none of the six is a promoted survivor.
+The 5.407 GiB corrected evidence ZIP contains the probe, audit, raw matrix, compact analysis, charts, and
+next plan; all 42 restored files passed SHA-256 verification before the online matrix was removed.
+
 For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 
 To fan one matrix out across eight Docker workers and automatically aggregate the result:

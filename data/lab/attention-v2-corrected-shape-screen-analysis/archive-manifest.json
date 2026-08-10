@@ -1,0 +1,271 @@
+{
+    "schemaVersion":  1,
+    "archiveKind":  "attention-v2-corrected-causal-shape-screen",
+    "planId":  "attention-v2-landscape-standard-957a7ac539e236a0f1387946",
+    "planHash":  "sha256:c10c3bec48175b897947618a818105f7c5a4dda41d586510afe2872cac25c542",
+    "completionReportHash":  "sha256:9ae18a15408a2ec6272a18efba74d1b64d03b570e605b6d81a3cd10a83702769",
+    "analysisHash":  "sha256:9e92787ff92b804fb7facc67b46ad9a9b877a5e8ef569ec3070bc9a52322cb9b",
+    "probeReportHash":  "sha256:89babb1eb4cd5614ca76662e6971b5591f74028608828dcb46fe60d5dd7096df",
+    "auditReportHash":  "sha256:37776820c602f99469e1396ea30c6942be4a541a0885da040e65006e81fd40bd",
+    "observedRuns":  9216000,
+    "preflightRuns":  288768,
+    "nextStageSelectionEligible":  true,
+    "finalSurvivorSelectionEligible":  false,
+    "provisionalCandidateRows":  [
+                                     22,
+                                     8,
+                                     25,
+                                     1,
+                                     29,
+                                     15
+                                 ],
+    "files":  [
+                  {
+                      "path":  "data/lab/attention-v2-audit-7a29d6caab84785026db10fe/manifest.json",
+                      "bytes":  1277,
+                      "sha256":  "sha256:75f759ab0073b5145245cdae16931ade03a0ab7cdae8c0579f0ff4f8b0a239ab",
+                      "description":  "mechanic reachability, attribution, and replay audit evidence"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-audit-7a29d6caab84785026db10fe/report.json",
+                      "bytes":  60219,
+                      "sha256":  "sha256:2327696c6b10b3f04f83d2688fd8f6035591648fb5010326e64125c0b898f132",
+                      "description":  "mechanic reachability, attribution, and replay audit evidence"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-audit-7a29d6caab84785026db10fe/runs.jsonl.gz",
+                      "bytes":  69069535,
+                      "sha256":  "sha256:6f7c1ffb3c1dea02e171541a3fe5bf7385f759d6753f77a771270b464b33ec81",
+                      "description":  "mechanic reachability, attribution, and replay audit evidence"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/01-causal-evidence.png",
+                      "bytes":  407853,
+                      "sha256":  "sha256:feb387353bd63cadc2f71ea7199c936320a2c5751edaabf51d86d7e2f70b6179",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/01-causal-evidence.svg",
+                      "bytes":  5509,
+                      "sha256":  "sha256:4680d515aabf03870d15568d8e3ebe4c2e73a89598ca5d08389ec11d141850b8",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/02-model-frontier.png",
+                      "bytes":  379208,
+                      "sha256":  "sha256:14d803e38287eb94eaf6055328146676009ff896cc449a41cb3db4380b5a6414",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/02-model-frontier.svg",
+                      "bytes":  10041,
+                      "sha256":  "sha256:45cac7679e0e7481ee896f0aa6a314a90662927eb841a3c1b22ce266efc0e93a",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/03-module-landscape.png",
+                      "bytes":  875121,
+                      "sha256":  "sha256:48f12de88a529eb76521734db403acf80102a2d8bb867973b7d1b1c1d0df8c55",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/03-module-landscape.svg",
+                      "bytes":  17070,
+                      "sha256":  "sha256:b42fb25b9a7c6a36c444da6d767bc5f831abbff61edad3d2a0bd5ebea3f8ac45",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/04-counterplay-topology.png",
+                      "bytes":  421771,
+                      "sha256":  "sha256:b8aaad7963ce20e1c1bcb4b79b7ee7af3dd13bf887bc54569647aac83d6367ee",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/04-counterplay-topology.svg",
+                      "bytes":  8799,
+                      "sha256":  "sha256:154908df84ec38bf849866d9cd8726c6e57ad2103c1c471b0382644da110250e",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/05-mechanic-reachability.png",
+                      "bytes":  415914,
+                      "sha256":  "sha256:8bb2666f0f3677ad9089bd0ae2230db497923ad5be3d9c278bfd44cda549e7a9",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/05-mechanic-reachability.svg",
+                      "bytes":  4814,
+                      "sha256":  "sha256:d8c68ef9e12c33d8269ce3a5247bcc34646d2f068b338754db16801854d080fc",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/06-storage-projection.png",
+                      "bytes":  405286,
+                      "sha256":  "sha256:a595756ffd51fccc3b68a019e48466399b595fe662bff8195ecbb8304a9ba7a6",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/06-storage-projection.svg",
+                      "bytes":  3260,
+                      "sha256":  "sha256:02b4a3190ed9a44b18d45adc45d1aa6be5800ed90630ecc6e40aaae6e43c356e",
+                      "description":  "human-readable evidence visualization"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/ARCHIVE_README.md",
+                      "bytes":  1877,
+                      "sha256":  "sha256:34d656050291bd0ec1e4cde238fc05b84ea7a049d3359ab0b436bb1c8be688e3",
+                      "description":  "compact assessment documentation"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/assessment.json",
+                      "bytes":  9873905,
+                      "sha256":  "sha256:13c1ceb5643effc16f0288a1c2a635597143b95f278b245b6b31d6c838b126ca",
+                      "description":  "machine-readable statistical assessment and candidate frontier"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md",
+                      "bytes":  2804,
+                      "sha256":  "sha256:0fd259b2eea24f9e8e1ca24e7ae7100412a90f81d727b1790a4a1a0f8ac5e9f6",
+                      "description":  "compact assessment documentation"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-corrected-shape-screen-analysis/NEXT_CAMPAIGN.md",
+                      "bytes":  4746,
+                      "sha256":  "sha256:35100d3de7dce436ec42d0b88c8aa55e7cd72247320a01b8d9e475f9f48a2fed",
+                      "description":  "hash-bound causal-refinement plan"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/launch-evidence.json",
+                      "bytes":  1697,
+                      "sha256":  "sha256:5b830c4e89992f38ae0299245608d456bb89fc6413f82e51b813361c3e1b3682",
+                      "description":  "source, image, calibration, probe, and audit launch binding"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/manifest.json",
+                      "bytes":  18973,
+                      "sha256":  "sha256:2826cba2d778ce9caf16de2d7e3da610d4664e257ae97a378a2c85d91093bb6d",
+                      "description":  "corrected campaign manifest or completion report"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/report.json",
+                      "bytes":  4097,
+                      "sha256":  "sha256:9eb306aac1f303f967364c297827aec808f4ae256d693f8b9d4be81d4ccb23f3",
+                      "description":  "corrected campaign manifest or completion report"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0000.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:4a30f91f3c70715dff53a4de953adf11b6b4d44cd8c0c56c34899ba15d16e01e",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0000.jsonl.gz",
+                      "bytes":  717617899,
+                      "sha256":  "sha256:7f411c3e9e360e8b8ec7ca58f92213bd1f523e1f1a3d413072bb7b1e601d256d",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0001.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:ac709acfc5f8f0accc2dc6b1c6738442fc5f062673af724fa62b9c50d06e80fd",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0001.jsonl.gz",
+                      "bytes":  717642392,
+                      "sha256":  "sha256:910049a4a6fed5c5e00fe69a39f461e45ff0b1f625f5413d7d7e435e6be06829",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0002.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:2adf2400622c4eab54629159d1984988efb1f1b8b9e2a8bd91282a8b14a9a135",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0002.jsonl.gz",
+                      "bytes":  717579265,
+                      "sha256":  "sha256:97ec889a5773153cfb818ca308902e16befc0c096d880d338dc054431f83bc71",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0003.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:59a1c119c93416836e40dcd55bf4ae989c26680057a31b11b962e08d11f7c752",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0003.jsonl.gz",
+                      "bytes":  717593109,
+                      "sha256":  "sha256:8ff58261610f8074460d4cdd9bdd80854dd29bbd25e91cbf567fce95d6bea970",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0004.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:e672a0ae09ea592636b29ea73c611e2b0eabc50396816bd6719bd68f6978ce87",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0004.jsonl.gz",
+                      "bytes":  717675162,
+                      "sha256":  "sha256:2a8bbfd92b20251394b809867ffeb3808eea0e293f2dbcf97074d0ad29d9cd63",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0005.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:07de2c846853381a950ab3f7ed8bf6e14e964793bfb7bd81498ea68bf2e3ad37",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0005.jsonl.gz",
+                      "bytes":  717635276,
+                      "sha256":  "sha256:0ef0885464961135dfb1bac03c5476994081c4467a461a0aa33eb9cec987d8a2",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0006.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:4cc1ad5b5a3fa567697f4b18b2766821e196f5f82d439b7277954eb85f57ca49",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0006.jsonl.gz",
+                      "bytes":  717667134,
+                      "sha256":  "sha256:aaf51b65e9c0d8905bbba04686128d258637ac4fd62c40f22d5151b9114768ec",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0007.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:55526238f75d617ceea624b9e62c14dd5161d99838faffacf96602a2841251ed",
+                      "description":  "shard completion marker with independent digest"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-957a7ac539e236a0f1387946/shard-0007.jsonl.gz",
+                      "bytes":  717628084,
+                      "sha256":  "sha256:bb2e14e81e6840da81ed29ccfd56ca1b44865866ff74dfa2f352a3cf16ac1cb1",
+                      "description":  "enriched corrected campaign records (gzip JSONL)"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-probe-285268036f1a53890bb33e1d/manifest.json",
+                      "bytes":  1208,
+                      "sha256":  "sha256:a6bb37a1b6de81ff740e20ae0ab5d4d0158282532f1ea951dae56b655ba1758d",
+                      "description":  "compiler and behavioral-distinctness probe evidence"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-probe-285268036f1a53890bb33e1d/report.json",
+                      "bytes":  47755,
+                      "sha256":  "sha256:2c1f15ad83ffb624b5701557fc5f6f54dee147c352f16494b1804ff477aae033",
+                      "description":  "compiler and behavioral-distinctness probe evidence"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-probe-285268036f1a53890bb33e1d/runs.jsonl.gz",
+                      "bytes":  7231033,
+                      "sha256":  "sha256:5a8b75a899232b6dbc3febeb390365b735c25eb17e82339ad8268f68d457d736",
+                      "description":  "compiler and behavioral-distinctness probe evidence"
+                  }
+              ],
+    "manifestHash":  "sha256:53573544da34d81039b8e1b7ee69fa7e65d95d471c35b60a50cea5bbb5b7216b"
+}

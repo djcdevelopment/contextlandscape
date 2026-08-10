@@ -1,7 +1,7 @@
 # Attention v2 Corrected Shape-Screen Plan
 
 Decision date: 2026-08-09  
-Status: preflights passed; corrected shape screen launching  
+Status: complete; valid train-screen evidence; six rows advance provisionally to causal refinement
 Supersedes the selection use of plan `attention-v2-landscape-standard-6d06365b0ff689e8ec24f773`; that run remains immutable integrity-only evidence.
 
 ## Decision
@@ -142,7 +142,7 @@ Advance no more than six model families. A model remains ineligible unless all o
 
 ## Artifact and capacity policy
 
-The completed screen used 1.786 GiB for gzip shards. At the same density, the full 30,008,992-run standard campaign projects to 5.816 GiB; provision **7.27 GiB per campaign** with a 25% margin. Provision approximately 72.7 GiB for 10 campaigns, 181.8 GiB for 25, and 363.5 GiB for 50.
+The corrected enriched screen used 5.347 GiB for gzip shards. At the measured density, the full 30,008,992-run standard campaign projects to 17.410 GiB; provision **21.763 GiB per campaign** with a 25% margin. Provision approximately 217.63 GiB for 10 campaigns, 544.06 GiB for 25, and 1,088.13 GiB for 50. These observed projections supersede the identity-only run's lower-density estimates.
 
 Raw shards are retained only through a verified portable archive containing the manifest, completion report, analysis, charts, and checksums. Compact assessments remain directly readable in the repository. Before raw local shards are removed, perform a full test extraction and checksum every restored file.
 
@@ -164,4 +164,14 @@ Both preregistered preflights passed on 2026-08-09 (America/Los_Angeles):
 - Cross-profile audit `attention-v2-audit-7a29d6caab84785026db10fe`: 256,000/256,000 runs, all required mechanics reached, 64/64 exact replays, zero attribution or common-stream mismatches, 2.98125% draws, and 5.56289% round-limit terminals. Report hash `sha256:37776820c602f99469e1396ea30c6942be4a541a0885da040e65006e81fd40bd`.
 - Exact-plan calibration: 8,192 enriched records compressed to 4,985,910 bytes (608.63 bytes/run), projecting 5.22 GiB for the 9,216,000-run screen and 6.53 GiB with the 25% margin. The launch volume had 14.46 GiB free.
 
-The frozen corrected screen is `attention-v2-landscape-standard-957a7ac539e236a0f1387946`, plan hash `sha256:c10c3bec48175b897947618a818105f7c5a4dda41d586510afe2872cac25c542`, using seeds 30,000–30,003 and eight resumable shards.
+The frozen corrected screen is `attention-v2-landscape-standard-957a7ac539e236a0f1387946`, plan hash `sha256:c10c3bec48175b897947618a818105f7c5a4dda41d586510afe2872cac25c542`, using seeds 30,000–30,003 and eight resumable shards. It completed 9,216,000/9,216,000 records with completion report `sha256:9ae18a15408a2ec6272a18efba74d1b64d03b570e605b6d81a3cd10a83702769`.
+
+## Final screen decision
+
+The [corrected assessment](../data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md), analysis hash `sha256:9e92787ff92b804fb7facc67b46ad9a9b877a5e8ef569ec3070bc9a52322cb9b`, passed exact coverage, attribution, compiler-identity, policy-identity, and mechanic-reachability checks. All 6,400 profiles appeared under all 40 models; all 57,600 oriented edges and 25,600 exact reversal pairs were present.
+
+Measured outcomes include 2.0916% draws, 9.7023% round-limit terminals, 555.17 softmax-effective commanders, and 7.20 effective compositions. The strongest average module signals favored `scout-line-line`, `risk-adaptive`, `own-front`, and `adaptive`; `siege-siege-siege`, `accept-all`, `flare-evade`, and `never` occupied the opposite ends. These are frozen-screen averages, not context-free rankings: the largest rule×module interaction ranges were 0.212 for objective coupling×movement, 0.191 for base soundness×movement, 0.185 for base soundness×triage, and 0.184 for throughput×composition.
+
+Rows **22, 8, 25, 1, 29, and 15** advance to the generated [causal-refinement campaign](../data/lab/attention-v2-corrected-shape-screen-analysis/NEXT_CAMPAIGN.md). Row 15 is retained as a counterplay-collapse boundary comparator, not as an assumed survivor. The set remains ineligible for final promotion because the screen used one battle sample and four train seeds; exact seat effects were large, pooled gates hid self-play/nearby terminal tails, sparse 8/8 maxima could not support universal-dominance claims, and the accepted v1 regressions plus fresh Macro Flare effect-size test remain pending.
+
+The complete probe, audit, raw matrix, compact assessment, next plan, and twelve chart files are preserved in `data/archives/attention-v2-landscape-standard-957a7ac539e236a0f1387946-corrected-evidence.zip` (5.407 GiB, `sha256:8bcdf08fd3f5aa2130c36332fdf046749b33867612259801a16f15b5ebee900b`). All 42 restored files, including the archive manifest, passed a full extraction and SHA-256 verification before the online matrix directory was removed. The tracked sidecar records manifest hash `sha256:53573544da34d81039b8e1b7ee69fa7e65d95d471c35b60a50cea5bbb5b7216b` and the restore state.

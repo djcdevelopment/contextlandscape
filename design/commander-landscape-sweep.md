@@ -1,7 +1,7 @@
 # Commander Landscape and Broad v2 Sweep
 
 Decision date: 2026-08-09
-Status: first shape screen completed as integrity-only evidence; corrected commander compilation required before selection
+Status: corrected causal shape screen complete; six rows provisionally selected for multi-sample refinement
 
 ## Intent
 
@@ -23,6 +23,16 @@ integrity, resolver execution, and narrow paired model sensitivity only. It may 
 viability, or survivor-selection gates. See the
 [forensic assessment](../data/lab/attention-v2-shape-screen-analysis/ASSESSMENT.md) and
 [corrected campaign plan](../plan/attention-v2-corrected-shape-screen.md).
+
+Corrected addendum: the compiler now maps all 10 composition, 10 triage, 8 movement, and 8 capacity
+modules into concrete match behavior and schema-v2 records retain profile, policy, composition,
+controller, mechanic, battle-context, and seat attribution. A 32,768-run differential probe and
+256,000-run audit passed before a new eight-shard screen completed 9,216,000/9,216,000 records. The
+[causal assessment](../data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md) advances
+design rows 22, 8, 25, 1, 29, and 15 to the linked refinement plan. This is valid train-screen evidence,
+not final promotion evidence: only one battle sample and four train seeds were used, while exact seat
+effects, stratum-specific terminal tails, supported dominance, fresh holdout, and v1 regression remain
+open gates.
 
 ## Commander landscape
 
