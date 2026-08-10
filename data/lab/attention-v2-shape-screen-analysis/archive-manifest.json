@@ -1,0 +1,158 @@
+{
+    "schemaVersion":  1,
+    "archiveKind":  "attention-v2-shape-screen-integrity-only",
+    "planId":  "attention-v2-landscape-standard-6d06365b0ff689e8ec24f773",
+    "planHash":  "sha256:d5c5c4de55df979978dbbe6d5d073c5d1e2cb1c25c9e91fc545374b09f43f71c",
+    "completionReportHash":  "sha256:a1abf203542a7cd942bc545933100d464e2aec1874ae171071b2b3cc8e8258b1",
+    "analysisHash":  "sha256:e5963f1257972b145ee5d70994384f02bfc4f9f7f7e297ba3cc829931cb46d05",
+    "observedRuns":  9216000,
+    "selectionEligible":  false,
+    "files":  [
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/manifest.json",
+                      "bytes":  18973,
+                      "sha256":  "sha256:4d6972510988a32027f9fff4a541f7543905e930148fed3682c471343505f927"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/report.json",
+                      "bytes":  4097,
+                      "sha256":  "sha256:9afc4675b2d7b6adc93ca811b339e50eeed828229d2e7c866d520983dff3fde8"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0000.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:db8843d65af16e7f4916532032d6ea62db3f564a26eab62214c435152213b29e"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0000.jsonl.gz",
+                      "bytes":  239761791,
+                      "sha256":  "sha256:d106acca7785451e8efbaf3be8d440a399ea2f35945cfbc17b4e4be0d1ddeec5"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0001.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:2972963f349632ef150fae39fda0f89208945a6abb964fe3c6a3f26c7551d225"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0001.jsonl.gz",
+                      "bytes":  239716280,
+                      "sha256":  "sha256:bb8d3871af2ccfe7b685c440a86b3b1b7f03f9924cd06ffd03c3829891cc70cf"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0002.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:3b71384284f40e75ec2151eaf4b1985b0433c7c3424adf0f8b7add49f6852d4c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0002.jsonl.gz",
+                      "bytes":  239743015,
+                      "sha256":  "sha256:4ae52770cbd45248ddfd10ca30e2c261f7ad6b2f40c1343e823c27465b3c06e2"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0003.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:491602c76005e3726c3764fd54b6d1f43b87854991dbca5ad7be65d49ef6a93f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0003.jsonl.gz",
+                      "bytes":  239717802,
+                      "sha256":  "sha256:a14d8c185393f84019911c9fb706b251fe342195b11de6e9fee53fb15757a076"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0004.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:92987d1de97f10bd9427f3bbcd56348d6b0f474f8142780ef784ad5b2b9ffdc0"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0004.jsonl.gz",
+                      "bytes":  239764192,
+                      "sha256":  "sha256:1d834d79434408a416aa393b3598ad6453ad8e4be298a54cd01479cccf58b0e2"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0005.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:2539757b62f7a7b67dc577b4d77258ce2aa87b9332eaca6f14aa407beaeb9f20"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0005.jsonl.gz",
+                      "bytes":  239739222,
+                      "sha256":  "sha256:93d107385d90e2d5d556fe3139d26ed74b1aeb2124961e147e35f9614cfe5be1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0006.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:44c54ecf9b64d3ff0e3873449adc1fc53c6ef440d4b28c1aec9e708256fed691"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0006.jsonl.gz",
+                      "bytes":  239757704,
+                      "sha256":  "sha256:ce36ec5167cd1a6475380c2f67b1328a1f8011a264125bb2571cfcc9dcf2f291"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0007.complete",
+                      "bytes":  416,
+                      "sha256":  "sha256:f7eb70be31f528ed8f3c88f7b436b06addabf8b291c20d87b84f6ff63d48e752"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-landscape-standard-6d06365b0ff689e8ec24f773/shard-0007.jsonl.gz",
+                      "bytes":  239711566,
+                      "sha256":  "sha256:59944b5acb3a534ebfc9804d224d7d78b69464970306bdde780a3ff111c95a07"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/01-evidence-boundary.png",
+                      "bytes":  423338,
+                      "sha256":  "sha256:a948bd9821ce222dc8af4e955d37413fabc7cec03a7c8ca569b8f60a17f464f9"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/01-evidence-boundary.svg",
+                      "bytes":  7031,
+                      "sha256":  "sha256:220dbea76714e651ba4e82a3023aef513bfee94d47985a3a882f8d33f07e4eb6"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/02-model-outcome-atlas.png",
+                      "bytes":  424808,
+                      "sha256":  "sha256:774609bbeaef83e7a02aa15175f05b8c234b08fbe3805a43b53ec35a0aa6f7bd"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/02-model-outcome-atlas.svg",
+                      "bytes":  34434,
+                      "sha256":  "sha256:8468b92623b7c79c739b9168c4f96f65159108d6ab7c224e2003b6a96ea72a1c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/03-factor-sensitivity.png",
+                      "bytes":  769217,
+                      "sha256":  "sha256:151cd96aa91c0e15c8ff09b7fab05cb5cb6f4fe46a06f62e1bca140a8cc4a895"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/03-factor-sensitivity.svg",
+                      "bytes":  13990,
+                      "sha256":  "sha256:c486107dea56fcf58254a294ce4a76355f7e3722ed647e6fcdf3dbe4e7d48010"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/04-storage-projection.png",
+                      "bytes":  405856,
+                      "sha256":  "sha256:6d2bd8a535565e1e0f18f88bcb3fbe127f226b6590131aec4a650a0c34d7a21f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/04-storage-projection.svg",
+                      "bytes":  3391,
+                      "sha256":  "sha256:4c3aabf6621ebe1ed9b206672b75143f1a1f15ccb45cf36e5ffd477edcf593a1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/ARCHIVE_README.md",
+                      "bytes":  1028,
+                      "sha256":  "sha256:b9c4c1c0337df95b9fa57814d1635f39925afa6215be63141fe7ca3258286bb9"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/assessment.json",
+                      "bytes":  83928,
+                      "sha256":  "sha256:ba966115d759eb03e8281115c9ecf8e88a84f9b60909a4f5881fbd11ad25c508"
+                  },
+                  {
+                      "path":  "data/lab/attention-v2-shape-screen-analysis/ASSESSMENT.md",
+                      "bytes":  2829,
+                      "sha256":  "sha256:a56e0cd3320945152eacc416d26fdad5d84e6ef32c36e94dbc3e373223fa840b"
+                  }
+              ],
+    "manifestHash":  "sha256:b9f3a00bb56ddf659a7794751474be6a64fd1d6b40e6ad190c1fe1e5c5b9c1ef"
+}

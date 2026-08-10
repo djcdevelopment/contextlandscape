@@ -125,11 +125,18 @@ The contract-native planner freezes commander, model-row, fold-specific edge, ba
 paired-world hashes and validates exact multiplicative run arithmetic. The lean 5,949,088 and deep
 153,570,624 profiles are sizing envelopes; the fully materialized standard design contains 30,008,992
 runs. Only the 40-row shape screen is initially materialized; every later model set requires a new,
-parent-linked plan backed by completed selection evidence. Every plan currently carries
-`executionStatus: "requires-v2-campaign-runner"`. The shape-screen resolver smoke is executable, but
-the durable v2 campaign runner and post-screen selection lineage must be wired before a canonical
-sweep can start. The runner now writes an immutable plan manifest, gzip JSONL shards, completion markers,
-and a report that refuses partial evidence. See [`design/commander-landscape-sweep.md`](design/commander-landscape-sweep.md).
+parent-linked plan backed by completed selection evidence.
+
+The first durable shape screen completed all 9,216,000 planned runs with eight verified gzip shards.
+Its post-run audit found that commander edge IDs affected random streams but the runner still supplied
+one balanced composition and one fixed policy duel. It is therefore retained as resolver, throughput,
+integrity, and narrow paired rule-model evidence—not commander or survivor-selection evidence. The
+compact [forensic assessment](data/lab/attention-v2-shape-screen-analysis/ASSESSMENT.md), charts, and
+[corrected campaign plan](plan/attention-v2-corrected-shape-screen.md) remain readable after the raw
+shards were moved into a fully extraction-tested archive. The corrected commander compiler and enriched
+records passed a 32,768-run module-discrimination suite and a 256,000-run cross-profile audit before the
+new standard screen was launched. The audit reached every required mechanic, replayed 64 fixed cells
+exactly, and remained below its preregistered draw and round-limit thresholds.
 
 For an unattended Docker worker on OMEN or AM4, use the orchestration script below. It builds the worker once, captures its image digest and host Git identity, freezes one manifest, then gives that exact manifest to every shard.
 

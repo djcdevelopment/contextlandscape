@@ -1,0 +1,2629 @@
+{
+  "schemaVersion": 1,
+  "analysisKind": "attention-v2-shape-screen-forensic-model-assessment",
+  "source": {
+    "planId": "attention-v2-landscape-standard-6d06365b0ff689e8ec24f773",
+    "planHash": "sha256:d5c5c4de55df979978dbbe6d5d073c5d1e2cb1c25c9e91fc545374b09f43f71c",
+    "completionReportHash": "sha256:a1abf203542a7cd942bc545933100d464e2aec1874ae171071b2b3cc8e8258b1",
+    "parentV1ModelHash": "sha256:f928a9340ed173f694f4f0613b5cbd764a9d019f97d54c3d44afb9eeab07eca7",
+    "runs": 9216000,
+    "modelRows": 40,
+    "pairedWorldsPerModel": 230400,
+    "edgeIds": 57600,
+    "battleSampleIds": 1,
+    "seeds": [
+      10000,
+      10001,
+      10002,
+      10003
+    ],
+    "policyPairs": [
+      "front-mobile-verify vs verify-lowest-confidence"
+    ],
+    "compressedShardBytes": 1917911572
+  },
+  "evidenceDecision": {
+    "artifactIntegrity": "pass",
+    "resolverExecution": "pass",
+    "narrowPairedModelEffects": "descriptive-only",
+    "commanderLandscapeEffects": "invalid",
+    "survivorSelectionEligible": false,
+    "reason": "Commander edge identities changed random streams but commander composition, triage, movement, and capacity modules were not compiled into match inputs."
+  },
+  "deductions": [
+    "All forty rule models completed the exact same set of paired edge/seed worlds, so narrow model-level differences under the fixed policy duel are comparable.",
+    "Every record used one policy pairing: front-mobile-verify versus verify-lowest-confidence; conclusions do not generalize to the 6,400 commander profiles.",
+    "The runner used the balanced composition for both players, so composition-policy interaction and top-composition coverage cannot be estimated.",
+    "Edge-specific random streams create outcome variation even though commander modules were inert; edge variation must not be labeled commander counterplay.",
+    "The stored records omit command/event counts, rule exposure, progress, drift, and per-player profile identity, preventing the preregistered viability gates from being evaluated.",
+    "attention-v2-model-37-5e61e180fce72d66 matched the v1 bridge on winner, terminal reason, and round count in every paired world; the corrected audit must determine whether those changed rules are unreachable or merely invisible in the compact record."
+  ],
+  "descriptiveLeaders": {
+    "lowestSeatSkew": [
+      "attention-v2-model-25-b2c6c9d0ad5b34b5",
+      "attention-v2-model-11-d59ba31886884512",
+      "attention-v2-model-17-be6d0faaa814b182",
+      "attention-v2-model-22-a349f2bf2755a55a",
+      "attention-v2-model-39-5c61d4dccf879388"
+    ],
+    "highestOutcomeDiversity": [
+      "attention-v2-model-16-d770e59575fdafab",
+      "attention-v2-model-15-f217786d8c3b5e80",
+      "attention-v2-model-29-a691e3a93590aabc",
+      "attention-v2-model-38-1decf8762f7440d1",
+      "attention-v2-model-14-d54e731b45a4e738"
+    ],
+    "longestMatches": [
+      "attention-v2-model-15-f217786d8c3b5e80",
+      "attention-v2-model-19-40ec5782a3c113be",
+      "attention-v2-model-16-d770e59575fdafab",
+      "attention-v2-model-20-9609f923e3fa7c0c",
+      "attention-v2-model-10-6d53323f15e32166"
+    ],
+    "largestPairedScoreShift": [
+      "attention-v2-model-16-d770e59575fdafab",
+      "attention-v2-model-31-e7d9c75783ca5eb2",
+      "attention-v2-model-15-f217786d8c3b5e80",
+      "attention-v2-model-29-a691e3a93590aabc",
+      "attention-v2-model-13-a4200523526a00f9"
+    ]
+  },
+  "models": [
+    {
+      "modelId": "attention-v2-model-00-5b5244f1e042445a",
+      "designRow": 0,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 1,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.508681,
+      "playerTwoWinRate": 0.448416,
+      "drawRate": 0.042904,
+      "seatSkew": 0.060265,
+      "meanRounds": 2.074115,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.390291,
+        "drift": 0.172578,
+        "round-limit": 0,
+        "simultaneous": 0.437131,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1200,
+      "effectiveOutcomeStates": 380.07,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.434429,
+        "meanRoundDelta": -1.178082,
+        "simultaneousRateDelta": 0.431901,
+        "betterWorldRate": 0.004878,
+        "worseWorldRate": 0.460191,
+        "sameWinnerTerminalRoundRate": 0.042895
+      }
+    },
+    {
+      "modelId": "attention-v2-model-01-91a25449fe7e0b0b",
+      "designRow": 1,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.771111,
+      "playerTwoWinRate": 0.220486,
+      "drawRate": 0.008403,
+      "seatSkew": 0.550625,
+      "meanRounds": 2.710855,
+      "minRounds": 1,
+      "maxRounds": 4,
+      "terminalRates": {
+        "objective": 0.870035,
+        "drift": 0.087114,
+        "round-limit": 0,
+        "simultaneous": 0.042852,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 2226,
+      "effectiveOutcomeStates": 605.993,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.189249,
+        "meanRoundDelta": -0.541341,
+        "simultaneousRateDelta": 0.037622,
+        "betterWorldRate": 0.00928,
+        "worseWorldRate": 0.202713,
+        "sameWinnerTerminalRoundRate": 0.475885
+      }
+    },
+    {
+      "modelId": "attention-v2-model-02-d2e2112ae0b0cbff",
+      "designRow": 2,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 0,
+        "objectiveTarget": 12,
+        "driftLimit": 5,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.845716,
+      "playerTwoWinRate": 0.139718,
+      "drawRate": 0.014566,
+      "seatSkew": 0.705998,
+      "meanRounds": 2.761345,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.974258,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.025742,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 100,
+      "effectiveOutcomeStates": 44.165,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.111562,
+        "meanRoundDelta": -0.490851,
+        "simultaneousRateDelta": 0.020512,
+        "betterWorldRate": 0.029358,
+        "worseWorldRate": 0.148194,
+        "sameWinnerTerminalRoundRate": 0.516849
+      }
+    },
+    {
+      "modelId": "attention-v2-model-03-099a819414ef374f",
+      "designRow": 3,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 0,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "v1",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 1,
+      "playerTwoWinRate": 0,
+      "drawRate": 0,
+      "seatSkew": 1,
+      "meanRounds": 2.906519,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 1,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 56,
+      "effectiveOutcomeStates": 30.149,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.035438,
+        "meanRoundDelta": -0.345677,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.035438,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 0.616866
+      }
+    },
+    {
+      "modelId": "attention-v2-model-04-2a05b86401e55551",
+      "designRow": 4,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 2,
+        "objectiveTarget": 12,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.875538,
+      "playerTwoWinRate": 0.124462,
+      "drawRate": 0,
+      "seatSkew": 0.751076,
+      "meanRounds": 2.506936,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.806853,
+        "drift": 0.139366,
+        "round-limit": 0,
+        "simultaneous": 0.05378,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1426,
+      "effectiveOutcomeStates": 369.201,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.089023,
+        "meanRoundDelta": -0.74526,
+        "simultaneousRateDelta": 0.04855,
+        "betterWorldRate": 0.017587,
+        "worseWorldRate": 0.10661,
+        "sameWinnerTerminalRoundRate": 0.274089
+      }
+    },
+    {
+      "modelId": "attention-v2-model-05-51fe6b737b79b16f",
+      "designRow": 5,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 2,
+        "objectiveTarget": 9,
+        "driftLimit": 5,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "flat",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "v1",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.679115,
+      "playerTwoWinRate": 0.320734,
+      "drawRate": 0.000152,
+      "seatSkew": 0.358381,
+      "meanRounds": 2.609666,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.475508,
+        "drift": 0.384193,
+        "round-limit": 0,
+        "simultaneous": 0.140299,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1825,
+      "effectiveOutcomeStates": 652.153,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.285371,
+        "meanRoundDelta": -0.64253,
+        "simultaneousRateDelta": 0.135069,
+        "betterWorldRate": 0.01023,
+        "worseWorldRate": 0.295651,
+        "sameWinnerTerminalRoundRate": 0.242157
+      }
+    },
+    {
+      "modelId": "attention-v2-model-06-044089f1e18653d5",
+      "designRow": 6,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 0,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "flat",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.930347,
+      "playerTwoWinRate": 0.065139,
+      "drawRate": 0.004514,
+      "seatSkew": 0.865208,
+      "meanRounds": 2.913533,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.995486,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.004514,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 61,
+      "effectiveOutcomeStates": 31.381,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.031957,
+        "meanRoundDelta": -0.338663,
+        "simultaneousRateDelta": -0.000716,
+        "betterWorldRate": 0.032813,
+        "worseWorldRate": 0.066997,
+        "sameWinnerTerminalRoundRate": 0.633728
+      }
+    },
+    {
+      "modelId": "attention-v2-model-07-10b6420be01ad186",
+      "designRow": 7,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 4,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.898325,
+      "playerTwoWinRate": 0.101675,
+      "drawRate": 0,
+      "seatSkew": 0.796649,
+      "meanRounds": 4.649071,
+      "minRounds": 1,
+      "maxRounds": 7,
+      "terminalRates": {
+        "objective": 0.898064,
+        "drift": 0.101936,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1065,
+      "effectiveOutcomeStates": 255.632,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.066237,
+        "meanRoundDelta": 1.396875,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.020174,
+        "worseWorldRate": 0.086411,
+        "sameWinnerTerminalRoundRate": 0.028906
+      }
+    },
+    {
+      "modelId": "attention-v2-model-08-197a490fef6fecbb",
+      "designRow": 8,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 0,
+        "objectiveTarget": 9,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.404353,
+      "playerTwoWinRate": 0.413494,
+      "drawRate": 0.182153,
+      "seatSkew": 0.009141,
+      "meanRounds": 2.042244,
+      "minRounds": 2,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.324557,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.675443,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 93,
+      "effectiveOutcomeStates": 31.992,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.469132,
+        "meanRoundDelta": -1.209952,
+        "simultaneousRateDelta": 0.670213,
+        "betterWorldRate": 0.010877,
+        "worseWorldRate": 0.56697,
+        "sameWinnerTerminalRoundRate": 0.002747
+      }
+    },
+    {
+      "modelId": "attention-v2-model-09-68b1aed5c7920038",
+      "designRow": 9,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 2,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "flat",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.890221,
+      "playerTwoWinRate": 0.109431,
+      "drawRate": 0.000347,
+      "seatSkew": 0.78079,
+      "meanRounds": 2.086111,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.83309,
+        "drift": 0.141827,
+        "round-limit": 0,
+        "simultaneous": 0.025082,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 571,
+      "effectiveOutcomeStates": 119.302,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.074167,
+        "meanRoundDelta": -1.166085,
+        "simultaneousRateDelta": 0.019852,
+        "betterWorldRate": 0.021128,
+        "worseWorldRate": 0.095391,
+        "sameWinnerTerminalRoundRate": 0.063255
+      }
+    },
+    {
+      "modelId": "attention-v2-model-10-6d53323f15e32166",
+      "designRow": 10,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 0,
+        "objectiveTarget": 24,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "flat",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 1,
+      "playerTwoWinRate": 0,
+      "drawRate": 0,
+      "seatSkew": 1,
+      "meanRounds": 5.32523,
+      "minRounds": 4,
+      "maxRounds": 8,
+      "terminalRates": {
+        "objective": 1,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 86,
+      "effectiveOutcomeStates": 41.988,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.035438,
+        "meanRoundDelta": 2.073034,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.035438,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 0
+      }
+    },
+    {
+      "modelId": "attention-v2-model-11-d59ba31886884512",
+      "designRow": 11,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 0,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "global",
+        "throughputShape": "v1",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.443472,
+      "playerTwoWinRate": 0.441675,
+      "drawRate": 0.114852,
+      "seatSkew": 0.001797,
+      "meanRounds": 2.617517,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.526489,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.473511,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 116,
+      "effectiveOutcomeStates": 53.71,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.463663,
+        "meanRoundDelta": -0.634679,
+        "simultaneousRateDelta": 0.468281,
+        "betterWorldRate": 0.006029,
+        "worseWorldRate": 0.524792,
+        "sameWinnerTerminalRoundRate": 0.073168
+      }
+    },
+    {
+      "modelId": "attention-v2-model-12-284efbaf9585741d",
+      "designRow": 12,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 2,
+        "objectiveTarget": 24,
+        "driftLimit": 3,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.475833,
+      "playerTwoWinRate": 0.457808,
+      "drawRate": 0.066359,
+      "seatSkew": 0.018025,
+      "meanRounds": 1.416215,
+      "minRounds": 1,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.000009,
+        "drift": 0.649136,
+        "round-limit": 0,
+        "simultaneous": 0.350855,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1092,
+      "effectiveOutcomeStates": 188.99,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.455549,
+        "meanRoundDelta": -1.835981,
+        "simultaneousRateDelta": 0.345625,
+        "betterWorldRate": 0.010434,
+        "worseWorldRate": 0.496793,
+        "sameWinnerTerminalRoundRate": 0.000122
+      }
+    },
+    {
+      "modelId": "attention-v2-model-13-a4200523526a00f9",
+      "designRow": 13,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 4,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.449909,
+      "playerTwoWinRate": 0.475885,
+      "drawRate": 0.074206,
+      "seatSkew": 0.025977,
+      "meanRounds": 5.143763,
+      "minRounds": 2,
+      "maxRounds": 7,
+      "terminalRates": {
+        "objective": 0.493264,
+        "drift": 0.000482,
+        "round-limit": 0,
+        "simultaneous": 0.506254,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1198,
+      "effectiveOutcomeStates": 217.427,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.47755,
+        "meanRoundDelta": 1.891567,
+        "simultaneousRateDelta": 0.501024,
+        "betterWorldRate": 0.008242,
+        "worseWorldRate": 0.521615,
+        "sameWinnerTerminalRoundRate": 0.000178
+      }
+    },
+    {
+      "modelId": "attention-v2-model-14-d54e731b45a4e738",
+      "designRow": 14,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "flat",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.858294,
+      "playerTwoWinRate": 0.141706,
+      "drawRate": 0,
+      "seatSkew": 0.716589,
+      "meanRounds": 4.581337,
+      "minRounds": 1,
+      "maxRounds": 6,
+      "terminalRates": {
+        "objective": 0.825872,
+        "drift": 0.157131,
+        "round-limit": 0,
+        "simultaneous": 0.016997,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 2904,
+      "effectiveOutcomeStates": 774.42,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.106267,
+        "meanRoundDelta": 1.329141,
+        "simultaneousRateDelta": 0.011766,
+        "betterWorldRate": 0.015013,
+        "worseWorldRate": 0.12128,
+        "sameWinnerTerminalRoundRate": 0.03217
+      }
+    },
+    {
+      "modelId": "attention-v2-model-15-f217786d8c3b5e80",
+      "designRow": 15,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "global",
+        "throughputShape": "v1",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "flat",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.455347,
+      "playerTwoWinRate": 0.530061,
+      "drawRate": 0.014592,
+      "seatSkew": 0.074714,
+      "meanRounds": 6.503108,
+      "minRounds": 3,
+      "maxRounds": 8,
+      "terminalRates": {
+        "objective": 0.612726,
+        "drift": 0.063008,
+        "round-limit": 0.001515,
+        "simultaneous": 0.322752,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 5580,
+      "effectiveOutcomeStates": 1849.716,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.501918,
+        "meanRoundDelta": 3.250911,
+        "simultaneousRateDelta": 0.317522,
+        "betterWorldRate": 0.004627,
+        "worseWorldRate": 0.513646,
+        "sameWinnerTerminalRoundRate": 0.001454
+      }
+    },
+    {
+      "modelId": "attention-v2-model-16-d770e59575fdafab",
+      "designRow": 16,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 3,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "flat",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.327721,
+      "playerTwoWinRate": 0.661966,
+      "drawRate": 0.010313,
+      "seatSkew": 0.334245,
+      "meanRounds": 5.446701,
+      "minRounds": 1,
+      "maxRounds": 8,
+      "terminalRates": {
+        "objective": 0.301202,
+        "drift": 0.478043,
+        "round-limit": 0.000039,
+        "simultaneous": 0.220716,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 5045,
+      "effectiveOutcomeStates": 1927.026,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.631684,
+        "meanRoundDelta": 2.194505,
+        "simultaneousRateDelta": 0.215486,
+        "betterWorldRate": 0.002535,
+        "worseWorldRate": 0.639266,
+        "sameWinnerTerminalRoundRate": 0.01447
+      }
+    },
+    {
+      "modelId": "attention-v2-model-17-be6d0faaa814b182",
+      "designRow": 17,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 2,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "flat",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.482821,
+      "playerTwoWinRate": 0.480916,
+      "drawRate": 0.036263,
+      "seatSkew": 0.001905,
+      "meanRounds": 2.762882,
+      "minRounds": 1,
+      "maxRounds": 6,
+      "terminalRates": {
+        "objective": 0.000916,
+        "drift": 0.735213,
+        "round-limit": 0,
+        "simultaneous": 0.263872,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 3007,
+      "effectiveOutcomeStates": 686.684,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.463609,
+        "meanRoundDelta": -0.489314,
+        "simultaneousRateDelta": 0.258641,
+        "betterWorldRate": 0.007431,
+        "worseWorldRate": 0.488038,
+        "sameWinnerTerminalRoundRate": 0.004201
+      }
+    },
+    {
+      "modelId": "attention-v2-model-18-f7f61d6ffcd6505c",
+      "designRow": 18,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 2,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.4549,
+      "playerTwoWinRate": 0.46566,
+      "drawRate": 0.07944,
+      "seatSkew": 0.01076,
+      "meanRounds": 2.867604,
+      "minRounds": 1,
+      "maxRounds": 4,
+      "terminalRates": {
+        "objective": 0.211675,
+        "drift": 0.001675,
+        "round-limit": 0,
+        "simultaneous": 0.786649,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1214,
+      "effectiveOutcomeStates": 245.056,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.469941,
+        "meanRoundDelta": -0.384592,
+        "simultaneousRateDelta": 0.781419,
+        "betterWorldRate": 0.007817,
+        "worseWorldRate": 0.516059,
+        "sameWinnerTerminalRoundRate": 0.040564
+      }
+    },
+    {
+      "modelId": "attention-v2-model-19-40ec5782a3c113be",
+      "designRow": 19,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.999136,
+      "playerTwoWinRate": 0.000864,
+      "drawRate": 0,
+      "seatSkew": 0.998273,
+      "meanRounds": 6.130082,
+      "minRounds": 3,
+      "maxRounds": 8,
+      "terminalRates": {
+        "objective": 0.99753,
+        "drift": 0.001155,
+        "round-limit": 0.000946,
+        "simultaneous": 0.000369,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 994,
+      "effectiveOutcomeStates": 200.362,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.034575,
+        "meanRoundDelta": 2.877886,
+        "simultaneousRateDelta": -0.004861,
+        "betterWorldRate": 0.035,
+        "worseWorldRate": 0.000425,
+        "sameWinnerTerminalRoundRate": 0.000017
+      }
+    },
+    {
+      "modelId": "attention-v2-model-20-9609f923e3fa7c0c",
+      "designRow": 20,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "flat",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "flat",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.999345,
+      "playerTwoWinRate": 0.000655,
+      "drawRate": 0,
+      "seatSkew": 0.998689,
+      "meanRounds": 5.40326,
+      "minRounds": 3,
+      "maxRounds": 8,
+      "terminalRates": {
+        "objective": 0.999345,
+        "drift": 0.000655,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 680,
+      "effectiveOutcomeStates": 130.631,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.034783,
+        "meanRoundDelta": 2.151063,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.035187,
+        "worseWorldRate": 0.000404,
+        "sameWinnerTerminalRoundRate": 0.000239
+      }
+    },
+    {
+      "modelId": "attention-v2-model-21-aa93a9c5a1979a39",
+      "designRow": 21,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 2,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.546115,
+      "playerTwoWinRate": 0.452005,
+      "drawRate": 0.001879,
+      "seatSkew": 0.09411,
+      "meanRounds": 2.562713,
+      "minRounds": 1,
+      "maxRounds": 4,
+      "terminalRates": {
+        "objective": 0.200069,
+        "drift": 0.634167,
+        "round-limit": 0,
+        "simultaneous": 0.165764,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1831,
+      "effectiveOutcomeStates": 569.575,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.417507,
+        "meanRoundDelta": -0.689484,
+        "simultaneousRateDelta": 0.160534,
+        "betterWorldRate": 0.007609,
+        "worseWorldRate": 0.425855,
+        "sameWinnerTerminalRoundRate": 0.194666
+      }
+    },
+    {
+      "modelId": "attention-v2-model-22-a349f2bf2755a55a",
+      "designRow": 22,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 0,
+        "objectiveTarget": 12,
+        "driftLimit": 3,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "v1",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.436706,
+      "playerTwoWinRate": 0.434158,
+      "drawRate": 0.129136,
+      "seatSkew": 0.002548,
+      "meanRounds": 3.05059,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.42832,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.57168,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 132,
+      "effectiveOutcomeStates": 55.905,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.463288,
+        "meanRoundDelta": -0.201606,
+        "simultaneousRateDelta": 0.56645,
+        "betterWorldRate": 0.005451,
+        "worseWorldRate": 0.53112,
+        "sameWinnerTerminalRoundRate": 0.179544
+      }
+    },
+    {
+      "modelId": "attention-v2-model-23-cefc26c5600cb838",
+      "designRow": 23,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 0,
+        "objectiveTarget": 9,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 1,
+      "playerTwoWinRate": 0,
+      "drawRate": 0,
+      "seatSkew": 1,
+      "meanRounds": 2.221263,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 1,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 54,
+      "effectiveOutcomeStates": 27.356,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.035438,
+        "meanRoundDelta": -1.030933,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.035438,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 0.072678
+      }
+    },
+    {
+      "modelId": "attention-v2-model-24-a1fd524e2b2fbdba",
+      "designRow": 24,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 1,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.853199,
+      "playerTwoWinRate": 0.146801,
+      "drawRate": 0,
+      "seatSkew": 0.706398,
+      "meanRounds": 3.156016,
+      "minRounds": 1,
+      "maxRounds": 4,
+      "terminalRates": {
+        "objective": 0.815738,
+        "drift": 0.16224,
+        "round-limit": 0,
+        "simultaneous": 0.022023,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1629,
+      "effectiveOutcomeStates": 445.227,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.111363,
+        "meanRoundDelta": -0.096181,
+        "simultaneousRateDelta": 0.016793,
+        "betterWorldRate": 0.001684,
+        "worseWorldRate": 0.113047,
+        "sameWinnerTerminalRoundRate": 0.835655
+      }
+    },
+    {
+      "modelId": "attention-v2-model-25-b2c6c9d0ad5b34b5",
+      "designRow": 25,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 2,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "global",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.451237,
+      "playerTwoWinRate": 0.449674,
+      "drawRate": 0.099089,
+      "seatSkew": 0.001563,
+      "meanRounds": 1.74786,
+      "minRounds": 1,
+      "maxRounds": 2,
+      "terminalRates": {
+        "objective": 0,
+        "drift": 0.234141,
+        "round-limit": 0,
+        "simultaneous": 0.765859,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 489,
+      "effectiveOutcomeStates": 139.864,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.46378,
+        "meanRoundDelta": -1.504336,
+        "simultaneousRateDelta": 0.760629,
+        "betterWorldRate": 0.007274,
+        "worseWorldRate": 0.518424,
+        "sameWinnerTerminalRoundRate": 0
+      }
+    },
+    {
+      "modelId": "attention-v2-model-26-9e4b256a1bd4fba2",
+      "designRow": 26,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 2,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "global",
+        "throughputShape": "flat",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "flat",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.469071,
+      "playerTwoWinRate": 0.482478,
+      "drawRate": 0.048451,
+      "seatSkew": 0.013407,
+      "meanRounds": 1.790334,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.160972,
+        "drift": 0.469431,
+        "round-limit": 0,
+        "simultaneous": 0.369596,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 811,
+      "effectiveOutcomeStates": 187.503,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.471265,
+        "meanRoundDelta": -1.461862,
+        "simultaneousRateDelta": 0.364366,
+        "betterWorldRate": 0.010017,
+        "worseWorldRate": 0.503286,
+        "sameWinnerTerminalRoundRate": 0.004527
+      }
+    },
+    {
+      "modelId": "attention-v2-model-27-e0f4ba705e195f6f",
+      "designRow": 27,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 2,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "flat",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.519687,
+      "playerTwoWinRate": 0.465286,
+      "drawRate": 0.015026,
+      "seatSkew": 0.054401,
+      "meanRounds": 2.190265,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.409518,
+        "drift": 0.418711,
+        "round-limit": 0,
+        "simultaneous": 0.171771,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1423,
+      "effectiveOutcomeStates": 528.437,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.437361,
+        "meanRoundDelta": -1.061931,
+        "simultaneousRateDelta": 0.166541,
+        "betterWorldRate": 0.005642,
+        "worseWorldRate": 0.449983,
+        "sameWinnerTerminalRoundRate": 0.133802
+      }
+    },
+    {
+      "modelId": "attention-v2-model-28-2846c60f757e215d",
+      "designRow": 28,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 1,
+        "objectiveTarget": 12,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.931606,
+      "playerTwoWinRate": 0.06378,
+      "drawRate": 0.004614,
+      "seatSkew": 0.867826,
+      "meanRounds": 2.914484,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.995386,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.004614,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 451,
+      "effectiveOutcomeStates": 70.243,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.030649,
+        "meanRoundDelta": -0.337713,
+        "simultaneousRateDelta": -0.000616,
+        "betterWorldRate": 0.032865,
+        "worseWorldRate": 0.065786,
+        "sameWinnerTerminalRoundRate": 0.651914
+      }
+    },
+    {
+      "modelId": "attention-v2-model-29-a691e3a93590aabc",
+      "designRow": 29,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 1,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "global",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "flat",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.460286,
+      "playerTwoWinRate": 0.51668,
+      "drawRate": 0.023034,
+      "seatSkew": 0.056393,
+      "meanRounds": 5.017743,
+      "minRounds": 2,
+      "maxRounds": 7,
+      "terminalRates": {
+        "objective": 0.51401,
+        "drift": 0.009714,
+        "round-limit": 0,
+        "simultaneous": 0.476276,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 3753,
+      "effectiveOutcomeStates": 1165.797,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.492758,
+        "meanRoundDelta": 1.765547,
+        "simultaneousRateDelta": 0.471046,
+        "betterWorldRate": 0.003168,
+        "worseWorldRate": 0.507357,
+        "sameWinnerTerminalRoundRate": 0.001706
+      }
+    },
+    {
+      "modelId": "attention-v2-model-30-ef91fdffa1701c26",
+      "designRow": 30,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 2,
+        "objectiveTarget": 9,
+        "driftLimit": 4,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "flat",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.468186,
+      "playerTwoWinRate": 0.429774,
+      "drawRate": 0.10204,
+      "seatSkew": 0.038411,
+      "meanRounds": 2.042378,
+      "minRounds": 1,
+      "maxRounds": 4,
+      "terminalRates": {
+        "objective": 0.363572,
+        "drift": 0.002678,
+        "round-limit": 0,
+        "simultaneous": 0.63375,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 711,
+      "effectiveOutcomeStates": 140.5,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.445356,
+        "meanRoundDelta": -1.209818,
+        "simultaneousRateDelta": 0.62852,
+        "betterWorldRate": 0.010625,
+        "worseWorldRate": 0.505456,
+        "sameWinnerTerminalRoundRate": 0.017543
+      }
+    },
+    {
+      "modelId": "attention-v2-model-31-e7d9c75783ca5eb2",
+      "designRow": 31,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 0,
+        "objectiveTarget": 24,
+        "driftLimit": 3,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "global",
+        "throughputShape": "v1",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "flat",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "utility-only",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.442348,
+      "playerTwoWinRate": 0.557652,
+      "drawRate": 0,
+      "seatSkew": 0.115304,
+      "meanRounds": 5.144714,
+      "minRounds": 4,
+      "maxRounds": 7,
+      "terminalRates": {
+        "objective": 0.496589,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.503411,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 147,
+      "effectiveOutcomeStates": 68.506,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.522214,
+        "meanRoundDelta": 1.892517,
+        "simultaneousRateDelta": 0.498181,
+        "betterWorldRate": 0.005655,
+        "worseWorldRate": 0.527869,
+        "sameWinnerTerminalRoundRate": 0.000087
+      }
+    },
+    {
+      "modelId": "attention-v2-model-32-1e4cf473a67b8174",
+      "designRow": 32,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 0,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 1,
+      "playerTwoWinRate": 0,
+      "drawRate": 0,
+      "seatSkew": 1,
+      "meanRounds": 2.527951,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 1,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 42,
+      "effectiveOutcomeStates": 23.061,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.035438,
+        "meanRoundDelta": -0.724245,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.035438,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 0.267144
+      }
+    },
+    {
+      "modelId": "attention-v2-model-33-565265d1f6a38f10",
+      "designRow": 33,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 0,
+        "objectiveTarget": 12,
+        "driftLimit": 5,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "flat",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.961224,
+      "playerTwoWinRate": 0.037687,
+      "drawRate": 0.001089,
+      "seatSkew": 0.923537,
+      "meanRounds": 3.237951,
+      "minRounds": 2,
+      "maxRounds": 6,
+      "terminalRates": {
+        "objective": 0.998394,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.001606,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 108,
+      "effectiveOutcomeStates": 41.831,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.002793,
+        "meanRoundDelta": -0.014245,
+        "simultaneousRateDelta": -0.003624,
+        "betterWorldRate": 0.033815,
+        "worseWorldRate": 0.037153,
+        "sameWinnerTerminalRoundRate": 0.692526
+      }
+    },
+    {
+      "modelId": "attention-v2-model-34-d9ba7f1b49c00c57",
+      "designRow": 34,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 2,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "flat",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "bankable-reserve",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.576337,
+      "playerTwoWinRate": 0.391411,
+      "drawRate": 0.032253,
+      "seatSkew": 0.184926,
+      "meanRounds": 2.283546,
+      "minRounds": 1,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.072387,
+        "drift": 0.587539,
+        "round-limit": 0,
+        "simultaneous": 0.340074,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1300,
+      "effectiveOutcomeStates": 310.077,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.372099,
+        "meanRoundDelta": -0.96865,
+        "simultaneousRateDelta": 0.334844,
+        "betterWorldRate": 0.010486,
+        "worseWorldRate": 0.396975,
+        "sameWinnerTerminalRoundRate": 0.067587
+      }
+    },
+    {
+      "modelId": "attention-v2-model-35-7a005bea16a4d67d",
+      "designRow": 35,
+      "role": "design",
+      "ruleShape": {
+        "attentionBudget": 2,
+        "verifyCost": 0,
+        "objectiveTarget": 9,
+        "driftLimit": 3,
+        "baseSoundness": 0.6,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "compressed",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "reveal",
+        "lineStationaryPayload": "reveal-token",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 1,
+      "playerTwoWinRate": 0,
+      "drawRate": 0,
+      "seatSkew": 1,
+      "meanRounds": 2.915868,
+      "minRounds": 2,
+      "maxRounds": 6,
+      "terminalRates": {
+        "objective": 1,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 42,
+      "effectiveOutcomeStates": 23.459,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0.035438,
+        "meanRoundDelta": -0.336328,
+        "simultaneousRateDelta": -0.00523,
+        "betterWorldRate": 0.035438,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 0.57046
+      }
+    },
+    {
+      "modelId": "attention-v2-model-36-8b7f54d2816d527a",
+      "designRow": 36,
+      "role": "v1-bridge",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "v1",
+        "stationaryQualification": "resolved-zero",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "auto-accept"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.964562,
+      "playerTwoWinRate": 0.035438,
+      "drawRate": 0,
+      "seatSkew": 0.929123,
+      "meanRounds": 3.252196,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.956502,
+        "drift": 0.038268,
+        "round-limit": 0,
+        "simultaneous": 0.00523,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1237,
+      "effectiveOutcomeStates": 271.073,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0,
+        "meanRoundDelta": 0,
+        "simultaneousRateDelta": 0,
+        "betterWorldRate": 0,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 1
+      }
+    },
+    {
+      "modelId": "attention-v2-model-37-5e61e180fce72d66",
+      "designRow": 37,
+      "role": "core-sentinel",
+      "ruleShape": {
+        "attentionBudget": 3,
+        "verifyCost": 1,
+        "objectiveTarget": 12,
+        "driftLimit": 4,
+        "baseSoundness": 0.7,
+        "objectiveCoupling": "binary-front",
+        "throughputShape": "v1",
+        "seizeCostShape": "v1",
+        "calibrationSeparation": "v1",
+        "movementSeparation": "v1",
+        "stationaryQualification": "voluntary-hold",
+        "scoutStationaryPayload": "calibration-boost",
+        "lineStationaryPayload": "banked-guarantee",
+        "siegeStationaryPayload": "delayed-attention",
+        "capacityTopology": "shared-exclusive",
+        "abilityUnlockBasis": "personal-claim-count",
+        "abilityPackage": "complete",
+        "unresolvedDisposition": "bounded-backlog"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.964562,
+      "playerTwoWinRate": 0.035438,
+      "drawRate": 0,
+      "seatSkew": 0.929123,
+      "meanRounds": 3.252196,
+      "minRounds": 2,
+      "maxRounds": 5,
+      "terminalRates": {
+        "objective": 0.956502,
+        "drift": 0.038268,
+        "round-limit": 0,
+        "simultaneous": 0.00523,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 1237,
+      "effectiveOutcomeStates": 271.073,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": 0,
+        "meanRoundDelta": 0,
+        "simultaneousRateDelta": 0,
+        "betterWorldRate": 0,
+        "worseWorldRate": 0,
+        "sameWinnerTerminalRoundRate": 1
+      }
+    },
+    {
+      "modelId": "attention-v2-model-38-1decf8762f7440d1",
+      "designRow": 38,
+      "role": "all-on-sentinel",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 2,
+        "objectiveTarget": 24,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "polarized",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "independent-tracks",
+        "abilityUnlockBasis": "global-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.8199,
+      "playerTwoWinRate": 0.1801,
+      "drawRate": 0,
+      "seatSkew": 0.6398,
+      "meanRounds": 4.578125,
+      "minRounds": 1,
+      "maxRounds": 6,
+      "terminalRates": {
+        "objective": 0.803989,
+        "drift": 0.187517,
+        "round-limit": 0,
+        "simultaneous": 0.008494,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 3521,
+      "effectiveOutcomeStates": 1034.255,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.144661,
+        "meanRoundDelta": 1.325929,
+        "simultaneousRateDelta": 0.003264,
+        "betterWorldRate": 0.014197,
+        "worseWorldRate": 0.158859,
+        "sameWinnerTerminalRoundRate": 0.031858
+      }
+    },
+    {
+      "modelId": "attention-v2-model-39-5c61d4dccf879388",
+      "designRow": 39,
+      "role": "fast-follower-sentinel",
+      "ruleShape": {
+        "attentionBudget": 4,
+        "verifyCost": 0,
+        "objectiveTarget": 9,
+        "driftLimit": 5,
+        "baseSoundness": 0.8,
+        "objectiveCoupling": "distance-weighted-front",
+        "throughputShape": "scout-forward",
+        "seizeCostShape": "flat",
+        "calibrationSeparation": "polarized",
+        "movementSeparation": "scout-forward",
+        "stationaryQualification": "committed-streak",
+        "scoutStationaryPayload": "free-verify",
+        "lineStationaryPayload": "spatial-aura",
+        "siegeStationaryPayload": "claim-subsidy",
+        "capacityTopology": "pioneer-copy",
+        "abilityUnlockBasis": "owned-rank",
+        "abilityPackage": "role-separated",
+        "unresolvedDisposition": "confidence-default"
+      },
+      "runs": 230400,
+      "playerOneWinRate": 0.406801,
+      "playerTwoWinRate": 0.403967,
+      "drawRate": 0.189232,
+      "seatSkew": 0.002834,
+      "meanRounds": 2.001944,
+      "minRounds": 2,
+      "maxRounds": 3,
+      "terminalRates": {
+        "objective": 0.084805,
+        "drift": 0,
+        "round-limit": 0,
+        "simultaneous": 0.915195,
+        "forfeit": 0
+      },
+      "uniqueOutcomeStates": 91,
+      "effectiveOutcomeStates": 36.473,
+      "pairedVsV1Bridge": {
+        "playerOneScoreDelta": -0.463145,
+        "meanRoundDelta": -1.250252,
+        "simultaneousRateDelta": 0.909965,
+        "betterWorldRate": 0.011549,
+        "worseWorldRate": 0.564718,
+        "sameWinnerTerminalRoundRate": 0.000829
+      }
+    }
+  ],
+  "factorEffects": [
+    {
+      "factor": "attentionBudget",
+      "levels": [
+        {
+          "level": 2,
+          "modelRows": 12,
+          "playerOneWinRate": 0.749901,
+          "simultaneousRate": 0.169165,
+          "meanRounds": 2.806195,
+          "pairedScoreDeltaVsV1Bridge": -0.20122
+        },
+        {
+          "level": 3,
+          "modelRows": 14,
+          "playerOneWinRate": 0.694941,
+          "simultaneousRate": 0.200291,
+          "meanRounds": 3.450455,
+          "pairedScoreDeltaVsV1Bridge": -0.260947
+        },
+        {
+          "level": 4,
+          "modelRows": 14,
+          "playerOneWinRate": 0.663859,
+          "simultaneousRate": 0.319524,
+          "meanRounds": 3.526109,
+          "pairedScoreDeltaVsV1Bridge": -0.274649
+        }
+      ]
+    },
+    {
+      "factor": "verifyCost",
+      "levels": [
+        {
+          "level": 1,
+          "modelRows": 14,
+          "playerOneWinRate": 0.745863,
+          "simultaneousRate": 0.147175,
+          "meanRounds": 4.302495,
+          "pairedScoreDeltaVsV1Bridge": -0.212339
+        },
+        {
+          "level": 0,
+          "modelRows": 13,
+          "playerOneWinRate": 0.759305,
+          "simultaneousRate": 0.243931,
+          "meanRounds": 3.051282,
+          "pairedScoreDeltaVsV1Bridge": -0.180813
+        },
+        {
+          "level": 2,
+          "modelRows": 13,
+          "playerOneWinRate": 0.592997,
+          "simultaneousRate": 0.313527,
+          "meanRounds": 2.418818,
+          "pairedScoreDeltaVsV1Bridge": -0.353053
+        }
+      ]
+    },
+    {
+      "factor": "objectiveTarget",
+      "levels": [
+        {
+          "level": 9,
+          "modelRows": 13,
+          "playerOneWinRate": 0.63391,
+          "simultaneousRate": 0.354434,
+          "meanRounds": 2.220578,
+          "pairedScoreDeltaVsV1Bridge": -0.300104
+        },
+        {
+          "level": 12,
+          "modelRows": 14,
+          "playerOneWinRate": 0.793709,
+          "simultaneousRate": 0.144983,
+          "meanRounds": 2.884035,
+          "pairedScoreDeltaVsV1Bridge": -0.160999
+        },
+        {
+          "level": 24,
+          "modelRows": 13,
+          "playerOneWinRate": 0.666867,
+          "simultaneousRate": 0.205384,
+          "meanRounds": 4.777095,
+          "pairedScoreDeltaVsV1Bridge": -0.28905
+        }
+      ]
+    },
+    {
+      "factor": "driftLimit",
+      "levels": [
+        {
+          "level": 3,
+          "modelRows": 12,
+          "playerOneWinRate": 0.580415,
+          "simultaneousRate": 0.324134,
+          "meanRounds": 2.750687,
+          "pairedScoreDeltaVsV1Bridge": -0.36221
+        },
+        {
+          "level": 4,
+          "modelRows": 14,
+          "playerOneWinRate": 0.776968,
+          "simultaneousRate": 0.179453,
+          "meanRounds": 3.234777,
+          "pairedScoreDeltaVsV1Bridge": -0.176782
+        },
+        {
+          "level": 5,
+          "modelRows": 14,
+          "playerOneWinRate": 0.727106,
+          "simultaneousRate": 0.207531,
+          "meanRounds": 3.789365,
+          "pairedScoreDeltaVsV1Bridge": -0.220824
+        }
+      ]
+    },
+    {
+      "factor": "baseSoundness",
+      "levels": [
+        {
+          "level": 0.7,
+          "modelRows": 14,
+          "playerOneWinRate": 0.803943,
+          "simultaneousRate": 0.168028,
+          "meanRounds": 3.295283,
+          "pairedScoreDeltaVsV1Bridge": -0.149293
+        },
+        {
+          "level": 0.8,
+          "modelRows": 14,
+          "playerOneWinRate": 0.702148,
+          "simultaneousRate": 0.295299,
+          "meanRounds": 3.491107,
+          "pairedScoreDeltaVsV1Bridge": -0.23968
+        },
+        {
+          "level": 0.6,
+          "modelRows": 12,
+          "playerOneWinRate": 0.578062,
+          "simultaneousRate": 0.235068,
+          "meanRounds": 3.028064,
+          "pairedScoreDeltaVsV1Bridge": -0.372282
+        }
+      ]
+    },
+    {
+      "factor": "objectiveCoupling",
+      "levels": [
+        {
+          "level": "distance-weighted-front",
+          "modelRows": 14,
+          "playerOneWinRate": 0.729627,
+          "simultaneousRate": 0.209757,
+          "meanRounds": 2.989518,
+          "pairedScoreDeltaVsV1Bridge": -0.217756
+        },
+        {
+          "level": "binary-front",
+          "modelRows": 14,
+          "playerOneWinRate": 0.894933,
+          "simultaneousRate": 0.031055,
+          "meanRounds": 3.239852,
+          "pairedScoreDeltaVsV1Bridge": -0.069543
+        },
+        {
+          "level": "global",
+          "modelRows": 12,
+          "playerOneWinRate": 0.439848,
+          "simultaneousRate": 0.494668,
+          "meanRounds": 3.677922,
+          "pairedScoreDeltaVsV1Bridge": -0.4909
+        }
+      ]
+    },
+    {
+      "factor": "throughputShape",
+      "levels": [
+        {
+          "level": "v1",
+          "modelRows": 14,
+          "playerOneWinRate": 0.721207,
+          "simultaneousRate": 0.196111,
+          "meanRounds": 3.3774,
+          "pairedScoreDeltaVsV1Bridge": -0.232786
+        },
+        {
+          "level": "scout-forward",
+          "modelRows": 14,
+          "playerOneWinRate": 0.773162,
+          "simultaneousRate": 0.189833,
+          "meanRounds": 3.2616,
+          "pairedScoreDeltaVsV1Bridge": -0.177051
+        },
+        {
+          "level": "flat",
+          "modelRows": 12,
+          "playerOneWinRate": 0.591737,
+          "simultaneousRate": 0.325348,
+          "meanRounds": 3.20002,
+          "pairedScoreDeltaVsV1Bridge": -0.34794
+        }
+      ]
+    },
+    {
+      "factor": "seizeCostShape",
+      "levels": [
+        {
+          "level": "polarized",
+          "modelRows": 13,
+          "playerOneWinRate": 0.648341,
+          "simultaneousRate": 0.259155,
+          "meanRounds": 2.943802,
+          "pairedScoreDeltaVsV1Bridge": -0.299581
+        },
+        {
+          "level": "flat",
+          "modelRows": 13,
+          "playerOneWinRate": 0.596037,
+          "simultaneousRate": 0.332568,
+          "meanRounds": 3.285702,
+          "pairedScoreDeltaVsV1Bridge": -0.341443
+        },
+        {
+          "level": "v1",
+          "modelRows": 14,
+          "playerOneWinRate": 0.846078,
+          "simultaneousRate": 0.115356,
+          "meanRounds": 3.597333,
+          "pairedScoreDeltaVsV1Bridge": -0.112835
+        }
+      ]
+    },
+    {
+      "factor": "calibrationSeparation",
+      "levels": [
+        {
+          "level": "v1",
+          "modelRows": 14,
+          "playerOneWinRate": 0.732844,
+          "simultaneousRate": 0.18091,
+          "meanRounds": 3.569611,
+          "pairedScoreDeltaVsV1Bridge": -0.222261
+        },
+        {
+          "level": "polarized",
+          "modelRows": 14,
+          "playerOneWinRate": 0.655685,
+          "simultaneousRate": 0.250027,
+          "meanRounds": 3.173813,
+          "pairedScoreDeltaVsV1Bridge": -0.288821
+        },
+        {
+          "level": "compressed",
+          "modelRows": 12,
+          "playerOneWinRate": 0.715217,
+          "simultaneousRate": 0.272856,
+          "meanRounds": 3.078192,
+          "pairedScoreDeltaVsV1Bridge": -0.229821
+        }
+      ]
+    },
+    {
+      "factor": "movementSeparation",
+      "levels": [
+        {
+          "level": "scout-forward",
+          "modelRows": 14,
+          "playerOneWinRate": 0.709877,
+          "simultaneousRate": 0.252074,
+          "meanRounds": 2.707136,
+          "pairedScoreDeltaVsV1Bridge": -0.236943
+        },
+        {
+          "level": "v1",
+          "modelRows": 14,
+          "playerOneWinRate": 0.759958,
+          "simultaneousRate": 0.199829,
+          "meanRounds": 3.142887,
+          "pairedScoreDeltaVsV1Bridge": -0.185057
+        },
+        {
+          "level": "flat",
+          "modelRows": 12,
+          "playerOneWinRate": 0.620361,
+          "simultaneousRate": 0.248396,
+          "meanRounds": 4.120492,
+          "pairedScoreDeltaVsV1Bridge": -0.33375
+        }
+      ]
+    },
+    {
+      "factor": "stationaryQualification",
+      "levels": [
+        {
+          "level": "voluntary-hold",
+          "modelRows": 13,
+          "playerOneWinRate": 0.723987,
+          "simultaneousRate": 0.239127,
+          "meanRounds": 3.183192,
+          "pairedScoreDeltaVsV1Bridge": -0.225741
+        },
+        {
+          "level": "committed-streak",
+          "modelRows": 14,
+          "playerOneWinRate": 0.652317,
+          "simultaneousRate": 0.271285,
+          "meanRounds": 3.630534,
+          "pairedScoreDeltaVsV1Bridge": -0.295106
+        },
+        {
+          "level": "resolved-zero",
+          "modelRows": 13,
+          "playerOneWinRate": 0.729057,
+          "simultaneousRate": 0.184673,
+          "meanRounds": 3.010558,
+          "pairedScoreDeltaVsV1Bridge": -0.218991
+        }
+      ]
+    },
+    {
+      "factor": "scoutStationaryPayload",
+      "levels": [
+        {
+          "level": "free-verify",
+          "modelRows": 14,
+          "playerOneWinRate": 0.626265,
+          "simultaneousRate": 0.290799,
+          "meanRounds": 3.404136,
+          "pairedScoreDeltaVsV1Bridge": -0.31744
+        },
+        {
+          "level": "calibration-boost",
+          "modelRows": 14,
+          "playerOneWinRate": 0.728997,
+          "simultaneousRate": 0.196359,
+          "meanRounds": 3.127351,
+          "pairedScoreDeltaVsV1Bridge": -0.224041
+        },
+        {
+          "level": "reveal",
+          "modelRows": 12,
+          "playerOneWinRate": 0.754029,
+          "simultaneousRate": 0.207265,
+          "meanRounds": 3.325451,
+          "pairedScoreDeltaVsV1Bridge": -0.194355
+        }
+      ]
+    },
+    {
+      "factor": "lineStationaryPayload",
+      "levels": [
+        {
+          "level": "banked-guarantee",
+          "modelRows": 14,
+          "playerOneWinRate": 0.703953,
+          "simultaneousRate": 0.199061,
+          "meanRounds": 3.1632,
+          "pairedScoreDeltaVsV1Bridge": -0.251738
+        },
+        {
+          "level": "reveal-token",
+          "modelRows": 12,
+          "playerOneWinRate": 0.761683,
+          "simultaneousRate": 0.184489,
+          "meanRounds": 3.225065,
+          "pairedScoreDeltaVsV1Bridge": -0.19289
+        },
+        {
+          "level": "spatial-aura",
+          "modelRows": 14,
+          "playerOneWinRate": 0.644748,
+          "simultaneousRate": 0.30762,
+          "meanRounds": 3.454332,
+          "pairedScoreDeltaVsV1Bridge": -0.290999
+        }
+      ]
+    },
+    {
+      "factor": "siegeStationaryPayload",
+      "levels": [
+        {
+          "level": "delayed-attention",
+          "modelRows": 14,
+          "playerOneWinRate": 0.700644,
+          "simultaneousRate": 0.23382,
+          "meanRounds": 3.289105,
+          "pairedScoreDeltaVsV1Bridge": -0.245742
+        },
+        {
+          "level": "bankable-reserve",
+          "modelRows": 12,
+          "playerOneWinRate": 0.709037,
+          "simultaneousRate": 0.216547,
+          "meanRounds": 3.196104,
+          "pairedScoreDeltaVsV1Bridge": -0.239557
+        },
+        {
+          "level": "claim-subsidy",
+          "modelRows": 14,
+          "playerOneWinRate": 0.693182,
+          "simultaneousRate": 0.245382,
+          "meanRounds": 3.353251,
+          "pairedScoreDeltaVsV1Bridge": -0.256994
+        }
+      ]
+    },
+    {
+      "factor": "capacityTopology",
+      "levels": [
+        {
+          "level": "independent-tracks",
+          "modelRows": 13,
+          "playerOneWinRate": 0.741244,
+          "simultaneousRate": 0.185365,
+          "meanRounds": 3.374803,
+          "pairedScoreDeltaVsV1Bridge": -0.215616
+        },
+        {
+          "level": "pioneer-copy",
+          "modelRows": 13,
+          "playerOneWinRate": 0.727354,
+          "simultaneousRate": 0.233551,
+          "meanRounds": 3.174318,
+          "pairedScoreDeltaVsV1Bridge": -0.219133
+        },
+        {
+          "level": "shared-exclusive",
+          "modelRows": 14,
+          "playerOneWinRate": 0.637875,
+          "simultaneousRate": 0.27582,
+          "meanRounds": 3.300548,
+          "pairedScoreDeltaVsV1Bridge": -0.304375
+        }
+      ]
+    },
+    {
+      "factor": "abilityUnlockBasis",
+      "levels": [
+        {
+          "level": "global-rank",
+          "modelRows": 13,
+          "playerOneWinRate": 0.617019,
+          "simultaneousRate": 0.329532,
+          "meanRounds": 3.167452,
+          "pairedScoreDeltaVsV1Bridge": -0.326367
+        },
+        {
+          "level": "personal-claim-count",
+          "modelRows": 14,
+          "playerOneWinRate": 0.761945,
+          "simultaneousRate": 0.160596,
+          "meanRounds": 3.179086,
+          "pairedScoreDeltaVsV1Bridge": -0.189764
+        },
+        {
+          "level": "owned-rank",
+          "modelRows": 13,
+          "playerOneWinRate": 0.717964,
+          "simultaneousRate": 0.213472,
+          "meanRounds": 3.512474,
+          "pairedScoreDeltaVsV1Bridge": -0.23181
+        }
+      ]
+    },
+    {
+      "factor": "abilityPackage",
+      "levels": [
+        {
+          "level": "complete",
+          "modelRows": 14,
+          "playerOneWinRate": 0.766186,
+          "simultaneousRate": 0.171256,
+          "meanRounds": 2.913409,
+          "pairedScoreDeltaVsV1Bridge": -0.186145
+        },
+        {
+          "level": "utility-only",
+          "modelRows": 12,
+          "playerOneWinRate": 0.615394,
+          "simultaneousRate": 0.284667,
+          "meanRounds": 3.797489,
+          "pairedScoreDeltaVsV1Bridge": -0.332076
+        },
+        {
+          "level": "role-separated",
+          "modelRows": 14,
+          "playerOneWinRate": 0.707906,
+          "simultaneousRate": 0.249557,
+          "meanRounds": 3.213474,
+          "pairedScoreDeltaVsV1Bridge": -0.23729
+        }
+      ]
+    },
+    {
+      "factor": "unresolvedDisposition",
+      "levels": [
+        {
+          "level": "auto-accept",
+          "modelRows": 13,
+          "playerOneWinRate": 0.706663,
+          "simultaneousRate": 0.219659,
+          "meanRounds": 3.120797,
+          "pairedScoreDeltaVsV1Bridge": -0.248376
+        },
+        {
+          "level": "confidence-default",
+          "modelRows": 14,
+          "playerOneWinRate": 0.684788,
+          "simultaneousRate": 0.222124,
+          "meanRounds": 3.756468,
+          "pairedScoreDeltaVsV1Bridge": -0.262604
+        },
+        {
+          "level": "bounded-backlog",
+          "modelRows": 13,
+          "playerOneWinRate": 0.711413,
+          "simultaneousRate": 0.257084,
+          "meanRounds": 2.937332,
+          "pairedScoreDeltaVsV1Bridge": -0.231358
+        }
+      ]
+    }
+  ],
+  "storageProjection": {
+    "currentShapeScreenGiB": 1.786,
+    "projectedFullStandardCampaignGiB": 5.816,
+    "assumption": "Linear projection from observed gzip shard bytes, plus a 25% generous provisioning margin; archive metadata and charts are negligible by comparison.",
+    "scenarios": [
+      {
+        "campaigns": 1,
+        "shapeScreensGiB": 1.79,
+        "fullStandardCampaignsGiB": 5.82,
+        "generousProvisionGiB": 7.27
+      },
+      {
+        "campaigns": 10,
+        "shapeScreensGiB": 17.86,
+        "fullStandardCampaignsGiB": 58.16,
+        "generousProvisionGiB": 72.7
+      },
+      {
+        "campaigns": 25,
+        "shapeScreensGiB": 44.65,
+        "fullStandardCampaignsGiB": 145.4,
+        "generousProvisionGiB": 181.76
+      },
+      {
+        "campaigns": 50,
+        "shapeScreensGiB": 89.31,
+        "fullStandardCampaignsGiB": 290.81,
+        "generousProvisionGiB": 363.51
+      }
+    ]
+  },
+  "analysisHash": "sha256:e5963f1257972b145ee5d70994384f02bfc4f9f7f7e297ba3cc829931cb46d05"
+}

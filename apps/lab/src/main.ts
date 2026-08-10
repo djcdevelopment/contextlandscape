@@ -30,6 +30,7 @@ import {
   writeAttentionV2ShapeScreenReport,
   writeAttentionV2ShapeScreenShard
 } from "./attention-v2-runner.js";
+import { runAttentionV2Preflight } from "./attention-v2-preflight.js";
 import { writeImmutableJson } from "./artifact-io.js";
 import type { Sha256Digest } from "./provenance.js";
 
@@ -99,6 +100,21 @@ async function main(): Promise<void> {
     return;
   }
   const manifestPath = value("manifest");
+  const attentionV2Preflight = value("attention-v2-preflight");
+  if (attentionV2Preflight) {
+    if (attentionV2Preflight !== "probe" && attentionV2Preflight !== "audit") {
+      throw new Error("--attention-v2-preflight must be probe or audit");
+    }
+    const report = await runAttentionV2Preflight({
+      kind: attentionV2Preflight,
+      parentV1ModelHash: requiredDigest("parent-model"),
+      createdAt: value("created-at") ?? new Date().toISOString(),
+      outputDir: normalizeDataPath(value("out") ?? defaultOutputDirectory()),
+      progressEvery: optionalInteger("progress-every")
+    });
+    console.log(`wrote ${report}`);
+    return;
+  }
   const landscapeSweep = value("landscape-sweep");
   if (landscapeSweep) {
     await runLandscapeSweepCommand(landscapeSweep);
@@ -151,7 +167,7 @@ async function main(): Promise<void> {
 
 async function runLandscapeSweepCommand(mode: string): Promise<void> {
   if (mode !== "shape-screen" && mode !== "report") throw new Error("--landscape-sweep must be shape-screen or report");
-  const outputDir = value("out") ?? defaultOutputDirectory();
+  const outputDir = normalizeDataPath(value("out") ?? defaultOutputDirectory());
   const frozenManifest = value("manifest");
   if (mode === "report" && frozenManifest) {
     const plan = AttentionV2SweepPlanSchema.parse(

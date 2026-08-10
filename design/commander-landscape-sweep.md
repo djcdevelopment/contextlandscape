@@ -1,7 +1,7 @@
 # Commander Landscape and Broad v2 Sweep
 
 Decision date: 2026-08-09
-Status: commander slice and sweep planner implemented; v2 resolver required before execution
+Status: first shape screen completed as integrity-only evidence; corrected commander compilation required before selection
 
 ## Intent
 
@@ -12,12 +12,17 @@ The design has two linked landscapes. They share identities and evidence, but th
 ## Implementation boundary
 
 The sparse world contracts, coordinate helpers, viewer-scoped API, commander Canvas vertical slice,
-6,400-profile catalog, connected matchup graph, battle-sample catalog, frozen folds, and exact sweep
-budgets are implemented and tested. The plans are not runnable manifests: each is schema-locked to
-`executionStatus: "requires-v2-campaign-runner"` until the bounded campaign runner, durable v2
-manifests, and post-screen selection lineage are wired. The shape-screen resolver smoke is already
-executable; this status prevents a smoke path from being mistaken for the full canonical sweep.
-No v2 outcome evidence exists yet.
+6,400-profile catalog, connected matchup graph, battle-sample catalog, frozen folds, exact sweep
+budgets, durable shape-screen shards, completion report, and explicit post-screen selection lineage are
+implemented and tested.
+
+Audit addendum: the first 9,216,000-run shape screen completed, but its runner used one balanced
+composition and one fixed policy duel for every commander edge. Edge IDs changed the common-world
+random streams without compiling commander modules into behavior. The evidence is valid for artifact
+integrity, resolver execution, and narrow paired model sensitivity only. It may not satisfy commander,
+viability, or survivor-selection gates. See the
+[forensic assessment](../data/lab/attention-v2-shape-screen-analysis/ASSESSMENT.md) and
+[corrected campaign plan](../plan/attention-v2-corrected-shape-screen.md).
 
 ## Commander landscape
 

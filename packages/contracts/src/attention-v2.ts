@@ -2,7 +2,7 @@ import { z } from "zod";
 import { BattleCoordinateV1Schema, BattleVolumeRefV1Schema } from "./landscape.js";
 
 export const ATTENTION_V2_MODEL_VERSION = "duel-capacity-v2" as const;
-export const ATTENTION_V2_PLANNER_VERSION = "attention-v2-landscape-sweep-v2" as const;
+export const ATTENTION_V2_PLANNER_VERSION = "attention-v2-landscape-sweep-v3" as const;
 export const ATTENTION_V2_FACTOR_COUNT = 18 as const;
 export const ATTENTION_V2_COMMANDER_PROFILE_COUNT = 6_400 as const;
 
@@ -876,6 +876,85 @@ export const AttentionV2RunRecordSchema = z.object({
   }
 });
 export type AttentionV2RunRecord = z.infer<typeof AttentionV2RunRecordSchema>;
+
+export const AttentionV2CompiledCommanderRefSchema = z.object({
+  profile: AttentionV2CommanderProfileSchema,
+  compilerVersion: z.literal("attention-v2-commander-compiler-1"),
+  compositionId: z.string().min(1),
+  policyId: z.string().min(1),
+  policyHash: digest
+}).strict();
+export type AttentionV2CompiledCommanderRef = z.infer<typeof AttentionV2CompiledCommanderRefSchema>;
+
+export const AttentionV2ControllerTelemetrySchema = z.object({
+  movementCalls: z.number().int().nonnegative(),
+  movementIntents: z.record(z.string(), z.number().int().nonnegative()),
+  capacityCalls: z.number().int().nonnegative(),
+  capacityIntents: z.record(z.string(), z.number().int().nonnegative()),
+  commandCalls: z.number().int().nonnegative(),
+  commandIntents: z.record(z.string(), z.number().int().nonnegative())
+}).strict();
+export type AttentionV2ControllerTelemetry = z.infer<typeof AttentionV2ControllerTelemetrySchema>;
+
+export const AttentionV2EnrichedPlayerOutcomeSchema = z.object({
+  playerId: z.string().min(1),
+  commanderId: z.string().min(1),
+  status: z.enum(["active", "victory", "defeat", "draw"]),
+  progress: z.number().int().nonnegative(),
+  drift: z.number().int().nonnegative(),
+  counters: z.record(z.string(), z.number().finite().nonnegative()),
+  controller: AttentionV2ControllerTelemetrySchema
+}).strict();
+export type AttentionV2EnrichedPlayerOutcome = z.infer<typeof AttentionV2EnrichedPlayerOutcomeSchema>;
+
+/** Corrected v2 record: every catalog identity has a corresponding causal engine input. */
+export const AttentionV2EnrichedRunRecordSchema = z.object({
+  schemaVersion: z.literal(2),
+  planId: z.string().min(1),
+  planHash: digest,
+  stage: z.literal("shape-screen"),
+  identity: AttentionV2RunPlannerIdentitySchema,
+  modelId: z.string().min(1),
+  ruleShapeHash: digest,
+  edge: z.object({
+    edgeId: z.string().min(1),
+    pairHash: digest,
+    seatOrientation: z.union([z.literal(1), z.literal(2)]),
+    stratum: z.enum(["uniform", "nearby", "adversarial", "self-play", "sentinel"]),
+    left: AttentionV2CompiledCommanderRefSchema,
+    right: AttentionV2CompiledCommanderRefSchema,
+    playerOneCommanderId: z.string().min(1),
+    playerTwoCommanderId: z.string().min(1)
+  }).strict(),
+  battleSampleId: z.string().min(1),
+  battleSampleHash: digest,
+  battleContextHash: digest,
+  status: z.literal("complete"),
+  winnerPlayerSlot: z.union([z.literal(1), z.literal(2)]).nullable(),
+  terminalReason: z.enum(["objective", "drift", "round-limit", "simultaneous", "forfeit"]),
+  rounds: z.number().int().nonnegative(),
+  operations: z.number().int().positive(),
+  eventTypes: z.record(z.string(), z.number().int().nonnegative()),
+  players: z.tuple([AttentionV2EnrichedPlayerOutcomeSchema, AttentionV2EnrichedPlayerOutcomeSchema]),
+  traceHash: digest,
+  stateHash: digest,
+  outcomeHash: digest
+}).strict().superRefine((record, context) => {
+  if (record.identity.planId !== record.planId || record.identity.planHash !== record.planHash || record.identity.modelId !== record.modelId) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["identity"], message: "run identity must match its enclosing record" });
+  }
+  if (record.edge.edgeId !== record.identity.edgeId || record.edge.pairHash !== record.identity.pairHash) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["edge"], message: "edge attribution must match run identity" });
+  }
+  if (record.battleSampleId !== record.identity.battleSampleId) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["battleSampleId"], message: "battle sample must match run identity" });
+  }
+  if (record.players[0].playerId !== "alpha" || record.players[1].playerId !== "bravo" ||
+      record.players[0].commanderId !== record.edge.playerOneCommanderId || record.players[1].commanderId !== record.edge.playerTwoCommanderId) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["players"], message: "player outcomes must retain oriented commander attribution" });
+  }
+});
+export type AttentionV2EnrichedRunRecord = z.infer<typeof AttentionV2EnrichedRunRecordSchema>;
 
 export const AttentionV2ShardCompletionSchema = z.object({
   schemaVersion: z.literal(1),
