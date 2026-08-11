@@ -61,7 +61,31 @@ regression-tested; the apparent result did not survive it.
 ### Research rig
 
 - `apps/lab` — sharded, resumable synthetic matrix worker with a streaming reducer, Wilson intervals,
-  Pareto frontier, pressure sensitivity, and recommendation-only candidate patches.
+  Pareto frontier, pressure sensitivity, recommendation-only candidate patches, and v2 provenance
+  that content-addresses the source revision, model, scenario/policy sets, manifest, shards, and report.
+  Canonical runs require clean identified source; legacy v1 evidence remains readable but is explicitly
+  reported as historically unverifiable.
+- `packages/contracts/src/landscape.ts`, `packages/engine/src/landscape.ts`, and
+  `apps/server/src/landscape-routes.ts` — bounded sparse coordinates and viewer-scoped projections for
+  a 6,400×6,400 theater, 32×32 chunks, and 32×32×32 battle volumes. The opt-in
+  `?view=commander` Canvas UI supports theater LOD, selection, fronts, uncertainty, and battle layers
+  without allocating the world densely.
+- `packages/contracts/src/attention-v2.ts`, `apps/lab/src/landscape-sweep.ts`,
+  `apps/lab/src/attention-v2-commanders.ts`, and the v2 runner/preflight tools — versioned 6,400-profile
+  doctrine catalog, concrete composition/controller compiler, connected sparse matchup graph, balanced
+  battle-sample catalog, frozen folds, exact lean/standard/deep budgets, enriched schema-v2 evidence,
+  deterministic probe/audit modes, and resumable gzip-JSONL shards. The corrected 9,216,000-run shape
+  screen is complete and supports provisional next-stage selection; later model sets still require a new,
+  parent-linked plan and may not bypass the multi-sample, holdout, and v1 regression gates.
+- `packages/engine/src/attention.ts` — versioned deterministic two-player attention reducer with a
+  10×10 spatial layer, simultaneous movement, stationary Scout/Line/Siege trade-offs, shared capacity
+  claims, Perfect Focus, Overclock, Macro Flare, blinded projections, and policy-independent random
+  streams. `apps/simulator/src/attention-policies.ts` provides serializable projection-only policies;
+  `apps/lab/src/attention-lab.ts` executes the paired stationary/capacity/holdout matrices and links
+  their outcomes to immutable build provenance.
+  The canonical v1r1 evidence accepts Scout specialization, Siege specialization, movement value, and
+  stationary Line escort as the research baseline. Macro Flare remains experimental after failing its
+  predeclared causal drift-defeat gate; see [the v1r1 research decision](../design/attention-duel-v1r1-decision.md).
 - `apps/server` — Fastify API with PostgreSQL or in-memory persistence, idempotent commands,
   optimistic concurrency, per-match and per-session locks, and **server-side blinding** of lab
   treatments.
@@ -93,6 +117,7 @@ implemented**:
 | Discord | `packages/discord-adapter` is two pure functions building embed objects. No bot, no transport, no caller. |
 | Challenges / PvP | Endpoints exist, but there is no second-player turn structure or per-player projection split. |
 | Progression, profiles, accounts, matchmaking, ranked, economy beyond energy | None. |
+| Downstream v2 refinement and holdout evidence | The corrected causal shape screen is complete, but its six provisional rows have not yet passed the planned multi-sample refinement, fresh-seed holdout, or v1 regression panel. No v2 rule model is promoted. |
 
 ## Known limits of the evidence
 

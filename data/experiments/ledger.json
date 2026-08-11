@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "experiments": [
+    {
+      "schemaVersion": 1,
+      "matrixId": "attention-duel-v1r1-stationary-train",
+      "createdAt": "2026-08-09T12:40:03.849Z",
+      "completedAt": "2026-08-09T12:45:10.734Z",
+      "stage": "train",
+      "hypothesis": "Stationary chassis effects break the verify-lowest-confidence monopoly across compositions",
+      "disposition": "revise",
+      "sourceRevision": "005090cc4c3fe2d323cc6a6b77e1a7fd22d389e6",
+      "modelHash": "sha256:ecdacd6c9fdfaeb64f48470bedac7ca46cc08e6b22f4f1e68ba9351f7815ac38",
+      "manifestHash": "sha256:ac58c51e59711cb2ebd2c737223b11b5d50634de8ec09ac46f81d404e66ba8ac",
+      "reportHash": "sha256:91175e17ae169b0cd5b70a7bca7272828ce8ab397095e1e486eaf310b1c1c4d4",
+      "manifestPath": "attention-duel-v1r1-stationary-train/manifest.json",
+      "reportPath": "attention-duel-v1r1-stationary-train/report.json",
+      "runs": 480000
+    },
+    {
+      "schemaVersion": 1,
+      "matrixId": "attention-duel-v1r1-capacity-train",
+      "createdAt": "2026-08-09T12:40:05.325Z",
+      "completedAt": "2026-08-09T12:47:55.676Z",
+      "stage": "train",
+      "hypothesis": "Shared capacity creates distinct pioneer and fast-follower strategy outcomes",
+      "disposition": "revise",
+      "sourceRevision": "005090cc4c3fe2d323cc6a6b77e1a7fd22d389e6",
+      "modelHash": "sha256:f928a9340ed173f694f4f0613b5cbd764a9d019f97d54c3d44afb9eeab07eca7",
+      "manifestHash": "sha256:d13aadefb54d339a447686289488fe9db42355f4804c0f29e36e0616a4f0704c",
+      "reportHash": "sha256:b0fcfe35ca27b78e1fa8ffc49859a58a28fe8cb2daf30514338de3633d2a8e15",
+      "manifestPath": "attention-duel-v1r1-capacity-train/manifest.json",
+      "reportPath": "attention-duel-v1r1-capacity-train/report.json",
+      "runs": 144000
+    },
+    {
+      "schemaVersion": 1,
+      "matrixId": "attention-duel-v1r1-holdout",
+      "createdAt": "2026-08-09T12:40:08.842Z",
+      "completedAt": "2026-08-09T12:48:48.098Z",
+      "stage": "holdout",
+      "hypothesis": "Specialization, movement, escort, and Macro Flare meet their predeclared 95 percent acceptance gates",
+      "disposition": "revise",
+      "sourceRevision": "005090cc4c3fe2d323cc6a6b77e1a7fd22d389e6",
+      "modelHash": "sha256:42e047a0c6b233b17151d6d1fd5b7bd2316dacafc0f45ac213eb3b1840b5b37d",
+      "manifestHash": "sha256:c3b17aa4c05f59195cd32dab637ea0e6d5c9108e5e2976f154c7683c5215e7b8",
+      "reportHash": "sha256:523763ea89a1af1aa2e96337fb37cfe4d6a2867e49f9f4f9a82509aa0270c09b",
+      "manifestPath": "attention-duel-v1r1-holdout/manifest.json",
+      "reportPath": "attention-duel-v1r1-holdout/report.json",
+      "runs": 50000
+    }
+  ]
+}

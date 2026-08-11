@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "experiment": "attention-v3-stage-c3-ruleset-aware-spatial-holdout",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "resolverVersion": "attention-v3-stage-c-resolver-1",
+  "parentStageC2ReportHash": "sha256:93d5e5c3caa2411e3e9c30570d44cbc9d88af6d866d7cd09eab9643879ac50ea",
+  "staticPolicies": [
+    {
+      "id": "hold-pass",
+      "kind": "hold"
+    },
+    {
+      "id": "scout-peel-support",
+      "kind": "peel-support"
+    },
+    {
+      "id": "always-chaff",
+      "kind": "chaff"
+    }
+  ],
+  "distanceCandidates": [
+    {
+      "id": "low-total-ge-1",
+      "feature": "lowTotal",
+      "threshold": 1
+    },
+    {
+      "id": "low-total-ge-2",
+      "feature": "lowTotal",
+      "threshold": 2
+    },
+    {
+      "id": "low-total-ge-3",
+      "feature": "lowTotal",
+      "threshold": 3
+    },
+    {
+      "id": "low-total-ge-4",
+      "feature": "lowTotal",
+      "threshold": 4
+    },
+    {
+      "id": "low-total-ge-5",
+      "feature": "lowTotal",
+      "threshold": 5
+    },
+    {
+      "id": "low-total-ge-6",
+      "feature": "lowTotal",
+      "threshold": 6
+    },
+    {
+      "id": "low-objective-ge-1",
+      "feature": "lowObjective",
+      "threshold": 1
+    },
+    {
+      "id": "low-objective-ge-2",
+      "feature": "lowObjective",
+      "threshold": 2
+    },
+    {
+      "id": "low-objective-ge-3",
+      "feature": "lowObjective",
+      "threshold": 3
+    },
+    {
+      "id": "low-objective-ge-4",
+      "feature": "lowObjective",
+      "threshold": 4
+    },
+    {
+      "id": "low-objective-ge-5",
+      "feature": "lowObjective",
+      "threshold": 5
+    },
+    {
+      "id": "low-objective-ge-6",
+      "feature": "lowObjective",
+      "threshold": 6
+    },
+    {
+      "id": "low-scout-ge-1",
+      "feature": "lowScout",
+      "threshold": 1
+    },
+    {
+      "id": "low-scout-ge-2",
+      "feature": "lowScout",
+      "threshold": 2
+    },
+    {
+      "id": "low-scout-ge-3",
+      "feature": "lowScout",
+      "threshold": 3
+    },
+    {
+      "id": "objective-deficit-ge-0p2",
+      "feature": "objectiveDeficit",
+      "threshold": 0.2
+    },
+    {
+      "id": "objective-deficit-ge-0p4",
+      "feature": "objectiveDeficit",
+      "threshold": 0.4
+    },
+    {
+      "id": "objective-deficit-ge-0p6",
+      "feature": "objectiveDeficit",
+      "threshold": 0.6
+    },
+    {
+      "id": "objective-deficit-ge-0p8",
+      "feature": "objectiveDeficit",
+      "threshold": 0.8
+    },
+    {
+      "id": "objective-deficit-ge-1p0",
+      "feature": "objectiveDeficit",
+      "threshold": 1
+    },
+    {
+      "id": "scout-deficit-ge-0p2",
+      "feature": "scoutDeficit",
+      "threshold": 0.2
+    },
+    {
+      "id": "scout-deficit-ge-0p4",
+      "feature": "scoutDeficit",
+      "threshold": 0.4
+    },
+    {
+      "id": "scout-deficit-ge-0p6",
+      "feature": "scoutDeficit",
+      "threshold": 0.6
+    },
+    {
+      "id": "scout-deficit-ge-0p8",
+      "feature": "scoutDeficit",
+      "threshold": 0.8
+    },
+    {
+      "id": "scout-deficit-ge-1p0",
+      "feature": "scoutDeficit",
+      "threshold": 1
+    }
+  ],
+  "publicPolicyContract": {
+    "confidenceThreshold": "hold-pass",
+    "localGlobal": "always-chaff",
+    "localBinaryFront": "scout-peel-support",
+    "localDistanceWeightedFront": "selected public spatial-confidence rule",
+    "forbiddenInputs": [
+      "latent soundness",
+      "artifact truth",
+      "pressure id",
+      "soundness rate",
+      "focal seat",
+      "split membership"
+    ]
+  },
+  "featureContract": {
+    "lowConfidenceCutoff": 0.5,
+    "lowTotal": "pending public artifacts below cutoff",
+    "lowObjective": "pending public objectiveEligible artifacts below cutoff",
+    "lowScout": "pending public Scout-source artifacts below cutoff",
+    "objectiveDeficit": "sum max(0, 0.50 - reportedConfidence) over objectiveEligible artifacts",
+    "scoutDeficit": "sum max(0, 0.50 - reportedConfidence) over Scout-source artifacts"
+  },
+  "selector": [
+    "maximum minimum local-verify pressure score",
+    "maximum pooled local-verify score",
+    "maximum minimum distance-weighted pressure score",
+    "minimum distance-weighted Chaff activation rate",
+    "lexical candidate id"
+  ],
+  "pressureSamples": [
+    {
+      "id": "binary-sound-70",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.7
+    },
+    {
+      "id": "global-sound-45",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.45
+    },
+    {
+      "id": "distance-sound-55",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "distance-sound-80",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.8
+    }
+  ],
+  "commandModes": [
+    "confidence-threshold",
+    "local-verify"
+  ],
+  "trainSeeds": [
+    202000,
+    202001,
+    202002,
+    202003,
+    202004,
+    202005,
+    202006,
+    202007,
+    202008,
+    202009,
+    202010,
+    202011,
+    202012,
+    202013,
+    202014,
+    202015,
+    202016,
+    202017,
+    202018,
+    202019,
+    202020,
+    202021,
+    202022,
+    202023,
+    202024,
+    202025,
+    202026,
+    202027,
+    202028,
+    202029,
+    202030,
+    202031,
+    202032,
+    202033,
+    202034,
+    202035,
+    202036,
+    202037,
+    202038,
+    202039,
+    202040,
+    202041,
+    202042,
+    202043,
+    202044,
+    202045,
+    202046,
+    202047,
+    202048,
+    202049,
+    202050,
+    202051,
+    202052,
+    202053,
+    202054,
+    202055,
+    202056,
+    202057,
+    202058,
+    202059,
+    202060,
+    202061,
+    202062,
+    202063
+  ],
+  "holdoutSeeds": [
+    202064,
+    202065,
+    202066,
+    202067,
+    202068,
+    202069,
+    202070,
+    202071,
+    202072,
+    202073,
+    202074,
+    202075,
+    202076,
+    202077,
+    202078,
+    202079,
+    202080,
+    202081,
+    202082,
+    202083,
+    202084,
+    202085,
+    202086,
+    202087,
+    202088,
+    202089,
+    202090,
+    202091,
+    202092,
+    202093,
+    202094,
+    202095
+  ],
+  "orientations": [
+    "focal-alpha",
+    "focal-bravo"
+  ],
+  "composition": "balanced",
+  "baseModelHash": "sha256:42b8b949f671eedf48c59429a8144c7e6ce55d66a8c79eeacd71e5938cb7b606",
+  "uapModelHash": "sha256:396eeb7bba35633c8be78e12a639993bdfa84fecfcb7367dc5810e21630ae5fd",
+  "spatialModelHash": "sha256:023005393e0d1da931ad127591cc9764fb9414537bb2944f908b08eed7dc7d18",
+  "artilleryModelHash": "sha256:fd022a658d4a2f68644f6acccbcd2982954d8be344c59cf5adb2fad0b11c7666",
+  "scenarioHash": "sha256:033ef8c114e01d2275d6342d10fe333ed5e7c5c0c69a341f3e12f86673b0c618",
+  "compositionHash": "sha256:40ae8ceaf1e03b9375ca81f7a4fa3827b8245891f77bf03e6e6c1c0a61029b57",
+  "worldStreamNamespace": "attention-v3-stage-c3-ruleset-spatial-world-v1",
+  "trainingMode": "three simulated static arms plus exact offline candidate lookup",
+  "capacityPolicy": "pass",
+  "reload": false,
+  "promotionTolerance": 0.05,
+  "planId": "attention-v3-stage-c3-0b316976b0976c46",
+  "planHash": "sha256:0b316976b0976c46c51a9a4c34711a54b19f31698d2c70ae767d4aab6d1139b1"
+}

@@ -1,0 +1,1892 @@
+{
+  "schemaVersion": 1,
+  "matrixId": "attention-duel-v1r1-capacity-train",
+  "matrixKind": "attention-command",
+  "modelVersion": "duel-capacity-v1",
+  "campaignKind": "capacity-train",
+  "model": {
+    "schemaVersion": 1,
+    "modelVersion": "duel-capacity-v1",
+    "rules": {
+      "attentionPerRound": 3,
+      "verifyCost": 1,
+      "objectiveTarget": 12,
+      "driftLimit": 4,
+      "soundnessRate": 0.7,
+      "requireObjectiveRange": true
+    },
+    "chassis": {
+      "scout": {
+        "throughput": 3,
+        "seizeCost": 1,
+        "calibration": 0.2,
+        "movementRange": 3
+      },
+      "line": {
+        "throughput": 2,
+        "seizeCost": 2,
+        "calibration": 0.6,
+        "movementRange": 2
+      },
+      "siege": {
+        "throughput": 1,
+        "seizeCost": 3,
+        "calibration": 0.9,
+        "movementRange": 1
+      }
+    },
+    "stationary": {
+      "reconLock": {
+        "calibration": 0.85,
+        "delayRounds": 1
+      },
+      "targetLock": {
+        "tokensPerStationaryRound": 1,
+        "streakThreshold": 3,
+        "thresholdRoundTokens": 2,
+        "tokenCap": 99,
+        "range": 4
+      },
+      "commandUplink": {
+        "attentionBonus": 1,
+        "calibration": 0.2,
+        "delayRounds": 1,
+        "stackLimit": 3
+      }
+    },
+    "capacity": {
+      "slots": [
+        {
+          "rank": 1,
+          "cost": 1,
+          "capacityAward": 1
+        },
+        {
+          "rank": 2,
+          "cost": 2,
+          "capacityAward": 1
+        },
+        {
+          "rank": 3,
+          "cost": 3,
+          "capacityAward": 3
+        },
+        {
+          "rank": 4,
+          "cost": 5,
+          "capacityAward": 5
+        },
+        {
+          "rank": 5,
+          "cost": 8,
+          "capacityAward": 8
+        }
+      ],
+      "followerStartsAtSlot": 2,
+      "perfectFocus": {
+        "unlockRank": 1,
+        "cooldownRounds": 3,
+        "maxUses": 3
+      },
+      "overclock": {
+        "unlockRank": 2,
+        "seizeDiscount": 1,
+        "durationRounds": 1,
+        "maxUses": 1
+      },
+      "macroFlare": {
+        "unlockRank": 3,
+        "range": 4,
+        "width": 3,
+        "height": 3,
+        "durationEmissions": 2,
+        "outputMultiplier": 2,
+        "maxUses": 1
+      }
+    }
+  },
+  "scenarios": [
+    {
+      "schemaVersion": 1,
+      "scenarioId": "shifting-front",
+      "version": 1,
+      "board": {
+        "width": 10,
+        "height": 10,
+        "distanceMetric": "chebyshev",
+        "exclusiveOccupancy": true
+      },
+      "roundLimit": 8,
+      "playerOrder": [
+        1,
+        2
+      ],
+      "frontSchedule": [
+        {
+          "round": 1,
+          "playerSlot": 1,
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radius": 1
+        },
+        {
+          "round": 1,
+          "playerSlot": 2,
+          "center": {
+            "x": 7,
+            "y": 7
+          },
+          "radius": 1
+        },
+        {
+          "round": 2,
+          "playerSlot": 1,
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radius": 1
+        },
+        {
+          "round": 2,
+          "playerSlot": 2,
+          "center": {
+            "x": 7,
+            "y": 7
+          },
+          "radius": 1
+        },
+        {
+          "round": 3,
+          "playerSlot": 1,
+          "center": {
+            "x": 4,
+            "y": 3
+          },
+          "radius": 1
+        },
+        {
+          "round": 3,
+          "playerSlot": 2,
+          "center": {
+            "x": 5,
+            "y": 6
+          },
+          "radius": 1
+        },
+        {
+          "round": 4,
+          "playerSlot": 1,
+          "center": {
+            "x": 4,
+            "y": 3
+          },
+          "radius": 1
+        },
+        {
+          "round": 4,
+          "playerSlot": 2,
+          "center": {
+            "x": 5,
+            "y": 6
+          },
+          "radius": 1
+        },
+        {
+          "round": 5,
+          "playerSlot": 1,
+          "center": {
+            "x": 6,
+            "y": 4
+          },
+          "radius": 1
+        },
+        {
+          "round": 5,
+          "playerSlot": 2,
+          "center": {
+            "x": 3,
+            "y": 5
+          },
+          "radius": 1
+        },
+        {
+          "round": 6,
+          "playerSlot": 1,
+          "center": {
+            "x": 6,
+            "y": 4
+          },
+          "radius": 1
+        },
+        {
+          "round": 6,
+          "playerSlot": 2,
+          "center": {
+            "x": 3,
+            "y": 5
+          },
+          "radius": 1
+        },
+        {
+          "round": 7,
+          "playerSlot": 1,
+          "center": {
+            "x": 7,
+            "y": 6
+          },
+          "radius": 1
+        },
+        {
+          "round": 7,
+          "playerSlot": 2,
+          "center": {
+            "x": 2,
+            "y": 3
+          },
+          "radius": 1
+        },
+        {
+          "round": 8,
+          "playerSlot": 1,
+          "center": {
+            "x": 7,
+            "y": 6
+          },
+          "radius": 1
+        },
+        {
+          "round": 8,
+          "playerSlot": 2,
+          "center": {
+            "x": 2,
+            "y": 3
+          },
+          "radius": 1
+        }
+      ],
+      "spawns": [
+        {
+          "playerSlot": 1,
+          "unitIndex": 0,
+          "position": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "playerSlot": 1,
+          "unitIndex": 1,
+          "position": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "playerSlot": 1,
+          "unitIndex": 2,
+          "position": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "playerSlot": 2,
+          "unitIndex": 0,
+          "position": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "playerSlot": 2,
+          "unitIndex": 1,
+          "position": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "playerSlot": 2,
+          "unitIndex": 2,
+          "position": {
+            "x": 7,
+            "y": 8
+          }
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "scenarioId": "flare-pocket",
+      "version": 1,
+      "board": {
+        "width": 10,
+        "height": 10,
+        "distanceMetric": "chebyshev",
+        "exclusiveOccupancy": true
+      },
+      "roundLimit": 8,
+      "initialCapacitySlot": 2,
+      "playerOrder": [
+        1,
+        2
+      ],
+      "frontSchedule": [
+        {
+          "round": 1,
+          "playerSlot": 1,
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radius": 1
+        },
+        {
+          "round": 1,
+          "playerSlot": 2,
+          "center": {
+            "x": 7,
+            "y": 7
+          },
+          "radius": 1
+        },
+        {
+          "round": 2,
+          "playerSlot": 1,
+          "center": {
+            "x": 2,
+            "y": 2
+          },
+          "radius": 1
+        },
+        {
+          "round": 2,
+          "playerSlot": 2,
+          "center": {
+            "x": 7,
+            "y": 7
+          },
+          "radius": 1
+        },
+        {
+          "round": 3,
+          "playerSlot": 1,
+          "center": {
+            "x": 3,
+            "y": 3
+          },
+          "radius": 1
+        },
+        {
+          "round": 3,
+          "playerSlot": 2,
+          "center": {
+            "x": 6,
+            "y": 6
+          },
+          "radius": 1
+        },
+        {
+          "round": 4,
+          "playerSlot": 1,
+          "center": {
+            "x": 3,
+            "y": 3
+          },
+          "radius": 1
+        },
+        {
+          "round": 4,
+          "playerSlot": 2,
+          "center": {
+            "x": 6,
+            "y": 6
+          },
+          "radius": 1
+        },
+        {
+          "round": 5,
+          "playerSlot": 1,
+          "center": {
+            "x": 4,
+            "y": 4
+          },
+          "radius": 1
+        },
+        {
+          "round": 5,
+          "playerSlot": 2,
+          "center": {
+            "x": 5,
+            "y": 5
+          },
+          "radius": 1
+        },
+        {
+          "round": 6,
+          "playerSlot": 1,
+          "center": {
+            "x": 4,
+            "y": 4
+          },
+          "radius": 1
+        },
+        {
+          "round": 6,
+          "playerSlot": 2,
+          "center": {
+            "x": 5,
+            "y": 5
+          },
+          "radius": 1
+        },
+        {
+          "round": 7,
+          "playerSlot": 1,
+          "center": {
+            "x": 5,
+            "y": 5
+          },
+          "radius": 1
+        },
+        {
+          "round": 7,
+          "playerSlot": 2,
+          "center": {
+            "x": 4,
+            "y": 4
+          },
+          "radius": 1
+        },
+        {
+          "round": 8,
+          "playerSlot": 1,
+          "center": {
+            "x": 5,
+            "y": 5
+          },
+          "radius": 1
+        },
+        {
+          "round": 8,
+          "playerSlot": 2,
+          "center": {
+            "x": 4,
+            "y": 4
+          },
+          "radius": 1
+        }
+      ],
+      "spawns": [
+        {
+          "playerSlot": 1,
+          "unitIndex": 0,
+          "position": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "playerSlot": 1,
+          "unitIndex": 1,
+          "position": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "playerSlot": 1,
+          "unitIndex": 2,
+          "position": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "playerSlot": 2,
+          "unitIndex": 0,
+          "position": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "playerSlot": 2,
+          "unitIndex": 1,
+          "position": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "playerSlot": 2,
+          "unitIndex": 2,
+          "position": {
+            "x": 7,
+            "y": 8
+          }
+        }
+      ]
+    }
+  ],
+  "compositions": [
+    {
+      "schemaVersion": 1,
+      "compositionId": "balanced",
+      "units": [
+        {
+          "unitKey": "scout",
+          "chassis": "scout"
+        },
+        {
+          "unitKey": "line",
+          "chassis": "line"
+        },
+        {
+          "unitKey": "siege",
+          "chassis": "siege"
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "compositionId": "scout-homogeneous",
+      "units": [
+        {
+          "unitKey": "scout-1",
+          "chassis": "scout"
+        },
+        {
+          "unitKey": "scout-2",
+          "chassis": "scout"
+        },
+        {
+          "unitKey": "scout-3",
+          "chassis": "scout"
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "compositionId": "siege-homogeneous",
+      "units": [
+        {
+          "unitKey": "siege-1",
+          "chassis": "siege"
+        },
+        {
+          "unitKey": "siege-2",
+          "chassis": "siege"
+        },
+        {
+          "unitKey": "siege-3",
+          "chassis": "siege"
+        }
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "variantId": "default",
+      "factorLevels": {
+        "default": true
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 3
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 1
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 4,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 1
+          }
+        }
+      }
+    },
+    {
+      "variantId": "no-capacity",
+      "factorLevels": {
+        "capacity": false
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1000000,
+              "capacityAward": 0
+            },
+            {
+              "rank": 2,
+              "cost": 1000000,
+              "capacityAward": 0
+            },
+            {
+              "rank": 3,
+              "cost": 1000000,
+              "capacityAward": 0
+            },
+            {
+              "rank": 4,
+              "cost": 1000000,
+              "capacityAward": 0
+            },
+            {
+              "rank": 5,
+              "cost": 1000000,
+              "capacityAward": 0
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 0
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 0
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 4,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 0
+          }
+        }
+      }
+    },
+    {
+      "variantId": "no-perfect-focus",
+      "factorLevels": {
+        "perfectFocus": false
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 0
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 1
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 4,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 1
+          }
+        }
+      }
+    },
+    {
+      "variantId": "no-overclock",
+      "factorLevels": {
+        "overclock": false
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 3
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 0
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 4,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 1
+          }
+        }
+      }
+    },
+    {
+      "variantId": "no-macro-flare",
+      "factorLevels": {
+        "macroFlare": false
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 3
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 1
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 4,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 0
+          }
+        }
+      }
+    },
+    {
+      "variantId": "flare-range-3",
+      "factorLevels": {
+        "flareRange": 3
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 3
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 1
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 3,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 1
+          }
+        }
+      }
+    },
+    {
+      "variantId": "flare-range-5",
+      "factorLevels": {
+        "flareRange": 5
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 3
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 1
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 5,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 2,
+            "outputMultiplier": 2,
+            "maxUses": 1
+          }
+        }
+      }
+    },
+    {
+      "variantId": "flare-duration-1",
+      "factorLevels": {
+        "flareDuration": 1
+      },
+      "model": {
+        "schemaVersion": 1,
+        "modelVersion": "duel-capacity-v1",
+        "rules": {
+          "attentionPerRound": 3,
+          "verifyCost": 1,
+          "objectiveTarget": 24,
+          "driftLimit": 4,
+          "soundnessRate": 0.7,
+          "requireObjectiveRange": true
+        },
+        "chassis": {
+          "scout": {
+            "throughput": 3,
+            "seizeCost": 1,
+            "calibration": 0.2,
+            "movementRange": 3
+          },
+          "line": {
+            "throughput": 2,
+            "seizeCost": 2,
+            "calibration": 0.6,
+            "movementRange": 2
+          },
+          "siege": {
+            "throughput": 1,
+            "seizeCost": 3,
+            "calibration": 0.9,
+            "movementRange": 1
+          }
+        },
+        "stationary": {
+          "reconLock": {
+            "calibration": 0.85,
+            "delayRounds": 1
+          },
+          "targetLock": {
+            "tokensPerStationaryRound": 1,
+            "streakThreshold": 3,
+            "thresholdRoundTokens": 2,
+            "tokenCap": 99,
+            "range": 4
+          },
+          "commandUplink": {
+            "attentionBonus": 1,
+            "calibration": 0.2,
+            "delayRounds": 1,
+            "stackLimit": 3
+          }
+        },
+        "capacity": {
+          "slots": [
+            {
+              "rank": 1,
+              "cost": 1,
+              "capacityAward": 1
+            },
+            {
+              "rank": 2,
+              "cost": 2,
+              "capacityAward": 1
+            },
+            {
+              "rank": 3,
+              "cost": 3,
+              "capacityAward": 3
+            },
+            {
+              "rank": 4,
+              "cost": 5,
+              "capacityAward": 5
+            },
+            {
+              "rank": 5,
+              "cost": 8,
+              "capacityAward": 8
+            }
+          ],
+          "followerStartsAtSlot": 2,
+          "perfectFocus": {
+            "unlockRank": 1,
+            "cooldownRounds": 3,
+            "maxUses": 3
+          },
+          "overclock": {
+            "unlockRank": 2,
+            "seizeDiscount": 1,
+            "durationRounds": 1,
+            "maxUses": 1
+          },
+          "macroFlare": {
+            "unlockRank": 3,
+            "range": 4,
+            "width": 3,
+            "height": 3,
+            "durationEmissions": 1,
+            "outputMultiplier": 2,
+            "maxUses": 1
+          }
+        }
+      }
+    }
+  ],
+  "policies": [
+    {
+      "schemaVersion": 1,
+      "policyId": "verify-lowest-confidence",
+      "label": "Verify lowest confidence",
+      "movementRules": [],
+      "movementFallback": "hold",
+      "capacityStrategy": "never",
+      "commandRules": [
+        {
+          "when": [
+            {
+              "kind": "revealed-unsound"
+            }
+          ],
+          "action": {
+            "kind": "reject"
+          },
+          "target": {
+            "kind": "revealed-unsound"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "always"
+            }
+          ],
+          "action": {
+            "kind": "verify"
+          },
+          "target": {
+            "kind": "lowest-confidence"
+          }
+        }
+      ],
+      "maxCommandActions": 64
+    },
+    {
+      "schemaVersion": 1,
+      "policyId": "front-mobile-verify",
+      "label": "Advance and verify",
+      "movementRules": [],
+      "movementFallback": "approach-own-front",
+      "capacityStrategy": "never",
+      "commandRules": [
+        {
+          "when": [
+            {
+              "kind": "revealed-unsound"
+            }
+          ],
+          "action": {
+            "kind": "reject"
+          },
+          "target": {
+            "kind": "revealed-unsound"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "always"
+            }
+          ],
+          "action": {
+            "kind": "verify"
+          },
+          "target": {
+            "kind": "lowest-confidence"
+          }
+        }
+      ],
+      "maxCommandActions": 64
+    },
+    {
+      "schemaVersion": 1,
+      "policyId": "capacity-ignore",
+      "label": "Ignore capacity",
+      "movementRules": [],
+      "movementFallback": "approach-own-front",
+      "capacityStrategy": "never",
+      "commandRules": [
+        {
+          "when": [
+            {
+              "kind": "revealed-unsound"
+            }
+          ],
+          "action": {
+            "kind": "reject"
+          },
+          "target": {
+            "kind": "revealed-unsound"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "always"
+            }
+          ],
+          "action": {
+            "kind": "verify"
+          },
+          "target": {
+            "kind": "lowest-confidence"
+          }
+        }
+      ],
+      "maxCommandActions": 64
+    },
+    {
+      "schemaVersion": 1,
+      "policyId": "capacity-pioneer",
+      "label": "Pioneer capacity",
+      "movementRules": [],
+      "movementFallback": "approach-own-front",
+      "capacityStrategy": "pioneer",
+      "commandRules": [
+        {
+          "when": [
+            {
+              "kind": "ability-ready",
+              "ability": "perfect-focus"
+            }
+          ],
+          "action": {
+            "kind": "perfect-focus"
+          },
+          "target": {
+            "kind": "lowest-confidence"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "revealed-unsound"
+            }
+          ],
+          "action": {
+            "kind": "reject"
+          },
+          "target": {
+            "kind": "revealed-unsound"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "always"
+            }
+          ],
+          "action": {
+            "kind": "verify"
+          },
+          "target": {
+            "kind": "lowest-confidence"
+          }
+        }
+      ],
+      "maxCommandActions": 64
+    },
+    {
+      "schemaVersion": 1,
+      "policyId": "capacity-follower-overclock",
+      "label": "Fast follower overclock",
+      "movementRules": [
+        {
+          "chassis": "siege",
+          "strategy": "hold"
+        }
+      ],
+      "movementFallback": "approach-own-front",
+      "capacityStrategy": "follower",
+      "commandRules": [
+        {
+          "when": [
+            {
+              "kind": "ability-ready",
+              "ability": "overclock"
+            }
+          ],
+          "action": {
+            "kind": "overclock"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "always"
+            }
+          ],
+          "action": {
+            "kind": "seize"
+          },
+          "target": {
+            "kind": "cheapest-seize"
+          }
+        }
+      ],
+      "maxCommandActions": 64
+    },
+    {
+      "schemaVersion": 1,
+      "policyId": "capacity-follower-flare",
+      "label": "Fast follower macro flare",
+      "movementRules": [],
+      "movementFallback": "evade-flare",
+      "capacityStrategy": "follower",
+      "commandRules": [
+        {
+          "when": [
+            {
+              "kind": "ability-ready",
+              "ability": "macro-flare"
+            }
+          ],
+          "action": {
+            "kind": "macro-flare"
+          },
+          "target": {
+            "kind": "enemy-densest"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "revealed-unsound"
+            }
+          ],
+          "action": {
+            "kind": "reject"
+          },
+          "target": {
+            "kind": "revealed-unsound"
+          }
+        },
+        {
+          "when": [
+            {
+              "kind": "always"
+            }
+          ],
+          "action": {
+            "kind": "verify"
+          },
+          "target": {
+            "kind": "lowest-confidence"
+          }
+        }
+      ],
+      "maxCommandActions": 64
+    }
+  ],
+  "matchups": [
+    {
+      "matchupId": "shifting-front-scout-homogeneous",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "scout-homogeneous",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantIds": [
+        "default",
+        "no-capacity",
+        "no-perfect-focus",
+        "no-overclock",
+        "no-macro-flare",
+        "flare-range-3",
+        "flare-range-5",
+        "flare-duration-1"
+      ],
+      "playerOnePolicyIds": [
+        "capacity-ignore",
+        "capacity-pioneer",
+        "capacity-follower-overclock",
+        "capacity-follower-flare"
+      ],
+      "playerTwoPolicyIds": [
+        "verify-lowest-confidence",
+        "front-mobile-verify",
+        "capacity-pioneer"
+      ]
+    },
+    {
+      "matchupId": "shifting-front-siege-homogeneous",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "siege-homogeneous",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantIds": [
+        "default",
+        "no-capacity",
+        "no-perfect-focus",
+        "no-overclock",
+        "no-macro-flare",
+        "flare-range-3",
+        "flare-range-5",
+        "flare-duration-1"
+      ],
+      "playerOnePolicyIds": [
+        "capacity-ignore",
+        "capacity-pioneer",
+        "capacity-follower-overclock",
+        "capacity-follower-flare"
+      ],
+      "playerTwoPolicyIds": [
+        "verify-lowest-confidence",
+        "front-mobile-verify",
+        "capacity-pioneer"
+      ]
+    },
+    {
+      "matchupId": "shifting-front-balanced",
+      "scenarioId": "shifting-front",
+      "playerOneCompositionId": "balanced",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantIds": [
+        "default",
+        "no-capacity",
+        "no-perfect-focus",
+        "no-overclock",
+        "no-macro-flare",
+        "flare-range-3",
+        "flare-range-5",
+        "flare-duration-1"
+      ],
+      "playerOnePolicyIds": [
+        "capacity-ignore",
+        "capacity-pioneer",
+        "capacity-follower-overclock",
+        "capacity-follower-flare"
+      ],
+      "playerTwoPolicyIds": [
+        "verify-lowest-confidence",
+        "front-mobile-verify",
+        "capacity-pioneer"
+      ]
+    },
+    {
+      "matchupId": "flare-pocket-scout-homogeneous",
+      "scenarioId": "flare-pocket",
+      "playerOneCompositionId": "scout-homogeneous",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantIds": [
+        "default",
+        "no-capacity",
+        "no-perfect-focus",
+        "no-overclock",
+        "no-macro-flare",
+        "flare-range-3",
+        "flare-range-5",
+        "flare-duration-1"
+      ],
+      "playerOnePolicyIds": [
+        "capacity-ignore",
+        "capacity-pioneer",
+        "capacity-follower-overclock",
+        "capacity-follower-flare"
+      ],
+      "playerTwoPolicyIds": [
+        "verify-lowest-confidence",
+        "front-mobile-verify",
+        "capacity-pioneer"
+      ]
+    },
+    {
+      "matchupId": "flare-pocket-siege-homogeneous",
+      "scenarioId": "flare-pocket",
+      "playerOneCompositionId": "siege-homogeneous",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantIds": [
+        "default",
+        "no-capacity",
+        "no-perfect-focus",
+        "no-overclock",
+        "no-macro-flare",
+        "flare-range-3",
+        "flare-range-5",
+        "flare-duration-1"
+      ],
+      "playerOnePolicyIds": [
+        "capacity-ignore",
+        "capacity-pioneer",
+        "capacity-follower-overclock",
+        "capacity-follower-flare"
+      ],
+      "playerTwoPolicyIds": [
+        "verify-lowest-confidence",
+        "front-mobile-verify",
+        "capacity-pioneer"
+      ]
+    },
+    {
+      "matchupId": "flare-pocket-balanced",
+      "scenarioId": "flare-pocket",
+      "playerOneCompositionId": "balanced",
+      "playerTwoCompositionId": "scout-homogeneous",
+      "variantIds": [
+        "default",
+        "no-capacity",
+        "no-perfect-focus",
+        "no-overclock",
+        "no-macro-flare",
+        "flare-range-3",
+        "flare-range-5",
+        "flare-duration-1"
+      ],
+      "playerOnePolicyIds": [
+        "capacity-ignore",
+        "capacity-pioneer",
+        "capacity-follower-overclock",
+        "capacity-follower-flare"
+      ],
+      "playerTwoPolicyIds": [
+        "verify-lowest-confidence",
+        "front-mobile-verify",
+        "capacity-pioneer"
+      ]
+    }
+  ],
+  "seedStart": 100000,
+  "seedsPerCell": 250,
+  "shardCount": 12,
+  "traceMode": "summary",
+  "createdAt": "2026-08-09T12:40:05.325Z",
+  "provenance": {
+    "provenanceVersion": 1,
+    "canonical": true,
+    "repository": "djcdevelopment/contextlandscape",
+    "sourceRevision": "005090cc4c3fe2d323cc6a6b77e1a7fd22d389e6",
+    "sourceTree": "9e07f0d39f8fdad3ab53f2ed29c9dde783c7fb53",
+    "workspaceDirty": false,
+    "engineVersion": "1.0.0",
+    "commandModelVersion": "duel-capacity-v1",
+    "contractVersion": 1,
+    "modelHash": "sha256:f928a9340ed173f694f4f0613b5cbd764a9d019f97d54c3d44afb9eeab07eca7",
+    "scenarioSetHash": "sha256:501a75547c866825c2d14d39629446140c7e7f7e024745d9e5f3b3f8dd99b0d2",
+    "policySetHash": "sha256:c75aef7e4200426ce4deb1edd4a3242109e8cb5feea0f1c655c88f44a006d5c8",
+    "manifestHash": "sha256:d13aadefb54d339a447686289488fe9db42355f4804c0f29e36e0616a4f0704c",
+    "nodeVersion": "v24.19.0",
+    "platform": "linux",
+    "architecture": "x64",
+    "imageDigest": "sha256:b37456564291e0173327f2b83cd76727c1f50fd3d5c679862e8f024743f1a3f8"
+  }
+}

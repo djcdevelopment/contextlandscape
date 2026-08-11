@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Action, GameplayLabDefinition, MatchState, Order } from "@landscape/contracts";
 import { createMatchState, runReplay, resolveSlot } from "@landscape/engine";
@@ -46,6 +46,38 @@ const playableOrders: Array<{ action: Action; order: Order }> = [
   { action: "full_send", order: { unitId: "line-01", action: "full_send", fireMode: "full" } },
   { action: "consolidate", order: { unitId: "line-01", action: "consolidate", fireMode: "semi" } }
 ];
+
+type PortableCampaignSummaryEntry = {
+  matrixId?: unknown;
+  reportPath?: unknown;
+};
+
+export function gameplayLabSourceFilesPresent(
+  repoRoot: string,
+  source: GameplayLabDefinition["source"]
+): boolean {
+  const missingPaths = source.reportPaths.filter((path) => !existsSync(join(repoRoot, path)));
+  if (missingPaths.length === 0) return true;
+
+  const summaryPath = join(repoRoot, "data/lab/sleep-01-summary.json");
+  if (!existsSync(summaryPath)) return false;
+  try {
+    const parsed = JSON.parse(readFileSync(summaryPath, "utf8")) as unknown;
+    if (!Array.isArray(parsed)) return false;
+    const portableReports = new Map(
+      (parsed as PortableCampaignSummaryEntry[])
+        .filter((entry): entry is { matrixId: string; reportPath: string } =>
+          typeof entry.matrixId === "string" && typeof entry.reportPath === "string")
+        .map((entry) => [entry.reportPath, entry.matrixId])
+    );
+    return missingPaths.every((path) => {
+      const matrixId = portableReports.get(path);
+      return matrixId !== undefined && source.matrixIds.includes(matrixId);
+    });
+  } catch {
+    return false;
+  }
+}
 
 type SearchNode = {
   state: MatchState;
@@ -202,7 +234,7 @@ export function preflightGameplayLabs(repoRoot: string, now = new Date().toISOSt
         version: definition.version,
         scenarioId: definition.scenarioId,
         scenarioVersion: definition.scenarioVersion,
-        sourceFilesPresent: definition.source.reportPaths.every((path) => existsSync(join(repoRoot, path))),
+        sourceFilesPresent: gameplayLabSourceFilesPresent(repoRoot, definition.source),
         controlReplayMatchesScenario,
         variants,
         reachabilityChanges

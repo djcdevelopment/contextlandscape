@@ -32,6 +32,7 @@ import {
   submitGameplayLabReview
 } from "./gameplay-lab-core.js";
 import { preflightGameplayLabs } from "./gameplay-lab-preflight.js";
+import { registerLandscapeRoutes } from "./landscape-routes.js";
 
 type StoredMatch = { state: ReturnType<typeof createMatchState>; events: EventEnvelope[]; version?: number };
 const memory = new Map<string, StoredMatch>();
@@ -547,6 +548,7 @@ const app = Fastify({ logger: true });
 await app.register(cors, { origin: true });
 const webRoot = join(process.cwd(), "apps/web/dist");
 if (existsSync(webRoot)) await app.register(fastifyStatic, { root: webRoot, prefix: "/" });
+registerLandscapeRoutes(app);
 
 app.get("/health/live", async () => ({ status: "ok", service: "context-landscape" }));
 app.get("/health/ready", async (_request, reply) => {
@@ -897,5 +899,5 @@ app.get("/", async (_request, reply) => {
 });
 
 await initDb();
-const port = Number(process.env.PORT ?? 8080);
+const port = Number(process.env.CONTEXT_LANDSCAPE_PORT ?? process.env.PORT ?? 8080);
 await app.listen({ host: "0.0.0.0", port });

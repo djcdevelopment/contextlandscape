@@ -77,6 +77,16 @@ describe("command round", () => {
     expect(first.events).toEqual(second.events);
   });
 
+  it("keeps latent work identical across policy-specific match ids", () => {
+    const vector = (matchId: string) => createCommandState(matchId, 41000, [...fleet]).pending.map((artifact) => ({
+      mechId: artifact.mechId,
+      sound: artifact.sound,
+      reportedConfidence: artifact.reportedConfidence
+    }));
+
+    expect(vector("cmd-verify-lowest-confidence-41000")).toEqual(vector("cmd-seize-cheapest-41000"));
+  });
+
   it("produces uncorrelated work across seeds, at the configured soundness rate", () => {
     // Asserting that two specific seeds differ would be a coin flip: six draws at p=0.7 collide
     // (0.7^2 + 0.3^2)^6 = 3.8% of the time, so that test fails by chance roughly one run in 26.

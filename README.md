@@ -45,10 +45,12 @@ This prototype narrows those ideas into a falsifiable question: can systems-engi
 | Surface | Implemented state |
 | --- | --- |
 | Playable game | React/Vite 10×10 board, selectable cells, explicit unit orders, transaction console, and post-battle reconstruction |
+| Commander landscape | Opt-in sparse Canvas view of a 6,400×6,400 theater with 32×32 chunk LOD and 32×32×32 battle drill-down |
 | Scenario pack | Four versioned single-player scenarios with distinct lessons and rules profiles |
 | Rules engine | Deterministic TypeScript state transitions, seeded runs, idempotent commands, replay manifests, and event/projection hashes |
 | Persistence | PostgreSQL for matches, commands, events, observations, challenges, and gameplay-lab sessions; in-memory mode for portable runtime checks |
 | Synthetic research | Seeded doctrine simulator plus a resumable, sharded Docker worker with train/holdout comparisons and recommendation-only candidate patches |
+| Broad v2 research | Versioned 6,400-profile doctrine catalog, fold-specific sparse matchup graphs, physical battle-sample catalog, durable shape-screen runner, forensic analysis, and explicit post-screen selection lineage |
 | Gameplay research | Five blinded lab packs, 24 playable variants, gated pre/post-reconstruction reviews, joined exports, and executable follow-up matrices |
 | CI | Typecheck, tests, a bounded mechanics matrix, report generation, and recommendation validation on pushes, pull requests, and a nightly schedule |
 
@@ -59,6 +61,7 @@ Known boundaries:
 - no real population-level balance claim has been made;
 - the first human gameplay-lab cycle is still in progress;
 - composition needs mechanically distinct loadouts, initiative interactions, or multi-order slots before another large balance campaign;
+- the first 9,216,000-run v2 shape screen remains integrity-only evidence because commander modules were not compiled into match behavior; the [corrected campaign](plan/attention-v2-corrected-shape-screen.md) subsequently passed its 32,768-run differential probe, 256,000-run bounded audit, and all 9,216,000 enriched screen records. Its [causal assessment](data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md) advances rows 22, 8, 25, 1, 29, and 15 only to a 251,904-match multi-sample refinement—not final promotion;
 - Discord, profiles, matchmaking, ranked play, and durable progression are future product work.
 
 ## Quick start
@@ -92,7 +95,9 @@ docker compose -p context-landscape-dev -f infra/compose.dev.yml ps
 Invoke-RestMethod http://127.0.0.1:9080/health/ready
 ```
 
-Open <http://localhost:5173>. A healthy development response reports:
+Open <http://localhost:5173>. The opt-in commander vertical slice is at
+<http://localhost:5173/?view=commander>; it uses the live sparse landscape API when available and a
+deterministic sparse fixture otherwise. A healthy development response reports:
 
 ```text
 status      : ok
@@ -241,10 +246,40 @@ npm run lab -- --report=data/lab/local-check
 .\scripts\lab-gate.ps1 -ReportPath data/lab/local-check/report.json -MinimumRuns 25
 ```
 
+New matrices seal the Git/build identity, model/scenario/policy hashes, and manifest hash into every shard and report. Add `--canonical=true` to reject dirty or unidentified source, then audit or compare completed evidence:
+
+```powershell
+npm run lab -- --audit=data/lab/local-check
+npm run lab -- --left=data/lab/train-01 --right=data/lab/holdout-01
+npm run lab -- --record=data/lab/train-01 --stage=train --hypothesis="Describe the tested edge"
+```
+
+The last command explicitly promotes a reviewed canonical result into `data/experiments/ledger.json` and archives its sealed manifest, compact report, and recommendations under `data/experiments/<matrix-id>/`; raw shards remain untracked and disposable. Legacy v1 matrices remain readable but are reported as historically unverifiable.
+
+### Attention-command matrix
+
+The versioned `duel-capacity-v1` model runs two-player, common-random-world counterfactuals for movement, stationary chassis effects, the shared capacity track, and scale-scope abilities. Inspect the frozen campaign sizes without writing artifacts:
+
+```powershell
+npm run lab -- --attention-campaign=stationary-train --dry-run=true
+npm run lab -- --attention-campaign=capacity-train --dry-run=true
+npm run lab -- --attention-campaign=holdout --dry-run=true
+```
+
+For the canonical 480,000-run stationary screen, 144,000-run capacity screen, and independent 50,000-run holdout, use one pinned Docker build across all shards:
+
+```powershell
+.\scripts\lab-attention.ps1 -Canonical
+```
+
+Each run stores the manifest/provenance link, policy-independent random-stream ID, terminal outcome, SHA state/outcome hashes, and bounded summary counters. The compact report adds paired confidence intervals, interaction effects, acceptance gates, shard hashes, and a self-hash; `--audit`, `--left/--right`, and `--record` work for both legacy and attention matrices.
+
+The completed 674,000-run v1r1 campaign accepted the Scout, Siege, movement, and stationary escort behaviors as the research baseline. Macro Flare remained useful but failed its predeclared causal drift-defeat gate, so its tuning is still experimental. See the immutable evidence and next-experiment pre-registration in the [v1r1 research decision](design/attention-duel-v1r1-decision.md).
+
 ### Sharded Docker matrix
 
 ```powershell
-.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8
+.\scripts\lab-night.ps1 -MatrixId overnight-01 -Runs 1000 -Policies 32 -Tunings 6 -Shards 8 -Canonical
 ```
 
 ### Human-selected follow-up

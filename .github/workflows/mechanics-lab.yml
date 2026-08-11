@@ -17,12 +17,19 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npm run typecheck
       - run: npm test
-      - run: npm run lab -- --matrix=ci-${{ github.run_id }} --runs=${{ github.event_name == 'schedule' && 100 || 5 }} --policies=8 --tunings=2 --shards=1 --shard=0
+      - run: npm run lab -- --matrix=ci-${{ github.run_id }} --runs=${{ github.event_name == 'schedule' && 100 || 5 }} --policies=8 --tunings=2 --shards=1 --shard=0 --canonical=true
       - name: Validate report
         env:
           MATRIX_ID: ci-${{ github.run_id }}
         run: |
           npm run lab -- --report=data/lab/$MATRIX_ID
           node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync(`data/lab/${process.env.MATRIX_ID}/report.json`)); if(!r.runs || !r.cells.length || !r.recommendations.length) process.exit(1); console.log(`lab gate: ${r.runs} runs, ${r.cells.length} cells`);'
+      - name: Attention matrix smoke
+        env:
+          MATRIX_ID: attention-ci-${{ github.run_id }}
+        run: |
+          npm run lab -- --attention-campaign=holdout --matrix=$MATRIX_ID --runs=5 --shards=1 --all-shards=true --canonical=true
+          node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync(`data/lab/${process.env.MATRIX_ID}/report.json`)); if(r.matrixKind!=="attention-command" || r.runs!==50 || !r.cells.length || !r.reportHash) process.exit(1); console.log(`attention lab smoke: ${r.runs} runs, ${r.cells.length} cells`);'

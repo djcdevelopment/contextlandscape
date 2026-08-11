@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1460" height="1260" viewBox="0 0 1460 1260">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="32" y="47" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage C4 · hostile-aim robustness atlas</text>
+  <text x="32" y="77" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Orange: best static · cyan: within 0.075 · red: frozen audit failure</text>
+  <text x="32" y="142" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-front / cluster-center / confidence-threshold</text>
+<rect x="520" y="119" width="327.70833333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="139" width="327.70833333333337" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="142" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6302  best 0.6302  gap 0.0000</text>
+<text x="32" y="203" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-front / cluster-center / local-verify</text>
+<rect x="520" y="180" width="270.83333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="200" width="249.16666666666669" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="203" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4792  best 0.5208  gap -0.0417</text>
+<text x="32" y="264" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-front / artifact-density / confidence-threshold</text>
+<rect x="520" y="241" width="289.79166666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="261" width="289.79166666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="264" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5573  best 0.5573  gap 0.0000</text>
+<text x="32" y="325" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-front / artifact-density / local-verify</text>
+<rect x="520" y="302" width="273.54166666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="322" width="273.54166666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="325" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5260  best 0.5260  gap 0.0000</text>
+<text x="32" y="386" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-front / far-objective / confidence-threshold</text>
+<rect x="520" y="363" width="260" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="383" width="260" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="386" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5000  best 0.5000  gap 0.0000</text>
+<text x="32" y="447" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-front / far-objective / local-verify</text>
+<rect x="520" y="424" width="303.33333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="444" width="303.33333333333337" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="447" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5833  best 0.5833  gap 0.0000</text>
+<text x="32" y="508" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global / cluster-center / confidence-threshold</text>
+<rect x="520" y="485" width="411.66666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="505" width="411.66666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="508" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.7917  best 0.7917  gap 0.0000</text>
+<text x="32" y="569" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global / cluster-center / local-verify</text>
+<rect x="520" y="546" width="251.875" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="566" width="235.625" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="569" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4531  best 0.4844  gap -0.0313</text>
+<text x="32" y="630" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global / artifact-density / confidence-threshold</text>
+<rect x="520" y="607" width="354.79166666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="627" width="354.79166666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="630" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6823  best 0.6823  gap 0.0000</text>
+<text x="32" y="691" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global / artifact-density / local-verify</text>
+<rect x="520" y="668" width="292.5" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="688" width="222.08333333333331" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="691" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4271  best 0.5625  gap -0.1354</text>
+<text x="32" y="752" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global / far-objective / confidence-threshold</text>
+<rect x="520" y="729" width="295.20833333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="749" width="295.20833333333337" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="752" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5677  best 0.5677  gap 0.0000</text>
+<text x="32" y="813" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global / far-objective / local-verify</text>
+<rect x="520" y="790" width="303.33333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="810" width="260" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="813" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5000  best 0.5833  gap -0.0833</text>
+<text x="32" y="874" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-weighted-front / cluster-center / confidence-threshold</text>
+<rect x="520" y="851" width="406.25" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="871" width="406.25" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="874" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.7813  best 0.7813  gap 0.0000</text>
+<text x="32" y="935" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-weighted-front / cluster-center / local-verify</text>
+<rect x="520" y="912" width="327.70833333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="932" width="322.29166666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="935" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6198  best 0.6302  gap -0.0104</text>
+<text x="32" y="996" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-weighted-front / artifact-density / confidence-threshold</text>
+<rect x="520" y="973" width="308.75" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="993" width="308.75" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="996" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5938  best 0.5938  gap 0.0000</text>
+<text x="32" y="1057" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-weighted-front / artifact-density / local-verify</text>
+<rect x="520" y="1034" width="268.125" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1054" width="251.875" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1057" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4844  best 0.5156  gap -0.0313</text>
+<text x="32" y="1118" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-weighted-front / far-objective / confidence-threshold</text>
+<rect x="520" y="1095" width="314.16666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1115" width="314.16666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1118" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6042  best 0.6042  gap 0.0000</text>
+<text x="32" y="1179" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-weighted-front / far-objective / local-verify</text>
+<rect x="520" y="1156" width="289.79166666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1176" width="278.95833333333337" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1179" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5365  best 0.5573  gap -0.0208</text>
+</svg>

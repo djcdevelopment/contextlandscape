@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "experiment": "attention-v3-stage-c4-generalization-hostile-aim-audit",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "resolverVersion": "attention-v3-stage-c-resolver-1",
+  "parentStageC3ReportHash": "sha256:8b92063ddeabada20beb3fc07ad57ebcdba90ad3684f1ea01361c97aa3217174",
+  "fixedPolicy": {
+    "id": "ruleset-spatial-low-total-ge-4",
+    "confidenceThreshold": "hold-pass",
+    "localGlobal": "always-chaff",
+    "localBinaryFront": "scout-peel-support",
+    "localDistanceWeightedFront": "always-chaff iff public low-confidence count >= 4",
+    "chaffCenter": "focal formation cluster",
+    "forbiddenInputs": [
+      "soundness rate",
+      "pressure id",
+      "hostile aim mode",
+      "latent truth",
+      "focal seat",
+      "audit cell"
+    ]
+  },
+  "policies": [
+    {
+      "id": "hold-pass",
+      "kind": "hold"
+    },
+    {
+      "id": "scout-peel-support",
+      "kind": "peel-support"
+    },
+    {
+      "id": "always-chaff",
+      "kind": "chaff"
+    },
+    {
+      "id": "ruleset-spatial-low-total-ge-4",
+      "kind": "adaptive"
+    }
+  ],
+  "pressureSamples": [
+    {
+      "id": "binary-sound-45",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.45
+    },
+    {
+      "id": "binary-sound-60",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.6
+    },
+    {
+      "id": "binary-sound-85",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.85
+    },
+    {
+      "id": "global-sound-35",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.35
+    },
+    {
+      "id": "global-sound-55",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "global-sound-75",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.75
+    },
+    {
+      "id": "distance-sound-45",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.45
+    },
+    {
+      "id": "distance-sound-65",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.65
+    },
+    {
+      "id": "distance-sound-90",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.9
+    }
+  ],
+  "aimModes": [
+    {
+      "id": "cluster-center",
+      "rule": "focal formation center"
+    },
+    {
+      "id": "artifact-density",
+      "rule": "artifact coordinate maximizing 3x3 pending count, objective count, confidence sum, then coordinate"
+    },
+    {
+      "id": "far-objective",
+      "rule": "farthest objective-eligible pending artifact, then lowest confidence, then coordinate"
+    }
+  ],
+  "commandModes": [
+    "confidence-threshold",
+    "local-verify"
+  ],
+  "seeds": [
+    303000,
+    303001,
+    303002,
+    303003,
+    303004,
+    303005,
+    303006,
+    303007,
+    303008,
+    303009,
+    303010,
+    303011,
+    303012,
+    303013,
+    303014,
+    303015
+  ],
+  "orientations": [
+    "focal-alpha",
+    "focal-bravo"
+  ],
+  "composition": "balanced",
+  "baseModelHash": "sha256:42b8b949f671eedf48c59429a8144c7e6ce55d66a8c79eeacd71e5938cb7b606",
+  "uapModelHash": "sha256:396eeb7bba35633c8be78e12a639993bdfa84fecfcb7367dc5810e21630ae5fd",
+  "spatialModelHash": "sha256:023005393e0d1da931ad127591cc9764fb9414537bb2944f908b08eed7dc7d18",
+  "artilleryModelHash": "sha256:fd022a658d4a2f68644f6acccbcd2982954d8be344c59cf5adb2fad0b11c7666",
+  "scenarioHash": "sha256:033ef8c114e01d2275d6342d10fe333ed5e7c5c0c69a341f3e12f86673b0c618",
+  "compositionHash": "sha256:40ae8ceaf1e03b9375ca81f7a4fa3827b8245891f77bf03e6e6c1c0a61029b57",
+  "worldStreamNamespace": "attention-v3-stage-c4-generalization-aim-world-v1",
+  "capacityPolicy": "pass",
+  "reload": false,
+  "cellTolerance": 0.075,
+  "seatTolerance": 0.05,
+  "clusterRegressionTolerance": 0.05,
+  "minimumOffCenterRate": 0.1,
+  "planId": "attention-v3-stage-c4-6831dd0d5311ef5b",
+  "planHash": "sha256:6831dd0d5311ef5bb27a0080c074f742065ddd33c277e0e39cd84593a574f8b8"
+}

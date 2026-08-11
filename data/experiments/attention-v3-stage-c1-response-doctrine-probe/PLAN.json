@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "experiment": "attention-v3-stage-c1-response-doctrine-probe",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "resolverVersion": "attention-v3-stage-c-resolver-1",
+  "parentStageCReportHash": "sha256:869099e6a2539111f6d996fadbff3080b6c62b0d6dcfdeff879419015e67b9e5",
+  "policies": [
+    {
+      "id": "hold-pass",
+      "movement": "hold",
+      "chaff": "never"
+    },
+    {
+      "id": "full-evacuate",
+      "movement": "full-evacuate",
+      "chaff": "never"
+    },
+    {
+      "id": "scout-peel",
+      "movement": "scout-peel",
+      "chaff": "never"
+    },
+    {
+      "id": "scout-peel-support",
+      "movement": "scout-peel-support",
+      "chaff": "never"
+    },
+    {
+      "id": "compress-support",
+      "movement": "compress-support",
+      "chaff": "never"
+    },
+    {
+      "id": "always-chaff",
+      "movement": "hold",
+      "chaff": "always"
+    },
+    {
+      "id": "risk-chaff",
+      "movement": "hold",
+      "chaff": "risk"
+    }
+  ],
+  "riskChaff": {
+    "threshold": 5,
+    "formula": "drift + max(0, ownPendingArtifacts - attention) + ownPendingConfidenceBelow0.50"
+  },
+  "pressureSamples": [
+    {
+      "id": "binary-sound-70",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.7
+    },
+    {
+      "id": "global-sound-45",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.45
+    },
+    {
+      "id": "distance-sound-55",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "distance-sound-80",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.8
+    }
+  ],
+  "commandModes": [
+    "confidence-threshold",
+    "local-verify"
+  ],
+  "seeds": [
+    91000,
+    91001,
+    91002,
+    91003,
+    91004,
+    91005,
+    91006,
+    91007,
+    91008,
+    91009,
+    91010,
+    91011,
+    91012,
+    91013,
+    91014,
+    91015,
+    91016,
+    91017,
+    91018,
+    91019,
+    91020,
+    91021,
+    91022,
+    91023,
+    91024,
+    91025,
+    91026,
+    91027,
+    91028,
+    91029,
+    91030,
+    91031,
+    91032,
+    91033,
+    91034,
+    91035,
+    91036,
+    91037,
+    91038,
+    91039,
+    91040,
+    91041,
+    91042,
+    91043,
+    91044,
+    91045,
+    91046,
+    91047
+  ],
+  "orientations": [
+    "focal-alpha",
+    "focal-bravo"
+  ],
+  "composition": "balanced",
+  "baseModelHash": "sha256:42b8b949f671eedf48c59429a8144c7e6ce55d66a8c79eeacd71e5938cb7b606",
+  "uapModelHash": "sha256:396eeb7bba35633c8be78e12a639993bdfa84fecfcb7367dc5810e21630ae5fd",
+  "spatialModelHash": "sha256:023005393e0d1da931ad127591cc9764fb9414537bb2944f908b08eed7dc7d18",
+  "artilleryModelHash": "sha256:fd022a658d4a2f68644f6acccbcd2982954d8be344c59cf5adb2fad0b11c7666",
+  "scenarioHash": "sha256:033ef8c114e01d2275d6342d10fe333ed5e7c5c0c69a341f3e12f86673b0c618",
+  "compositionHash": "sha256:40ae8ceaf1e03b9375ca81f7a4fa3827b8245891f77bf03e6e6c1c0a61029b57",
+  "worldStreamNamespace": "attention-v3-stage-c1-response-world-v1",
+  "opponent": "round-one hostile Flare, then pass; hold movement; matched command doctrine",
+  "capacityPolicy": "pass",
+  "reload": false,
+  "planId": "attention-v3-stage-c1-7b26766ed292281c",
+  "planHash": "sha256:7b26766ed292281c3673000d3d57bee135dda27b0edacf02110c445d8dd7bd26"
+}

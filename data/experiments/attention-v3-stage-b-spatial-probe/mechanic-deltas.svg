@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="488" viewBox="0 0 1120 488">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="42" y="48" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage B · direct mechanic deltas</text>
+  <text x="42" y="76" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Treatment minus identical-stream control · 4,608 paired battles</text>
+  <text x="682" y="76" fill="#a9b6d3" font-size="13" text-anchor="end" font-family="Segoe UI, sans-serif">contracts</text>
+  <text x="698" y="76" fill="#a9b6d3" font-size="13" font-family="Segoe UI, sans-serif">expands</text>
+  <text x="42" y="119" fill="#f4f7ff" font-size="20" font-family="Segoe UI, sans-serif">Artifact chase</text>
+<line x1="690" y1="90" x2="690" y2="136" stroke="#a9b6d3" stroke-width="2"/>
+<rect x="690" y="96" width="280" height="32" rx="6" fill="#35f2d0"/>
+<text x="982" y="119" fill="#35f2d0" font-size="20" font-weight="700" text-anchor="start" font-family="Cascadia Mono, monospace">5.5043</text>
+<text x="42" y="147" fill="#94a3c7" font-size="14" font-family="Segoe UI, sans-serif">executed movement delta</text>
+<text x="42" y="211" fill="#f4f7ff" font-size="20" font-family="Segoe UI, sans-serif">Line Support Scan</text>
+<line x1="690" y1="182" x2="690" y2="228" stroke="#a9b6d3" stroke-width="2"/>
+<rect x="690" y="188" width="75.15533827472008" height="32" rx="6" fill="#35f2d0"/>
+<text x="777.1553382747201" y="211" fill="#35f2d0" font-size="20" font-weight="700" text-anchor="start" font-family="Cascadia Mono, monospace">1.4774</text>
+<text x="42" y="239" fill="#94a3c7" font-size="14" font-family="Segoe UI, sans-serif">scan-mediated verification delta</text>
+<text x="42" y="303" fill="#f4f7ff" font-size="20" font-family="Segoe UI, sans-serif">Range compression</text>
+<line x1="690" y1="274" x2="690" y2="320" stroke="#a9b6d3" stroke-width="2"/>
+<rect x="670.7736161488724" y="280" width="19.226383851127583" height="32" rx="6" fill="#ff9f43"/>
+<text x="658.7736161488724" y="303" fill="#ff9f43" font-size="20" font-weight="700" text-anchor="end" font-family="Cascadia Mono, monospace">-0.3780</text>
+<text x="42" y="331" fill="#94a3c7" font-size="14" font-family="Segoe UI, sans-serif">mean artifact-distance delta</text>
+<text x="42" y="395" fill="#f4f7ff" font-size="20" font-family="Segoe UI, sans-serif">Range expansion</text>
+<line x1="690" y1="366" x2="690" y2="412" stroke="#a9b6d3" stroke-width="2"/>
+<rect x="690" y="372" width="22.67966847149941" height="32" rx="6" fill="#35f2d0"/>
+<text x="724.6796684714994" y="395" fill="#35f2d0" font-size="20" font-weight="700" text-anchor="start" font-family="Cascadia Mono, monospace">0.4458</text>
+<text x="42" y="423" fill="#94a3c7" font-size="14" font-family="Segoe UI, sans-serif">mean artifact-distance delta</text>
+</svg>

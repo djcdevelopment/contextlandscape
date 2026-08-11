@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "experiment": "attention-v3-stage-c-flare-chaff-anti-turtle-probe",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "resolverVersion": "attention-v3-stage-c-resolver-1",
+  "parentStageBReportHash": "sha256:d517e38297f2419652c35e9ee23b34d3be9dc7c2b505a4439162b444e58b04ed",
+  "contrasts": [
+    {
+      "id": "hostile-flare-vs-pass-on-hold",
+      "treatment": {
+        "focalMovement": "hold",
+        "focalChaff": false,
+        "aggressorFlare": true
+      },
+      "control": {
+        "focalMovement": "hold",
+        "focalChaff": false,
+        "aggressorFlare": false
+      }
+    },
+    {
+      "id": "centered-chaff-vs-pass",
+      "treatment": {
+        "focalMovement": "hold",
+        "focalChaff": true,
+        "aggressorFlare": true
+      },
+      "control": {
+        "focalMovement": "hold",
+        "focalChaff": false,
+        "aggressorFlare": true
+      }
+    },
+    {
+      "id": "evacuate-vs-hold-under-flare",
+      "treatment": {
+        "focalMovement": "evacuate",
+        "focalChaff": false,
+        "aggressorFlare": true
+      },
+      "control": {
+        "focalMovement": "hold",
+        "focalChaff": false,
+        "aggressorFlare": true
+      }
+    }
+  ],
+  "pressureSamples": [
+    {
+      "id": "binary-sound-70",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.7
+    },
+    {
+      "id": "global-sound-45",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.45
+    },
+    {
+      "id": "distance-sound-55",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "distance-sound-80",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.8
+    }
+  ],
+  "commandModes": [
+    "confidence-threshold",
+    "local-verify"
+  ],
+  "seeds": [
+    83000,
+    83001,
+    83002,
+    83003,
+    83004,
+    83005,
+    83006,
+    83007,
+    83008,
+    83009,
+    83010,
+    83011,
+    83012,
+    83013,
+    83014,
+    83015,
+    83016,
+    83017,
+    83018,
+    83019,
+    83020,
+    83021,
+    83022,
+    83023,
+    83024,
+    83025,
+    83026,
+    83027,
+    83028,
+    83029,
+    83030,
+    83031,
+    83032,
+    83033,
+    83034,
+    83035,
+    83036,
+    83037,
+    83038,
+    83039,
+    83040,
+    83041,
+    83042,
+    83043,
+    83044,
+    83045,
+    83046,
+    83047
+  ],
+  "orientations": [
+    "focal-alpha",
+    "focal-bravo"
+  ],
+  "arms": [
+    "treatment",
+    "control"
+  ],
+  "composition": "balanced",
+  "baseModelHash": "sha256:42b8b949f671eedf48c59429a8144c7e6ce55d66a8c79eeacd71e5938cb7b606",
+  "uapModelHash": "sha256:396eeb7bba35633c8be78e12a639993bdfa84fecfcb7367dc5810e21630ae5fd",
+  "spatialModelHash": "sha256:023005393e0d1da931ad127591cc9764fb9414537bb2944f908b08eed7dc7d18",
+  "artilleryModelHash": "sha256:fd022a658d4a2f68644f6acccbcd2982954d8be344c59cf5adb2fad0b11c7666",
+  "scenarioHash": "sha256:033ef8c114e01d2275d6342d10fe333ed5e7c5c0c69a341f3e12f86673b0c618",
+  "compositionHash": "sha256:40ae8ceaf1e03b9375ca81f7a4fa3827b8245891f77bf03e6e6c1c0a61029b57",
+  "worldStreamNamespace": "attention-v3-stage-c-artillery-world-v1",
+  "capacityPolicy": "pass",
+  "hand": {
+    "flare": 1,
+    "chaff": 1
+  },
+  "reload": false,
+  "planId": "attention-v3-stage-c-e7e63d4c273a0479",
+  "planHash": "sha256:e7e63d4c273a0479f1200dfbb9421e6add6b5b6a3521a9e86e5bccf4b25d38e6"
+}

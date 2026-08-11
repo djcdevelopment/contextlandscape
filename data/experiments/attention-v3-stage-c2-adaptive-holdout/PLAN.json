@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "experiment": "attention-v3-stage-c2-doctrine-aware-adaptive-holdout",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "resolverVersion": "attention-v3-stage-c-resolver-1",
+  "parentStageC1ReportHash": "sha256:b6af622b1c9e312be0861f4ffd3513c2f5ad64d52f9b9c16ea814c6f2224e268",
+  "staticPolicies": [
+    {
+      "id": "hold-pass",
+      "kind": "hold"
+    },
+    {
+      "id": "scout-peel-support",
+      "kind": "peel-support"
+    },
+    {
+      "id": "always-chaff",
+      "kind": "chaff"
+    }
+  ],
+  "thresholds": [
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "adaptiveContract": {
+    "confidenceThreshold": "hold-pass",
+    "localVerifyBelowRiskThreshold": "scout-peel-support",
+    "localVerifyAtOrAboveRiskThreshold": "always-chaff",
+    "riskFormula": "drift + max(0, ownPendingArtifacts - attention) + ownPendingConfidenceBelow0.50"
+  },
+  "selector": [
+    "maximum minimum local-verify pressure score",
+    "maximum pooled local-verify score",
+    "minimum Chaff activation rate",
+    "minimum numeric threshold"
+  ],
+  "pressureSamples": [
+    {
+      "id": "binary-sound-70",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.7
+    },
+    {
+      "id": "global-sound-45",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.45
+    },
+    {
+      "id": "distance-sound-55",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "distance-sound-80",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.8
+    }
+  ],
+  "commandModes": [
+    "confidence-threshold",
+    "local-verify"
+  ],
+  "trainSeeds": [
+    101000,
+    101001,
+    101002,
+    101003,
+    101004,
+    101005,
+    101006,
+    101007,
+    101008,
+    101009,
+    101010,
+    101011,
+    101012,
+    101013,
+    101014,
+    101015,
+    101016,
+    101017,
+    101018,
+    101019,
+    101020,
+    101021,
+    101022,
+    101023,
+    101024,
+    101025,
+    101026,
+    101027,
+    101028,
+    101029,
+    101030,
+    101031
+  ],
+  "holdoutSeeds": [
+    101032,
+    101033,
+    101034,
+    101035,
+    101036,
+    101037,
+    101038,
+    101039,
+    101040,
+    101041,
+    101042,
+    101043,
+    101044,
+    101045,
+    101046,
+    101047
+  ],
+  "orientations": [
+    "focal-alpha",
+    "focal-bravo"
+  ],
+  "composition": "balanced",
+  "baseModelHash": "sha256:42b8b949f671eedf48c59429a8144c7e6ce55d66a8c79eeacd71e5938cb7b606",
+  "uapModelHash": "sha256:396eeb7bba35633c8be78e12a639993bdfa84fecfcb7367dc5810e21630ae5fd",
+  "spatialModelHash": "sha256:023005393e0d1da931ad127591cc9764fb9414537bb2944f908b08eed7dc7d18",
+  "artilleryModelHash": "sha256:fd022a658d4a2f68644f6acccbcd2982954d8be344c59cf5adb2fad0b11c7666",
+  "scenarioHash": "sha256:033ef8c114e01d2275d6342d10fe333ed5e7c5c0c69a341f3e12f86673b0c618",
+  "compositionHash": "sha256:40ae8ceaf1e03b9375ca81f7a4fa3827b8245891f77bf03e6e6c1c0a61029b57",
+  "worldStreamNamespace": "attention-v3-stage-c2-adaptive-world-v1",
+  "capacityPolicy": "pass",
+  "reload": false,
+  "promotionTolerance": 0.05,
+  "planId": "attention-v3-stage-c2-2ec219830f0af361",
+  "planHash": "sha256:2ec219830f0af36105db90566756d73d3f80028d3c2d7db3f33b857d13c7f302"
+}

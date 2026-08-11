@@ -1,0 +1,16 @@
+{
+    "schemaVersion":  1,
+    "archivePath":  "data/archives/attention-v2-landscape-standard-957a7ac539e236a0f1387946-corrected-evidence.zip",
+    "archiveBytes":  5805859370,
+    "archiveHash":  "sha256:8bcdf08fd3f5aa2130c36332fdf046749b33867612259801a16f15b5ebee900b",
+    "manifestHash":  "sha256:53573544da34d81039b8e1b7ee69fa7e65d95d471c35b60a50cea5bbb5b7216b",
+    "manifestFileHash":  "sha256:b8eb16ffaf72e5580f234346b807a0b841706dd758c879470b11efe988e96397",
+    "analysisHash":  "sha256:9e92787ff92b804fb7facc67b46ad9a9b877a5e8ef569ec3070bc9a52322cb9b",
+    "completionReportHash":  "sha256:9ae18a15408a2ec6272a18efba74d1b64d03b570e605b6d81a3cd10a83702769",
+    "fullExtractionVerified":  true,
+    "verifiedFiles":  42,
+    "matrixSourceRemoved":  true,
+    "probeAndAuditRemainOnline":  true,
+    "nextStageSelectionEligible":  true,
+    "finalSurvivorSelectionEligible":  false
+}
