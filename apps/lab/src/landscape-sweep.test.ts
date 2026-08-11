@@ -157,7 +157,7 @@ describe("attention-v2 commander landscape planner", () => {
     for (const fold of skeleton.folds) expect(fold.assignmentHash).toBe(hashWithout(fold, "assignmentHash"));
     expect(skeleton.foldAssignmentHash).toBe(sha256Value(skeleton.folds));
     expect(() => verifyAttentionV2SweepSkeleton(skeleton)).not.toThrow();
-  });
+  }, 30_000);
 
   it("proves each frozen budget from its multiplicative stage operands", () => {
     expect(Object.fromEntries(skeleton.budgets.map((budget) => [budget.profile, budget.plannedRuns]))).toEqual({

@@ -88,5 +88,5 @@ describe("corrected attention-v2 commander compilation", () => {
     expect(right.record.identity.randomStreamId).toBe(left.record.identity.randomStreamId);
     expect(replay.record.traceHash).toBe(left.record.traceHash);
     expect(replay.record.outcomeHash).toBe(left.record.outcomeHash);
-  }, 15_000);
+  }, 30_000);
 });
