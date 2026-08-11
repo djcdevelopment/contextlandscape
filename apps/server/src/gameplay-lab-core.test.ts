@@ -1,4 +1,6 @@
-import { resolve } from "node:path";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { GameplayLabReviewRequest } from "@landscape/contracts";
 import { gameplayLabById, gameplayLabs } from "@landscape/scenarios";
@@ -10,7 +12,7 @@ import {
   gameplayLabSummary,
   submitGameplayLabReview
 } from "./gameplay-lab-core.js";
-import { preflightGameplayLabs } from "./gameplay-lab-preflight.js";
+import { gameplayLabSourceFilesPresent, preflightGameplayLabs } from "./gameplay-lab-preflight.js";
 
 function ids() {
   let session = 0;
@@ -120,6 +122,21 @@ describe("gameplay lab session", () => {
 });
 
 describe("gameplay lab reachability", () => {
+  it("accepts the tracked compact summary when full local reports are absent", () => {
+    const repoRoot = resolve(process.cwd(), "../..");
+    const portableRoot = mkdtempSync(join(tmpdir(), "contextlandscape-preflight-"));
+    try {
+      mkdirSync(join(portableRoot, "data/lab"), { recursive: true });
+      copyFileSync(
+        join(repoRoot, "data/lab/sleep-01-summary.json"),
+        join(portableRoot, "data/lab/sleep-01-summary.json")
+      );
+      expect(gameplayLabs.every((lab) => gameplayLabSourceFilesPresent(portableRoot, lab.source))).toBe(true);
+    } finally {
+      rmSync(portableRoot, { recursive: true, force: true });
+    }
+  });
+
   it("preflights every registered source and variant", () => {
     const repoRoot = resolve(process.cwd(), "../..");
     const report = preflightGameplayLabs(repoRoot, "2026-01-01T00:00:00.000Z");
