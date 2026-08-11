@@ -17,6 +17,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npm run typecheck
       - run: npm test
       - run: npm run lab -- --matrix=ci-${{ github.run_id }} --runs=${{ github.event_name == 'schedule' && 100 || 5 }} --policies=8 --tunings=2 --shards=1 --shard=0 --canonical=true
