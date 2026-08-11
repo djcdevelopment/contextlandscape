@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="760" viewBox="0 0 1320 760">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="38" y="47" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage C3 · frozen spatial candidate frontier</text>
+  <text x="38" y="77" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Cyan marks the selected maximin rule · violet is pooled local-verification score</text>
+  <text x="38" y="157" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">1. low-total-ge-4</text>
+<rect x="390" y="135" width="237.76223776223782" height="17" rx="4" fill="#35f2d0"/>
+<rect x="390" y="157" width="493.2759548144163" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="156" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5625  pooled 0.6367  dist chaff 18%</text>
+<text x="38" y="214" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">2. low-objective-ge-2</text>
+<rect x="390" y="192" width="210.86605701990322" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="214" width="429.3975255513717" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="213" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5547  pooled 0.6182  dist chaff 68%</text>
+<text x="38" y="271" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">3. low-total-ge-3</text>
+<rect x="390" y="249" width="197.41796664873593" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="271" width="486.55190962883273" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="270" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5508  pooled 0.6348  dist chaff 44%</text>
+<text x="38" y="328" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">4. low-objective-ge-4</text>
+<rect x="390" y="306" width="183.96987627756863" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="328" width="493.2759548144163" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="327" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5469  pooled 0.6367  dist chaff 12%</text>
+<text x="38" y="385" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">5. low-objective-ge-3</text>
+<rect x="390" y="363" width="170.52178590640136" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="385" width="486.55190962883273" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="384" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5430  pooled 0.6348  dist chaff 34%</text>
+<text x="38" y="442" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">6. objective-deficit-ge-0p4</text>
+<rect x="390" y="420" width="170.52178590640136" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="442" width="456.2937062937063" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="441" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5430  pooled 0.6260  dist chaff 43%</text>
+<text x="38" y="499" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">7. low-total-ge-2</text>
+<rect x="390" y="477" width="157.07369553523407" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="499" width="389.05325443786984" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="498" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5391  pooled 0.6064  dist chaff 77%</text>
+<text x="38" y="556" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">8. low-scout-ge-2</text>
+<rect x="390" y="534" width="143.62560516406677" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="556" width="439.4835933297472" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="555" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5352  pooled 0.6211  dist chaff 42%</text>
+<text x="38" y="613" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">9. objective-deficit-ge-0p2</text>
+<rect x="390" y="591" width="116.72942442173219" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="613" width="372.2431414739107" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="612" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5273  pooled 0.6016  dist chaff 73%</text>
+<text x="38" y="670" fill="#5ab4ff" font-size="14" font-family="Cascadia Mono, monospace">10. low-objective-ge-6</text>
+<rect x="390" y="648" width="103.2813340505649" height="17" rx="4" fill="#5ab4ff"/>
+<rect x="390" y="670" width="500" height="12" rx="3" fill="#8b7cff"/>
+<text x="930" y="669" fill="#dbe5ff" font-size="14" font-family="Cascadia Mono, monospace">min 0.5234  pooled 0.6387  dist chaff 0%</text>
+</svg>

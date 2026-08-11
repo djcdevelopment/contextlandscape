@@ -16,6 +16,7 @@ import {
   ensureAttentionManifest,
   expectedAttentionRunCount,
   isAttentionManifest,
+  preflightAttentionArtilleryCampaign,
   recordAttentionExperiment,
   sealAttentionMatrix,
   writeAttentionReport,
@@ -41,6 +42,11 @@ function value(name: string): string | undefined {
 }
 
 async function main(): Promise<void> {
+  const artilleryPreflightDir = value("attention-artillery-preflight");
+  if (artilleryPreflightDir) {
+    console.log(JSON.stringify(await preflightAttentionArtilleryCampaign(normalizeDataPath(artilleryPreflightDir)), null, 2));
+    return;
+  }
   const auditDir = value("audit");
   if (auditDir) {
     const normalized = normalizeDataPath(auditDir);
@@ -229,7 +235,7 @@ async function runAttentionCommand(
   manifestDocument: unknown,
   canonical: boolean
 ): Promise<void> {
-  const campaignKinds = ["stationary-train", "capacity-train", "holdout"] as const;
+  const campaignKinds = ["stationary-train", "capacity-train", "holdout", "v3-shape", "v3-artillery-causal"] as const;
   if (requestedCampaign && !campaignKinds.includes(requestedCampaign as typeof campaignKinds[number])) {
     throw new Error(`invalid attention campaign: ${requestedCampaign}`);
   }

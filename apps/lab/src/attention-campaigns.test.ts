@@ -6,7 +6,9 @@ import {
   attentionCampaignRunCount,
   capacityAttentionVariants,
   createAttentionCampaignDraft,
-  stationaryAttentionVariants
+  stationaryAttentionVariants,
+  v3ArtilleryCausalPolicies,
+  v3ArtilleryCausalVariants
 } from "./attention-campaigns.js";
 
 describe("attention campaign manifests", () => {
@@ -31,6 +33,25 @@ describe("attention campaign manifests", () => {
       "gate-escort-efficiency",
       "gate-movement-value"
     ]);
+  });
+
+  it("freezes the five-drift artillery causal campaign at exactly 9.216M runs", () => {
+    const draft = createAttentionCampaignDraft("v3-artillery-causal", { createdAt: "2026-08-10T00:00:00.000Z" });
+    expect(AttentionMatrixDraftSchema.parse(draft)).toEqual(draft);
+    expect(draft.schemaVersion).toBe(2);
+    expect(draft.seedStart).toBe(30_000_000);
+    expect(draft.seedsPerCell).toBe(320);
+    expect(draft.matchups).toHaveLength(8);
+    expect(v3ArtilleryCausalVariants).toHaveLength(36);
+    expect(v3ArtilleryCausalPolicies).toHaveLength(10);
+    expect(new Set(draft.variants.map((variant) => variant.model.rules.driftLimit))).toEqual(new Set([5]));
+    expect(attentionCampaignRunCount(draft)).toBe(9_216_000);
+    for (const scenarioId of ["static-front", "shifting-front", "escort-corridor", "flare-pocket"]) {
+      const orientations = draft.matchups.filter((matchup) => matchup.scenarioId === scenarioId);
+      expect(orientations).toHaveLength(2);
+      expect(orientations[0].playerOneCompositionId).toBe(orientations[1].playerTwoCompositionId);
+      expect(orientations[0].playerTwoCompositionId).toBe(orientations[1].playerOneCompositionId);
+    }
   });
 
   it("stores resolved models for every declared factor level", () => {

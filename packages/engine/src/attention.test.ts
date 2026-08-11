@@ -376,6 +376,35 @@ describe("duel-capacity-v1 attention reducer", () => {
     expect(match.state.terminalReason).toBe("drift");
   });
 
+  it("uses five drift as the canonical defeat boundary while preserving explicit historical limits", () => {
+    expect(defaultAttentionModel.rules.driftLimit).toBe(5);
+    const resolveAt = (startingDrift: number, driftLimit = defaultAttentionModel.rules.driftLimit) => {
+      const runtime = context({ soundnessRate: 0, objectiveTarget: 999, driftLimit });
+      let match = commandPhase(create(`drift-boundary-${startingDrift}-${driftLimit}`, 20 + startingDrift, "balanced", runtime));
+      match = edit(match, (state) => {
+        state.players[0].drift = startingDrift;
+        const alpha = state.artifacts.filter((artifact) => artifact.ownerPlayerId === "alpha");
+        alpha[0].sound = false;
+        for (const artifact of alpha.slice(1)) artifact.resolution = "rejected";
+        for (const artifact of state.artifacts.filter((artifact) => artifact.ownerPlayerId === "bravo")) {
+          artifact.resolution = "rejected";
+        }
+      });
+      return finishRound(match);
+    };
+
+    const four = resolveAt(3);
+    expect(four.state.players[0]).toMatchObject({ drift: 4, status: "active" });
+    expect(four.state.status).toBe("active");
+
+    const five = resolveAt(4);
+    expect(five.state.players[0]).toMatchObject({ drift: 5, status: "defeat" });
+    expect(five.state.terminalReason).toBe("drift");
+
+    const historicalFour = resolveAt(3, 4);
+    expect(historicalFour.state.players[0]).toMatchObject({ drift: 4, status: "defeat" });
+  });
+
   it("represents an exact round-limit tiebreak as a draw", () => {
     let match = create("exact-draw", 21, "balanced");
     match = edit(match, (state) => { state.round = match.context.scenario.roundLimit; });

@@ -517,7 +517,8 @@ export type MatchProjection = MatchState & {
 
 // Attention-economy command model. This is deliberately separate from the
 // legacy seven-action contracts above so archived simulations keep their shape.
-export const AttentionModelVersionSchema = z.enum(["duel-capacity-v1", "duel-capacity-v2"]);
+export const ATTENTION_V3_MODEL_VERSION = "duel-capacity-v3-experimental" as const;
+export const AttentionModelVersionSchema = z.enum(["duel-capacity-v1", "duel-capacity-v2", ATTENTION_V3_MODEL_VERSION]);
 export type AttentionModelVersion = z.infer<typeof AttentionModelVersionSchema>;
 
 export const AttentionRuntimeExtensionsSchema = z.object({
@@ -539,7 +540,7 @@ export const AttentionCoordinateSchema = z.object({
 }).strict();
 export type AttentionCoordinate = z.infer<typeof AttentionCoordinateSchema>;
 
-export const AttentionPhaseSchema = z.enum(["movement", "capacity", "command", "resolution", "terminal"]);
+export const AttentionPhaseSchema = z.enum(["emission", "artillery", "movement", "capacity", "command", "resolution", "terminal"]);
 export type AttentionPhase = z.infer<typeof AttentionPhaseSchema>;
 
 export const AttentionChassisProfileSchema = z.object({
@@ -556,6 +557,71 @@ export const AttentionCapacitySlotSchema = z.object({
   capacityAward: z.number().int().nonnegative()
 }).strict();
 export type AttentionCapacitySlot = z.infer<typeof AttentionCapacitySlotSchema>;
+
+export const AttentionUapModelSchema = z.object({
+  budgets: z.object({
+    scout: z.literal(3),
+    line: z.literal(2),
+    siege: z.literal(1)
+  }).strict(),
+  scout: z.object({
+    activeReconCalibration: z.literal(0.85),
+    passiveSettleCalibration: z.tuple([
+      z.literal(0.4),
+      z.literal(0.65),
+      z.literal(0.85)
+    ])
+  }).strict(),
+  line: z.object({
+    stepUpCalibration: z.literal(0.85)
+  }).strict(),
+  siege: z.object({
+    uplinkAttentionBonus: z.literal(1),
+    uplinkCalibration: z.literal(0.2)
+  }).strict()
+}).strict();
+export type AttentionUapModel = z.infer<typeof AttentionUapModelSchema>;
+
+const AttentionSpatialRangeProfileSchema = z.object({
+  defaultRange: z.number().int().positive(),
+  minimumRange: z.number().int().positive(),
+  maximumRange: z.number().int().positive()
+}).strict().superRefine((profile, context) => {
+  if (profile.minimumRange > profile.defaultRange || profile.defaultRange > profile.maximumRange) {
+    context.addIssue({ code: z.ZodIssueCode.custom, message: "Spatial ranges must satisfy minimum <= default <= maximum" });
+  }
+});
+
+export const AttentionSpatialModelSchema = z.object({
+  ranges: z.object({
+    scout: AttentionSpatialRangeProfileSchema,
+    line: AttentionSpatialRangeProfileSchema,
+    siege: AttentionSpatialRangeProfileSchema
+  }).strict(),
+  spawnMinimumDistance: z.literal(1),
+  verificationReach: z.literal(1),
+  supportScansPerUnit: z.literal(1)
+}).strict();
+export type AttentionSpatialModel = z.infer<typeof AttentionSpatialModelSchema>;
+
+export const AttentionArtilleryShellSchema = z.enum(["flare", "chaff"]);
+export type AttentionArtilleryShell = z.infer<typeof AttentionArtilleryShellSchema>;
+
+export const AttentionArtilleryModelSchema = z.object({
+  startingHand: z.object({
+    flare: z.literal(1),
+    chaff: z.literal(1)
+  }).strict(),
+  zone: z.object({
+    width: z.literal(3),
+    height: z.literal(3)
+  }).strict(),
+  outputMultiplier: z.literal(2),
+  flareDurationEmissions: z.literal(2),
+  chaffDurationArtilleryPhases: z.literal(2),
+  reload: z.literal(false)
+}).strict();
+export type AttentionArtilleryModel = z.infer<typeof AttentionArtilleryModelSchema>;
 
 export const AttentionModelDefinitionSchema = z.object({
   schemaVersion: z.literal(1),
@@ -618,6 +684,9 @@ export const AttentionModelDefinitionSchema = z.object({
       maxUses: z.number().int().min(0).max(1)
     }).strict()
   }).strict(),
+  uap: AttentionUapModelSchema.optional(),
+  spatial: AttentionSpatialModelSchema.optional(),
+  artillery: AttentionArtilleryModelSchema.optional(),
   extensions: AttentionRuntimeExtensionsSchema.optional()
 }).strict().superRefine((model, context) => {
   for (const [index, slot] of model.capacity.slots.entries()) {
@@ -628,6 +697,25 @@ export const AttentionModelDefinitionSchema = z.object({
         message: "Capacity slot ranks must be sequential and one-based"
       });
     }
+  }
+  const isV3 = model.modelVersion === ATTENTION_V3_MODEL_VERSION;
+  if (isV3 && !model.uap) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["uap"], message: "v3 models require a UAP definition" });
+  }
+  if (!isV3 && model.uap) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["uap"], message: "UAP definitions are reserved for v3 models" });
+  }
+  if (!isV3 && model.spatial) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["spatial"], message: "Spatial artifact definitions are reserved for v3 models" });
+  }
+  if (model.spatial && !model.uap) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["spatial"], message: "Spatial artifact models require the v3 UAP layer" });
+  }
+  if (!isV3 && model.artillery) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["artillery"], message: "Artillery definitions are reserved for v3 models" });
+  }
+  if (model.artillery && !model.spatial) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["artillery"], message: "Artillery models require spatial artifact spawning" });
   }
 });
 export type AttentionModelDefinition = z.infer<typeof AttentionModelDefinitionSchema>;
@@ -707,11 +795,38 @@ export const AttentionModelVariantSchema = z.object({
 }).strict();
 export type AttentionModelVariant = z.infer<typeof AttentionModelVariantSchema>;
 
+export const AttentionUapActionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("move"), destination: AttentionCoordinateSchema }).strict(),
+  z.object({ kind: z.literal("turbo-charge") }).strict(),
+  z.object({ kind: z.literal("step-up") }).strict(),
+  z.object({ kind: z.literal("command-uplink") }).strict(),
+  z.object({ kind: z.literal("range-shift"), delta: z.union([z.literal(-1), z.literal(1)]) }).strict(),
+  z.object({ kind: z.literal("support-scan"), artifactId: z.string().min(1) }).strict()
+]);
+export type AttentionUapAction = z.infer<typeof AttentionUapActionSchema>;
+
 export const AttentionMovementIntentSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("move"), playerId: z.string().min(1), unitId: z.string().min(1), destination: AttentionCoordinateSchema }).strict(),
+  z.object({
+    kind: z.literal("unit-actions"),
+    playerId: z.string().min(1),
+    unitId: z.string().min(1),
+    actions: z.array(AttentionUapActionSchema).max(8)
+  }).strict(),
   z.object({ kind: z.literal("end-movement"), playerId: z.string().min(1) }).strict()
 ]);
 export type AttentionMovementIntent = z.infer<typeof AttentionMovementIntentSchema>;
+
+export const AttentionArtilleryIntentSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("fire-artillery"),
+    playerId: z.string().min(1),
+    shell: AttentionArtilleryShellSchema,
+    center: AttentionCoordinateSchema
+  }).strict(),
+  z.object({ kind: z.literal("pass-artillery"), playerId: z.string().min(1) }).strict()
+]);
+export type AttentionArtilleryIntent = z.infer<typeof AttentionArtilleryIntentSchema>;
 
 export const AttentionCapacityIntentSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("claim-capacity"), playerId: z.string().min(1) }).strict(),
@@ -733,6 +848,7 @@ export const AttentionCommandIntentSchema = z.discriminatedUnion("kind", [
 export type AttentionCommandIntent = z.infer<typeof AttentionCommandIntentSchema>;
 
 export const AttentionIntentSchema = z.union([
+  AttentionArtilleryIntentSchema,
   AttentionMovementIntentSchema,
   AttentionCapacityIntentSchema,
   AttentionCommandIntentSchema
@@ -771,6 +887,67 @@ export const AttentionPolicyActionSchema = z.object({
 }).strict();
 export type AttentionPolicyAction = z.infer<typeof AttentionPolicyActionSchema>;
 
+export const AttentionV3UapDoctrineSchema = z.enum([
+  "hold",
+  "baseline-move",
+  "scout-recon",
+  "line-support",
+  "siege-uplink-range"
+]);
+export type AttentionV3UapDoctrine = z.infer<typeof AttentionV3UapDoctrineSchema>;
+
+export const AttentionV3CommandDoctrineSchema = z.enum(["accept", "local-verify"]);
+export type AttentionV3CommandDoctrine = z.infer<typeof AttentionV3CommandDoctrineSchema>;
+
+export const AttentionArtilleryTargetBasisSchema = z.enum([
+  "none",
+  "enemy-formation-cluster",
+  "enemy-artifact-density",
+  "far-enemy-objective",
+  "own-formation-screen",
+  "own-low-confidence-density"
+]);
+export type AttentionArtilleryTargetBasis = z.infer<typeof AttentionArtilleryTargetBasisSchema>;
+
+export const AttentionArtilleryPredicateSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("always") }).strict(),
+  z.object({ kind: z.literal("shell-available"), shell: AttentionArtilleryShellSchema }).strict(),
+  z.object({ kind: z.literal("hostile-flare-available") }).strict(),
+  z.object({
+    kind: z.literal("own-low-confidence-at-least"),
+    count: z.number().int().positive(),
+    confidenceAtMost: z.number().min(0).max(1)
+  }).strict()
+]);
+export type AttentionArtilleryPredicate = z.infer<typeof AttentionArtilleryPredicateSchema>;
+
+export const AttentionArtilleryDoctrineRuleSchema = z.object({
+  ruleId: z.string().min(1),
+  when: z.array(AttentionArtilleryPredicateSchema).min(1),
+  action: z.enum(["pass", "fire-flare", "fire-chaff"]),
+  reasonCode: z.string().min(1),
+  targetBasis: AttentionArtilleryTargetBasisSchema
+}).strict().superRefine((rule, context) => {
+  if (rule.action === "pass" && rule.targetBasis !== "none") {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["targetBasis"], message: "Pass rules cannot select a target" });
+  }
+  if (rule.action !== "pass" && rule.targetBasis === "none") {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["targetBasis"], message: "Fire rules require a target basis" });
+  }
+});
+export type AttentionArtilleryDoctrineRule = z.infer<typeof AttentionArtilleryDoctrineRuleSchema>;
+
+export const AttentionV3DoctrineSchema = z.object({
+  uap: AttentionV3UapDoctrineSchema,
+  command: AttentionV3CommandDoctrineSchema,
+  artilleryRules: z.array(AttentionArtilleryDoctrineRuleSchema).min(1).max(8)
+}).strict().superRefine((doctrine, context) => {
+  if (doctrine.artilleryRules.at(-1)?.when.some((predicate) => predicate.kind === "always") !== true) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["artilleryRules"], message: "Artillery doctrines require a final unconditional fallback" });
+  }
+});
+export type AttentionV3Doctrine = z.infer<typeof AttentionV3DoctrineSchema>;
+
 export const AttentionPolicyProgramSchema = z.object({
   schemaVersion: z.literal(1),
   policyId: z.string().min(1),
@@ -788,7 +965,8 @@ export const AttentionPolicyProgramSchema = z.object({
     action: AttentionPolicyActionSchema,
     target: AttentionPolicyTargetSchema.optional()
   }).strict()).default([]),
-  maxCommandActions: z.number().int().positive().max(64).default(64)
+  maxCommandActions: z.number().int().positive().max(64).default(64),
+  v3Doctrine: AttentionV3DoctrineSchema.optional()
 }).strict();
 export type AttentionPolicyProgram = z.infer<typeof AttentionPolicyProgramSchema>;
 
@@ -811,7 +989,13 @@ export const AttentionPlayerStateSchema = z.object({
   focusUses: z.number().int().nonnegative(),
   overclockUsed: z.boolean(),
   overclockActive: z.boolean(),
-  flareUsed: z.boolean()
+  flareUsed: z.boolean(),
+  artillery: z.object({
+    hand: z.object({
+      flare: z.number().int().nonnegative(),
+      chaff: z.number().int().nonnegative()
+    }).strict()
+  }).strict().optional()
 }).strict();
 export type AttentionPlayerState = z.infer<typeof AttentionPlayerStateSchema>;
 
@@ -823,7 +1007,16 @@ export const AttentionUnitStateSchema = z.object({
   movementSpent: z.number().int().nonnegative(),
   stationaryStreak: z.number().int().nonnegative(),
   emissionCalibration: z.number().min(0).max(1),
-  nextEmissionCalibration: z.number().min(0).max(1).nullable()
+  nextEmissionCalibration: z.number().min(0).max(1).nullable(),
+  uap: z.object({
+    budget: z.number().int().positive(),
+    spent: z.number().int().nonnegative(),
+    passiveSettleStreak: z.number().int().nonnegative()
+  }).strict().optional(),
+  spatial: z.object({
+    activeRange: z.number().int().positive(),
+    nextActiveRange: z.number().int().positive().nullable()
+  }).strict().optional()
 }).strict();
 export type AttentionUnitState = z.infer<typeof AttentionUnitStateSchema>;
 
@@ -844,7 +1037,8 @@ export const AttentionArtifactStateSchema = z.object({
   objectiveEligible: z.boolean(),
   guarantee: AttentionArtifactGuaranteeSchema.nullable(),
   guaranteedById: z.string().min(1).nullable(),
-  resolution: AttentionArtifactResolutionSchema
+  resolution: AttentionArtifactResolutionSchema,
+  supportScanUnitIds: z.array(z.string().min(1)).optional()
 }).strict();
 export type AttentionArtifactState = z.infer<typeof AttentionArtifactStateSchema>;
 
@@ -860,6 +1054,14 @@ export const AttentionFlareStateSchema = z.object({
   emissionsRemaining: z.number().int().positive()
 }).strict();
 export type AttentionFlareState = z.infer<typeof AttentionFlareStateSchema>;
+
+export const AttentionChaffStateSchema = z.object({
+  chaffId: z.string().min(1),
+  ownerPlayerId: z.string().min(1),
+  center: AttentionCoordinateSchema,
+  artilleryPhasesRemaining: z.number().int().positive()
+}).strict();
+export type AttentionChaffState = z.infer<typeof AttentionChaffStateSchema>;
 
 export const AttentionCapacityClaimSchema = z.object({
   slotIndex: z.number().int().nonnegative(),
@@ -897,11 +1099,13 @@ const AttentionMatchStateFields = {
   units: z.array(AttentionUnitStateSchema).min(2),
   artifacts: z.array(AttentionArtifactStateSchema),
   flares: z.array(AttentionFlareStateSchema),
+  chaffs: z.array(AttentionChaffStateSchema).optional(),
   capacityTrack: AttentionCapacityTrackStateSchema
 };
 
 export const AttentionMatchStateSchema = z.object(AttentionMatchStateFields).strict().superRefine((state, context) => {
   const playerIds = state.players.map((player) => player.playerId);
+  const isV3 = state.modelVersion === ATTENTION_V3_MODEL_VERSION;
   if (new Set(playerIds).size !== playerIds.length) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["players"], message: "Player ids must be unique" });
   }
@@ -909,12 +1113,33 @@ export const AttentionMatchStateSchema = z.object(AttentionMatchStateFields).str
   if (unitIds.size !== state.units.length) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["units"], message: "Unit ids must be unique" });
   }
+  if (!isV3 && (state.phase === "emission" || state.phase === "artillery")) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["phase"], message: "Emission and artillery phases are reserved for v3 matches" });
+  }
+  for (const [index, player] of state.players.entries()) {
+    if (!isV3 && player.artillery) context.addIssue({ code: z.ZodIssueCode.custom, path: ["players", index, "artillery"], message: "Artillery state is reserved for v3 matches" });
+  }
   for (const [index, unit] of state.units.entries()) {
     if (!playerIds.includes(unit.ownerPlayerId)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["units", index, "ownerPlayerId"], message: "Unknown player" });
+    if (isV3 && !unit.uap) context.addIssue({ code: z.ZodIssueCode.custom, path: ["units", index, "uap"], message: "v3 units require UAP state" });
+    if (!isV3 && unit.uap) context.addIssue({ code: z.ZodIssueCode.custom, path: ["units", index, "uap"], message: "UAP state is reserved for v3 matches" });
   }
   for (const [index, artifact] of state.artifacts.entries()) {
     if (!playerIds.includes(artifact.ownerPlayerId)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["artifacts", index, "ownerPlayerId"], message: "Unknown player" });
     if (!unitIds.has(artifact.sourceUnitId)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["artifacts", index, "sourceUnitId"], message: "Unknown source unit" });
+    const supportScanUnitIds = artifact.supportScanUnitIds ?? [];
+    if (new Set(supportScanUnitIds).size !== supportScanUnitIds.length) {
+      context.addIssue({ code: z.ZodIssueCode.custom, path: ["artifacts", index, "supportScanUnitIds"], message: "Support Scan units must be unique" });
+    }
+    for (const [scanIndex, unitId] of supportScanUnitIds.entries()) {
+      const scanUnit = state.units.find((unit) => unit.unitId === unitId);
+      if (!scanUnit) context.addIssue({ code: z.ZodIssueCode.custom, path: ["artifacts", index, "supportScanUnitIds", scanIndex], message: "Unknown Support Scan unit" });
+      else if (scanUnit.ownerPlayerId !== artifact.ownerPlayerId) context.addIssue({ code: z.ZodIssueCode.custom, path: ["artifacts", index, "supportScanUnitIds", scanIndex], message: "Support Scan unit must share the artifact owner" });
+    }
+  }
+  for (const [index, chaff] of (state.chaffs ?? []).entries()) {
+    if (!playerIds.includes(chaff.ownerPlayerId)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["chaffs", index, "ownerPlayerId"], message: "Unknown player" });
+    if (!isV3) context.addIssue({ code: z.ZodIssueCode.custom, path: ["chaffs", index], message: "Chaff state is reserved for v3 matches" });
   }
   if (state.winnerPlayerId !== null && !playerIds.includes(state.winnerPlayerId)) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["winnerPlayerId"], message: "Winner must reference a player" });
@@ -953,7 +1178,7 @@ export type AttentionProjection = AttentionMatchProjection;
 export const AttentionTraceModeSchema = z.enum(["summary", "hash", "full"]);
 export type AttentionTraceMode = z.infer<typeof AttentionTraceModeSchema>;
 
-export const AttentionCampaignKindSchema = z.enum(["stationary-train", "capacity-train", "holdout", "custom"]);
+export const AttentionCampaignKindSchema = z.enum(["stationary-train", "capacity-train", "holdout", "v3-shape", "v3-artillery-causal", "custom"]);
 export type AttentionCampaignKind = z.infer<typeof AttentionCampaignKindSchema>;
 
 export const AttentionMatrixMatchupSchema = z.object({
@@ -968,7 +1193,7 @@ export const AttentionMatrixMatchupSchema = z.object({
 export type AttentionMatrixMatchup = z.infer<typeof AttentionMatrixMatchupSchema>;
 
 const AttentionMatrixFields = {
-  schemaVersion: z.literal(1),
+  schemaVersion: z.union([z.literal(1), z.literal(2)]),
   matrixId: z.string().min(1).regex(/^[A-Za-z0-9][A-Za-z0-9._-]*$/),
   matrixKind: z.literal("attention-command"),
   modelVersion: AttentionModelVersionSchema,
@@ -1020,6 +1245,12 @@ function validateAttentionMatrixReferences(matrix: AttentionMatrixReferenceInput
       if (ids.some((id) => !catalog.has(id))) context.addIssue({ code: z.ZodIssueCode.custom, path: ["matchups", index, field], message: "Unknown reference" });
     }
   }
+  if (matrix.campaignKind === "v3-artillery-causal") {
+    if (matrix.schemaVersion !== 2) context.addIssue({ code: z.ZodIssueCode.custom, path: ["schemaVersion"], message: "Artillery causal campaigns require contract schema v2" });
+    if (matrix.modelVersion !== ATTENTION_V3_MODEL_VERSION) context.addIssue({ code: z.ZodIssueCode.custom, path: ["modelVersion"], message: "Artillery causal campaigns require the v3 model" });
+    if (matrix.policies.some((policy) => !policy.v3Doctrine)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["policies"], message: "Every artillery causal policy requires a manifest-defined v3 doctrine" });
+    if (matrix.variants.some((variant) => variant.model.rules.driftLimit !== 5)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["variants"], message: "Every artillery causal variant requires the canonical five-drift rule" });
+  }
 }
 
 export const AttentionMatrixDraftSchema = AttentionMatrixDraftBaseSchema.superRefine(validateAttentionMatrixReferences);
@@ -1035,8 +1266,73 @@ export const AttentionMatrixManifestSchema = AttentionMatrixManifestBaseSchema.s
   if (matrix.provenance.commandModelVersion !== matrix.modelVersion) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["provenance", "commandModelVersion"], message: "Provenance model version must match the manifest" });
   }
+  if (matrix.provenance.contractVersion !== matrix.schemaVersion) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["provenance", "contractVersion"], message: "Contract version must match the manifest schema version" });
+  }
 });
 export type AttentionMatrixManifest = z.infer<typeof AttentionMatrixManifestSchema>;
+
+export const AttentionUapSimulationCountersSchema = z.object({
+  available: z.number().int().nonnegative(),
+  spent: z.number().int().nonnegative(),
+  plansAccepted: z.number().int().nonnegative(),
+  plansRejected: z.number().int().nonnegative(),
+  moveSteps: z.number().int().nonnegative(),
+  turboCharges: z.number().int().nonnegative(),
+  stepUps: z.number().int().nonnegative(),
+  passiveSettles: z.number().int().nonnegative(),
+  uplinks: z.number().int().nonnegative()
+}).strict();
+export type AttentionUapSimulationCounters = z.infer<typeof AttentionUapSimulationCountersSchema>;
+
+export const AttentionSpatialSimulationCountersSchema = z.object({
+  artifactsSpawned: z.number().int().nonnegative(),
+  artifactDistanceTotal: z.number().int().nonnegative(),
+  rangeShifts: z.number().int().nonnegative(),
+  supportScans: z.number().int().nonnegative(),
+  localVerifications: z.number().int().nonnegative(),
+  supportScanVerifications: z.number().int().nonnegative(),
+  outOfRangeVerificationRejections: z.number().int().nonnegative(),
+  autoAcceptedBeyondReach: z.number().int().nonnegative()
+}).strict();
+export type AttentionSpatialSimulationCounters = z.infer<typeof AttentionSpatialSimulationCountersSchema>;
+
+export const AttentionArtillerySimulationCountersSchema = z.object({
+  shellsFired: z.number().int().nonnegative(),
+  flareShellsFired: z.number().int().nonnegative(),
+  chaffShellsFired: z.number().int().nonnegative(),
+  flareShellsEstablished: z.number().int().nonnegative(),
+  hostileShellsBlocked: z.number().int().nonnegative(),
+  ownShellsBlocked: z.number().int().nonnegative()
+}).strict();
+export type AttentionArtillerySimulationCounters = z.infer<typeof AttentionArtillerySimulationCountersSchema>;
+
+export const AttentionArtilleryDecisionSummarySchema = z.object({
+  phasesConsidered: z.number().int().nonnegative(),
+  passes: z.number().int().nonnegative(),
+  flareDeclarations: z.number().int().nonnegative(),
+  chaffDeclarations: z.number().int().nonnegative(),
+  availableButPassed: z.number().int().nonnegative(),
+  byReason: z.record(z.number().int().nonnegative()),
+  byTargetBasis: z.record(z.number().int().nonnegative())
+}).strict();
+export type AttentionArtilleryDecisionSummary = z.infer<typeof AttentionArtilleryDecisionSummarySchema>;
+
+export const AttentionArtilleryDecisionTraceEntrySchema = z.object({
+  round: z.number().int().nonnegative(),
+  ruleId: z.string().min(1),
+  decision: z.enum(["pass", "flare", "chaff"]),
+  reasonCode: z.string().min(1),
+  targetBasis: AttentionArtilleryTargetBasisSchema,
+  center: AttentionCoordinateSchema.nullable(),
+  publicInputs: z.object({
+    flareAvailable: z.boolean(),
+    chaffAvailable: z.boolean(),
+    hostileFlareAvailable: z.boolean(),
+    ownLowConfidenceCount: z.number().int().nonnegative()
+  }).strict()
+}).strict();
+export type AttentionArtilleryDecisionTraceEntry = z.infer<typeof AttentionArtilleryDecisionTraceEntrySchema>;
 
 export const AttentionSimulationCountersSchema = z.object({
   attentionAvailable: z.number().int().nonnegative(),
@@ -1063,7 +1359,9 @@ export const AttentionSimulationCountersSchema = z.object({
   overclockUses: z.number().int().nonnegative(),
   macroFlareUses: z.number().int().nonnegative(),
   flareAffectedArtifacts: z.number().int().nonnegative(),
-  driftDefeatsInduced: z.number().int().nonnegative()
+  driftDefeatsInduced: z.number().int().nonnegative(),
+  driftFourSurvivals: z.number().int().nonnegative().optional(),
+  driftFiveDefeats: z.number().int().nonnegative().optional()
 }).strict();
 export type AttentionSimulationCounters = z.infer<typeof AttentionSimulationCountersSchema>;
 
@@ -1074,12 +1372,17 @@ export const AttentionSimulationPlayerOutcomeSchema = z.object({
   drift: z.number().int().nonnegative(),
   driftPer12Progress: z.number().nonnegative(),
   attentionToArtifactRatio: z.number().nonnegative(),
-  counters: AttentionSimulationCountersSchema
+  counters: AttentionSimulationCountersSchema,
+  uap: AttentionUapSimulationCountersSchema.optional(),
+  spatial: AttentionSpatialSimulationCountersSchema.optional(),
+  artillery: AttentionArtillerySimulationCountersSchema.optional(),
+  artilleryDecisionSummary: AttentionArtilleryDecisionSummarySchema.optional(),
+  artilleryDecisionTrace: z.array(AttentionArtilleryDecisionTraceEntrySchema).optional()
 }).strict();
 export type AttentionSimulationPlayerOutcome = z.infer<typeof AttentionSimulationPlayerOutcomeSchema>;
 
 export const AttentionSimulationRunSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.union([z.literal(1), z.literal(2)]),
   matrixKind: z.literal("attention-command"),
   modelVersion: AttentionModelVersionSchema,
   runId: z.string().min(1),
@@ -1131,7 +1434,14 @@ export const AttentionAggregatePlayerMetricsSchema = z.object({
   averageAttentionSpent: z.number().nonnegative(),
   averageAttentionToArtifactRatio: z.number().nonnegative(),
   averageMovementDistance: z.number().nonnegative(),
-  averageStationaryTurns: z.number().nonnegative()
+  averageStationaryTurns: z.number().nonnegative(),
+  driftHistogram: z.record(z.number().int().nonnegative()).optional(),
+  driftFourSurvivals: z.number().int().nonnegative().optional(),
+  driftFiveDefeats: z.number().int().nonnegative().optional(),
+  uapTotals: AttentionUapSimulationCountersSchema.optional(),
+  spatialTotals: AttentionSpatialSimulationCountersSchema.optional(),
+  artilleryTotals: AttentionArtillerySimulationCountersSchema.optional(),
+  artilleryDecisionTotals: AttentionArtilleryDecisionSummarySchema.optional()
 }).strict();
 export type AttentionAggregatePlayerMetrics = z.infer<typeof AttentionAggregatePlayerMetricsSchema>;
 
@@ -1186,7 +1496,7 @@ export const AttentionAcceptanceGateSchema = z.object({
 export type AttentionAcceptanceGate = z.infer<typeof AttentionAcceptanceGateSchema>;
 
 export const AttentionAggregateReportSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.union([z.literal(1), z.literal(2)]),
   matrixKind: z.literal("attention-command"),
   modelVersion: AttentionModelVersionSchema,
   matrixId: z.string().min(1),

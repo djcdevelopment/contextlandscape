@@ -1,16 +1,22 @@
 import { randomUUID } from "node:crypto";
 import { link, mkdir, readFile, readdir, unlink } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
+import { stat } from "node:fs/promises";
 import type {
   AttentionAcceptanceGate,
   AttentionAggregateCell,
   AttentionAggregatePlayerMetrics,
   AttentionAggregateReport,
+  AttentionArtilleryDecisionSummary,
+  AttentionArtilleryDecisionTraceEntry,
+  AttentionArtilleryIntent,
   AttentionComposition,
   AttentionInteractionEffect,
   AttentionMatrixDraft,
   AttentionMatrixManifest,
   AttentionMatrixMatchup,
+  AttentionMovementIntent,
+  AttentionProjection,
   AttentionModelVariant,
   AttentionPairwiseComparison,
   AttentionPolicyProgram,
@@ -185,7 +191,7 @@ export async function sealAttentionMatrix(
     workspaceDirty: source.available ? source.workspaceDirty : true,
     engineVersion: ATTENTION_ENGINE_VERSION,
     commandModelVersion: draft.modelVersion,
-    contractVersion: 1,
+    contractVersion: draft.schemaVersion,
     ...identity,
     manifestHash: "unsealed",
     nodeVersion: process.version,
@@ -302,14 +308,205 @@ function scenarioForVariant(scenario: AttentionScenario, variant: AttentionModel
   });
 }
 
+type ArtilleryDecisionAudit = {
+  summary: AttentionArtilleryDecisionSummary;
+  trace: AttentionArtilleryDecisionTraceEntry[];
+};
+
+function emptyArtilleryDecisionAudit(): ArtilleryDecisionAudit {
+  return {
+    summary: {
+      phasesConsidered: 0,
+      passes: 0,
+      flareDeclarations: 0,
+      chaffDeclarations: 0,
+      availableButPassed: 0,
+      byReason: {},
+      byTargetBasis: {}
+    },
+    trace: []
+  };
+}
+
+function distance(left: { x: number; y: number }, right: { x: number; y: number }): number {
+  return Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+}
+
+function averageCoordinate(
+  coordinates: readonly { x: number; y: number }[],
+  fallback: { x: number; y: number },
+  board: { width: number; height: number }
+): { x: number; y: number } {
+  const source = coordinates.length > 0 ? coordinates : [fallback];
+  return {
+    x: Math.max(0, Math.min(board.width - 1, Math.round(source.reduce((sum, item) => sum + item.x, 0) / source.length))),
+    y: Math.max(0, Math.min(board.height - 1, Math.round(source.reduce((sum, item) => sum + item.y, 0) / source.length)))
+  };
+}
+
+function openStep(
+  projection: AttentionProjection,
+  origin: { x: number; y: number },
+  target: { x: number; y: number },
+  board: { width: number; height: number }
+): { x: number; y: number } | null {
+  const occupied = new Set(projection.units.map((unit) => `${unit.position.x},${unit.position.y}`));
+  const candidates = [];
+  for (let x = Math.max(0, origin.x - 1); x <= Math.min(board.width - 1, origin.x + 1); x += 1) {
+    for (let y = Math.max(0, origin.y - 1); y <= Math.min(board.height - 1, origin.y + 1); y += 1) {
+      if ((x === origin.x && y === origin.y) || occupied.has(`${x},${y}`)) continue;
+      candidates.push({ x, y });
+    }
+  }
+  return candidates.sort((left, right) =>
+    distance(left, target) - distance(right, target) || left.x - right.x || left.y - right.y
+  )[0] ?? null;
+}
+
+function createRuntimeController(
+  policy: AttentionPolicyProgram,
+  context: {
+    model: AttentionModelVariant["model"];
+    scenario: AttentionScenario;
+    playerId: string;
+    sampleArtilleryTrace: boolean;
+  }
+) {
+  const legacy = createAttentionController(policy, context);
+  const audit = emptyArtilleryDecisionAudit();
+  if (context.model.modelVersion !== "duel-capacity-v3-experimental" || !policy.v3Doctrine) {
+    return { controller: legacy, audit };
+  }
+  const doctrine = policy.v3Doctrine;
+  const playerId = context.playerId;
+  const controller = {
+    ...legacy,
+    movement: (projection: AttentionProjection): AttentionMovementIntent[] => {
+      const ownUnits = projection.units.filter((unit) => unit.ownerPlayerId === playerId).sort((a, b) => a.unitId.localeCompare(b.unitId));
+      const ownFront = projection.activeFronts.find((front) => front.playerId === playerId)?.center ?? ownUnits[0]?.position ?? { x: 0, y: 0 };
+      const submit = (unitId: string, actions: Extract<AttentionMovementIntent, { kind: "unit-actions" }>["actions"]): AttentionMovementIntent[] =>
+        [{ kind: "unit-actions", playerId, unitId, actions }];
+      if (doctrine.uap === "hold") return [{ kind: "end-movement", playerId }];
+      if (doctrine.uap === "scout-recon") {
+        const scout = ownUnits.find((unit) => unit.chassis === "scout");
+        const destination = scout ? openStep(projection, scout.position, ownFront, context.scenario.board) : null;
+        if (scout && destination) return submit(scout.unitId, [
+          { kind: "move", destination }, { kind: "turbo-charge" }, { kind: "step-up" }
+        ]);
+      }
+      if (doctrine.uap === "line-support") {
+        const line = ownUnits.find((unit) => unit.chassis === "line");
+        if (line) {
+          const target = projection.artifacts.filter((artifact) =>
+            artifact.ownerPlayerId === playerId && artifact.resolution === "pending" &&
+            distance(line.position, artifact.position) <= (line.spatial?.activeRange ?? 0)
+          ).sort((a, b) => a.reportedConfidence - b.reportedConfidence || a.artifactId.localeCompare(b.artifactId))[0];
+          return submit(line.unitId, [
+            { kind: "step-up" },
+            ...(target ? [{ kind: "support-scan" as const, artifactId: target.artifactId }] : [])
+          ]);
+        }
+      }
+      if (doctrine.uap === "siege-uplink-range") {
+        const siege = ownUnits.find((unit) => unit.chassis === "siege");
+        if (siege) {
+          if (projection.round % 2 === 0 && siege.spatial && context.model.spatial) {
+            const range = context.model.spatial.ranges.siege;
+            const delta = siege.spatial.activeRange < range.maximumRange ? 1 as const : -1 as const;
+            return submit(siege.unitId, [{ kind: "range-shift", delta }]);
+          }
+          return submit(siege.unitId, [{ kind: "command-uplink" }]);
+        }
+      }
+      const unit = ownUnits[0];
+      const destination = unit ? openStep(projection, unit.position, ownFront, context.scenario.board) : null;
+      return unit && destination ? submit(unit.unitId, [{ kind: "move", destination }]) : [{ kind: "end-movement", playerId }];
+    },
+    command: (projection: AttentionProjection) => {
+      const player = projection.players.find((candidate) => candidate.playerId === playerId)!;
+      const pending = projection.artifacts.filter((artifact) => artifact.ownerPlayerId === playerId && artifact.resolution === "pending");
+      if (doctrine.command === "local-verify") {
+        const ownUnitIds = new Set(projection.units.filter((unit) => unit.ownerPlayerId === playerId).map((unit) => unit.unitId));
+        const local = pending.filter((artifact) => !artifact.revealed && (
+          projection.units.some((unit) => unit.ownerPlayerId === playerId && distance(unit.position, artifact.position) <= 1) ||
+          (artifact.supportScanUnitIds ?? []).some((unitId) => ownUnitIds.has(unitId))
+        )).sort((a, b) => a.reportedConfidence - b.reportedConfidence || a.artifactId.localeCompare(b.artifactId))[0];
+        if (local && player.attention >= context.model.rules.verifyCost) return { kind: "verify" as const, playerId, artifactId: local.artifactId };
+      }
+      const revealedUnsound = pending.find((artifact) => artifact.revealedSound === false);
+      if (revealedUnsound) return { kind: "reject" as const, playerId, artifactId: revealedUnsound.artifactId };
+      const next = pending[0];
+      return next ? { kind: "accept" as const, playerId, artifactId: next.artifactId }
+        : { kind: "end-command" as const, playerId };
+    },
+    artillery: (projection: AttentionProjection): AttentionArtilleryIntent => {
+      const player = projection.players.find((candidate) => candidate.playerId === playerId)!;
+      const hostile = projection.players.find((candidate) => candidate.playerId !== playerId)!;
+      const ownLowConfidence = projection.artifacts.filter((artifact) =>
+        artifact.ownerPlayerId === playerId && artifact.resolution === "pending" && artifact.reportedConfidence <= 0.5
+      );
+      const publicInputs = {
+        flareAvailable: (player.artillery?.hand.flare ?? 0) > 0,
+        chaffAvailable: (player.artillery?.hand.chaff ?? 0) > 0,
+        hostileFlareAvailable: (hostile.artillery?.hand.flare ?? 0) > 0,
+        ownLowConfidenceCount: ownLowConfidence.length
+      };
+      const matches = (predicate: NonNullable<AttentionPolicyProgram["v3Doctrine"]>["artilleryRules"][number]["when"][number]) => {
+        if (predicate.kind === "always") return true;
+        if (predicate.kind === "shell-available") return predicate.shell === "flare" ? publicInputs.flareAvailable : publicInputs.chaffAvailable;
+        if (predicate.kind === "hostile-flare-available") return publicInputs.hostileFlareAvailable;
+        return projection.artifacts.filter((artifact) =>
+          artifact.ownerPlayerId === playerId && artifact.resolution === "pending" &&
+          artifact.reportedConfidence <= predicate.confidenceAtMost
+        ).length >= predicate.count;
+      };
+      const rule = doctrine.artilleryRules.find((candidate) => candidate.when.every(matches))!;
+      const ownUnits = projection.units.filter((unit) => unit.ownerPlayerId === playerId);
+      const enemyUnits = projection.units.filter((unit) => unit.ownerPlayerId !== playerId);
+      const hostileArtifacts = projection.artifacts.filter((artifact) => artifact.ownerPlayerId !== playerId && artifact.resolution === "pending");
+      const ownFront = projection.activeFronts.find((front) => front.playerId === playerId)?.center ?? { x: 5, y: 5 };
+      const hostileFront = projection.activeFronts.find((front) => front.playerId !== playerId)?.center ?? { x: 5, y: 5 };
+      const targetCoordinates = rule.targetBasis === "enemy-formation-cluster" ? enemyUnits.map((unit) => unit.position)
+        : rule.targetBasis === "enemy-artifact-density" ? hostileArtifacts.map((artifact) => artifact.position)
+          : rule.targetBasis === "far-enemy-objective" ? [hostileFront]
+            : rule.targetBasis === "own-formation-screen" ? ownUnits.map((unit) => unit.position)
+              : rule.targetBasis === "own-low-confidence-density" ? ownLowConfidence.map((artifact) => artifact.position)
+                : [];
+      const fallback = rule.targetBasis.startsWith("own-") ? ownFront : hostileFront;
+      const center = rule.action === "pass" ? null : averageCoordinate(targetCoordinates, fallback, context.scenario.board);
+      const decision = rule.action === "fire-flare" ? "flare" as const : rule.action === "fire-chaff" ? "chaff" as const : "pass" as const;
+      audit.summary.phasesConsidered += 1;
+      audit.summary.byReason[rule.reasonCode] = (audit.summary.byReason[rule.reasonCode] ?? 0) + 1;
+      audit.summary.byTargetBasis[rule.targetBasis] = (audit.summary.byTargetBasis[rule.targetBasis] ?? 0) + 1;
+      if (decision === "pass") {
+        audit.summary.passes += 1;
+        if (publicInputs.flareAvailable || publicInputs.chaffAvailable) audit.summary.availableButPassed += 1;
+      } else if (decision === "flare") audit.summary.flareDeclarations += 1;
+      else audit.summary.chaffDeclarations += 1;
+      if (context.sampleArtilleryTrace) audit.trace.push({
+        round: projection.round,
+        ruleId: rule.ruleId,
+        decision,
+        reasonCode: rule.reasonCode,
+        targetBasis: rule.targetBasis,
+        center,
+        publicInputs
+      });
+      return decision === "pass" ? { kind: "pass-artillery", playerId }
+        : { kind: "fire-artillery", playerId, shell: decision, center: center! };
+    }
+  };
+  return { controller, audit };
+}
+
 function runAttentionSpec(matrix: AttentionMatrixManifest, spec: AttentionRunSpec): AttentionSimulationRun {
   const scenario = scenarioForVariant(spec.scenario, spec.variant);
-  const controllers = {
-    [PLAYER_IDS[0]]: createAttentionController(spec.policyOne, {
-      model: spec.variant.model, scenario, playerId: PLAYER_IDS[0]
+  const runtimes = {
+    [PLAYER_IDS[0]]: createRuntimeController(spec.policyOne, {
+      model: spec.variant.model, scenario, playerId: PLAYER_IDS[0], sampleArtilleryTrace: spec.seed % 64 === 0
     }),
-    [PLAYER_IDS[1]]: createAttentionController(spec.policyTwo, {
-      model: spec.variant.model, scenario, playerId: PLAYER_IDS[1]
+    [PLAYER_IDS[1]]: createRuntimeController(spec.policyTwo, {
+      model: spec.variant.model, scenario, playerId: PLAYER_IDS[1], sampleArtilleryTrace: spec.seed % 64 === 0
     })
   };
   const result = runAttentionMatch({
@@ -321,13 +518,18 @@ function runAttentionSpec(matrix: AttentionMatrixManifest, spec: AttentionRunSpe
       { playerId: PLAYER_IDS[0], composition: spec.compositionOne },
       { playerId: PLAYER_IDS[1], composition: spec.compositionTwo }
     ]
-  }, controllers, { traceMode: matrix.traceMode, maxOperations: 10_000 });
+  }, {
+    [PLAYER_IDS[0]]: runtimes[PLAYER_IDS[0]].controller,
+    [PLAYER_IDS[1]]: runtimes[PLAYER_IDS[1]].controller
+  }, { traceMode: matrix.traceMode, maxOperations: 10_000 });
   const state = result.match.state;
   if (!state.terminalReason) throw new Error(`Attention run ${spec.runId} did not produce a terminal result`);
   const counters = PLAYER_IDS.map((playerId) => structuredClone(result.summary.players[playerId])) as
     [AttentionSimulationCounters, AttentionSimulationCounters];
   const players = state.players.map((player, index) => {
     const playerCounters = counters[index];
+    const playerId = PLAYER_IDS[index];
+    const artilleryAudit = runtimes[playerId].audit;
     return {
       playerSlot: (index + 1) as 1 | 2,
       status: player.status,
@@ -335,7 +537,14 @@ function runAttentionSpec(matrix: AttentionMatrixManifest, spec: AttentionRunSpe
       drift: player.drift,
       driftPer12Progress: 12 * player.drift / Math.max(1, player.progress),
       attentionToArtifactRatio: playerCounters.minimumAttentionToArtifactRatio,
-      counters: playerCounters
+      counters: playerCounters,
+      ...(result.summary.uap?.[playerId] ? { uap: structuredClone(result.summary.uap[playerId]) } : {}),
+      ...(result.summary.spatial?.[playerId] ? { spatial: structuredClone(result.summary.spatial[playerId]) } : {}),
+      ...(result.summary.artillery?.[playerId] ? {
+        artillery: structuredClone(result.summary.artillery[playerId]),
+        artilleryDecisionSummary: structuredClone(artilleryAudit.summary),
+        ...(spec.seed % 64 === 0 ? { artilleryDecisionTrace: structuredClone(artilleryAudit.trace) } : {})
+      } : {})
     };
   }) as [AttentionSimulationPlayerOutcome, AttentionSimulationPlayerOutcome];
   const stateHash = sha256Value(state);
@@ -347,8 +556,8 @@ function runAttentionSpec(matrix: AttentionMatrixManifest, spec: AttentionRunSpe
     players,
     stateHash
   };
-  return AttentionSimulationRunSchema.parse({
-    schemaVersion: 1,
+  const record = AttentionSimulationRunSchema.parse({
+    schemaVersion: matrix.schemaVersion,
     matrixKind: "attention-command",
     modelVersion: matrix.modelVersion,
     runId: spec.runId,
@@ -371,6 +580,19 @@ function runAttentionSpec(matrix: AttentionMatrixManifest, spec: AttentionRunSpe
     eventHash: matrix.traceMode === "summary" ? null : result.traceHash,
     outcomeHash: sha256Value(outcome)
   });
+  const expectUap = spec.variant.model.modelVersion === "duel-capacity-v3-experimental";
+  const expectSpatial = Boolean(spec.variant.model.spatial);
+  const expectArtillery = Boolean(spec.variant.model.artillery);
+  for (const player of record.players) {
+    if (Boolean(player.uap) !== expectUap || Boolean(player.spatial) !== expectSpatial ||
+      Boolean(player.artillery) !== expectArtillery || Boolean(player.artilleryDecisionSummary) !== expectArtillery) {
+      throw new Error(`Attention run ${spec.runId} has telemetry that does not match its capability stage`);
+    }
+    if (Boolean(player.artilleryDecisionTrace) !== (expectArtillery && spec.seed % 64 === 0)) {
+      throw new Error(`Attention run ${spec.runId} has an invalid artillery trace sampling decision`);
+    }
+  }
+  return record;
 }
 
 function shardStem(shardIndex: number): string {
@@ -569,6 +791,128 @@ async function* streamAttentionRecords(artifacts: VerifiedAttentionArtifacts): A
   }
 }
 
+export type AttentionArtilleryPreflightResult = {
+  matrixId: string;
+  runs: number;
+  compressedBytes: number;
+  compressedBytesPerRun: number;
+  projectedCampaignBytes: number;
+  projectedCampaignBytesWithMargin: number;
+  counters: {
+    plansRejected: number;
+    turboCharges: number;
+    stepUps: number;
+    uplinks: number;
+    rangeShifts: number;
+    supportScans: number;
+    flareDeclarations: number;
+    chaffDeclarations: number;
+    shellsFired: number;
+    flareEstablished: number;
+    hostileShellsBlocked: number;
+  };
+  reasons: string[];
+  targetBases: string[];
+};
+
+export async function preflightAttentionArtilleryCampaign(matrixDirInput: string): Promise<AttentionArtilleryPreflightResult> {
+  const artifacts = await verifyAttentionArtifacts(matrixDirInput);
+  const matrix = artifacts.matrix;
+  const issues: string[] = [];
+  if (matrix.campaignKind !== "v3-artillery-causal" || matrix.schemaVersion !== 2 || matrix.provenance.contractVersion !== 2) {
+    issues.push("preflight requires a v2 v3-artillery-causal manifest");
+  }
+  if (matrix.variants.length !== 36 || matrix.matchups.length !== 8 || matrix.policies.length !== 10) {
+    issues.push("preflight manifest does not retain the production 36×8×10 catalog shape");
+  }
+  if (matrix.variants.some((variant) => variant.model.rules.driftLimit !== 5)) issues.push("not every variant uses the five-drift rule");
+  const orientationKeys = new Set(matrix.matchups.map((matchup) =>
+    `${matchup.scenarioId}|${matchup.playerOneCompositionId}|${matchup.playerTwoCompositionId}`
+  ));
+  for (const matchup of matrix.matchups) {
+    if (!orientationKeys.has(`${matchup.scenarioId}|${matchup.playerTwoCompositionId}|${matchup.playerOneCompositionId}`)) {
+      issues.push(`missing exact composition reversal for ${matchup.matchupId}`);
+    }
+  }
+  const totals = {
+    plansRejected: 0, turboCharges: 0, stepUps: 0, uplinks: 0,
+    rangeShifts: 0, supportScans: 0, flareDeclarations: 0, chaffDeclarations: 0,
+    shellsFired: 0, flareEstablished: 0, hostileShellsBlocked: 0
+  };
+  const reasons = new Set<string>();
+  const targetBases = new Set<string>();
+  let runs = 0;
+  for await (const record of streamAttentionRecords(artifacts)) {
+    runs += 1;
+    const variant = matrix.variants.find((candidate) => candidate.variantId === record.variantId)!;
+    const expectSpatial = Boolean(variant.model.spatial);
+    const expectArtillery = Boolean(variant.model.artillery);
+    if (record.randomStreamId !== record.scenarioId) issues.push(`non-common stream identity in ${record.runId}`);
+    for (const player of record.players) {
+      if (!player.uap || Boolean(player.spatial) !== expectSpatial || Boolean(player.artillery) !== expectArtillery ||
+        Boolean(player.artilleryDecisionSummary) !== expectArtillery) {
+        issues.push(`capability telemetry mismatch in ${record.runId}`);
+        continue;
+      }
+      totals.plansRejected += player.uap.plansRejected;
+      totals.turboCharges += player.uap.turboCharges;
+      totals.stepUps += player.uap.stepUps;
+      totals.uplinks += player.uap.uplinks;
+      if (player.spatial) {
+        totals.rangeShifts += player.spatial.rangeShifts;
+        totals.supportScans += player.spatial.supportScans;
+      }
+      if (player.artillery && player.artilleryDecisionSummary) {
+        totals.flareDeclarations += player.artilleryDecisionSummary.flareDeclarations;
+        totals.chaffDeclarations += player.artilleryDecisionSummary.chaffDeclarations;
+        totals.shellsFired += player.artillery.shellsFired;
+        totals.flareEstablished += player.artillery.flareShellsEstablished;
+        totals.hostileShellsBlocked += player.artillery.hostileShellsBlocked;
+        if (player.artilleryDecisionSummary.flareDeclarations + player.artilleryDecisionSummary.chaffDeclarations !== player.artillery.shellsFired) {
+          issues.push(`artillery declarations did not resolve exactly in ${record.runId}`);
+        }
+        Object.keys(player.artilleryDecisionSummary.byReason).forEach((reason) => reasons.add(reason));
+        Object.keys(player.artilleryDecisionSummary.byTargetBasis).forEach((basis) => targetBases.add(basis));
+        const shouldTrace = record.seed % 64 === 0;
+        if (Boolean(player.artilleryDecisionTrace) !== shouldTrace) issues.push(`trace sampling mismatch in ${record.runId}`);
+      }
+    }
+    if (issues.length > 50) break;
+  }
+  if (runs !== expectedAttentionRunCount(matrix)) issues.push(`observed ${runs} runs instead of the exact manifest count`);
+  if (totals.plansRejected !== 0) issues.push(`UAP plans rejected: ${totals.plansRejected}`);
+  for (const [name, value] of Object.entries(totals)) {
+    if (name !== "plansRejected" && value === 0) issues.push(`required counter was not reached: ${name}`);
+  }
+  const requiredReasons = [
+    "doctrine-pass", "shell-unavailable", "enemy-cluster", "enemy-artifact-density", "far-objective",
+    "hostile-flare-available", "hostile-flare-unavailable", "high-own-exposure", "exposure-below-trigger"
+  ];
+  for (const reason of requiredReasons) if (!reasons.has(reason)) issues.push(`required artillery reason was not reached: ${reason}`);
+  const requiredTargets = [
+    "none", "enemy-formation-cluster", "enemy-artifact-density", "far-enemy-objective",
+    "own-formation-screen", "own-low-confidence-density"
+  ];
+  for (const basis of requiredTargets) if (!targetBases.has(basis)) issues.push(`required artillery target basis was not reached: ${basis}`);
+  const compressedBytes = (await Promise.all(artifacts.shardNames.map((name) => stat(resolve(artifacts.matrixDir, name)))))
+    .reduce((sum, entry) => sum + entry.size, 0);
+  const compressedBytesPerRun = compressedBytes / Math.max(1, runs);
+  const projectedCampaignBytes = Math.ceil(compressedBytesPerRun * 9_216_000);
+  const result: AttentionArtilleryPreflightResult = {
+    matrixId: matrix.matrixId,
+    runs,
+    compressedBytes,
+    compressedBytesPerRun,
+    projectedCampaignBytes,
+    projectedCampaignBytesWithMargin: Math.ceil(projectedCampaignBytes * 1.25),
+    counters: totals,
+    reasons: [...reasons].sort(),
+    targetBases: [...targetBases].sort()
+  };
+  if (issues.length > 0) throw new Error(`Artillery campaign preflight failed:\n- ${[...new Set(issues)].join("\n- ")}`);
+  return result;
+}
+
 type PlayerSums = {
   wins: number;
   progress: number;
@@ -577,6 +921,13 @@ type PlayerSums = {
   attentionRatio: number;
   movementDistance: number;
   stationaryTurns: number;
+  uap?: NonNullable<AttentionSimulationPlayerOutcome["uap"]>;
+  spatial?: NonNullable<AttentionSimulationPlayerOutcome["spatial"]>;
+  artillery?: NonNullable<AttentionSimulationPlayerOutcome["artillery"]>;
+  artilleryDecision?: NonNullable<AttentionSimulationPlayerOutcome["artilleryDecisionSummary"]>;
+  driftHistogram: Record<string, number>;
+  driftFourSurvivals: number;
+  driftFiveDefeats: number;
 };
 
 type CellAccumulator = {
@@ -596,8 +947,44 @@ function emptyPlayerSums(): PlayerSums {
     attentionSpent: 0,
     attentionRatio: 0,
     movementDistance: 0,
-    stationaryTurns: 0
+    stationaryTurns: 0,
+    driftHistogram: {},
+    driftFourSurvivals: 0,
+    driftFiveDefeats: 0
   };
+}
+
+function addNumericCounters<T extends object>(
+  current: T | undefined,
+  addition: T | undefined
+): T | undefined {
+  if (!addition) return current;
+  const result = current ? structuredClone(current) : structuredClone(addition);
+  if (!current) return result;
+  const numericResult = result as Record<string, number>;
+  for (const [key, value] of Object.entries(addition as Record<string, number>)) {
+    numericResult[key] = (numericResult[key] ?? 0) + value;
+  }
+  return result;
+}
+
+function addDecisionSummary(
+  current: AttentionArtilleryDecisionSummary | undefined,
+  addition: AttentionArtilleryDecisionSummary | undefined
+): AttentionArtilleryDecisionSummary | undefined {
+  if (!addition) return current;
+  const result = current ? structuredClone(current) : {
+    phasesConsidered: 0, passes: 0, flareDeclarations: 0, chaffDeclarations: 0,
+    availableButPassed: 0, byReason: {}, byTargetBasis: {}
+  };
+  result.phasesConsidered += addition.phasesConsidered;
+  result.passes += addition.passes;
+  result.flareDeclarations += addition.flareDeclarations;
+  result.chaffDeclarations += addition.chaffDeclarations;
+  result.availableButPassed += addition.availableButPassed;
+  for (const [key, value] of Object.entries(addition.byReason)) result.byReason[key] = (result.byReason[key] ?? 0) + value;
+  for (const [key, value] of Object.entries(addition.byTargetBasis)) result.byTargetBasis[key] = (result.byTargetBasis[key] ?? 0) + value;
+  return result;
 }
 
 function cellKey(record: AttentionSimulationRun): string {
@@ -652,6 +1039,13 @@ function addCell(cells: Map<string, CellAccumulator>, record: AttentionSimulatio
     sums.attentionRatio += outcome.attentionToArtifactRatio;
     sums.movementDistance += outcome.counters.movementDistance;
     sums.stationaryTurns += outcome.counters.stationaryTurns;
+    sums.driftHistogram[String(outcome.drift)] = (sums.driftHistogram[String(outcome.drift)] ?? 0) + 1;
+    sums.driftFourSurvivals += outcome.counters.driftFourSurvivals ?? 0;
+    sums.driftFiveDefeats += outcome.counters.driftFiveDefeats ?? 0;
+    sums.uap = addNumericCounters(sums.uap, outcome.uap);
+    sums.spatial = addNumericCounters(sums.spatial, outcome.spatial);
+    sums.artillery = addNumericCounters(sums.artillery, outcome.artillery);
+    sums.artilleryDecision = addDecisionSummary(sums.artilleryDecision, outcome.artilleryDecisionSummary);
   }
 }
 
@@ -685,7 +1079,14 @@ function finishCells(accumulators: Map<string, CellAccumulator>): AttentionAggre
       averageAttentionSpent: sums.attentionSpent / cell.runs,
       averageAttentionToArtifactRatio: sums.attentionRatio / cell.runs,
       averageMovementDistance: sums.movementDistance / cell.runs,
-      averageStationaryTurns: sums.stationaryTurns / cell.runs
+      averageStationaryTurns: sums.stationaryTurns / cell.runs,
+      driftHistogram: sums.driftHistogram,
+      driftFourSurvivals: sums.driftFourSurvivals,
+      driftFiveDefeats: sums.driftFiveDefeats,
+      ...(sums.uap ? { uapTotals: sums.uap } : {}),
+      ...(sums.spatial ? { spatialTotals: sums.spatial } : {}),
+      ...(sums.artillery ? { artilleryTotals: sums.artillery } : {}),
+      ...(sums.artilleryDecision ? { artilleryDecisionTotals: sums.artilleryDecision } : {})
     })) as [AttentionAggregatePlayerMetrics, AttentionAggregatePlayerMetrics]
   }));
 }
@@ -969,6 +1370,8 @@ function validateReportDocument(
   const { reportHash, ...hashable } = report;
   if (
     reportHash !== sha256Value(hashable) ||
+    report.schemaVersion !== matrix.schemaVersion ||
+    report.provenance.contractVersion !== matrix.schemaVersion ||
     report.matrixId !== matrix.matrixId ||
     report.modelVersion !== matrix.modelVersion ||
     report.campaignKind !== matrix.campaignKind ||
@@ -1029,7 +1432,7 @@ export async function writeAttentionReport(matrixDirInput: string): Promise<stri
   const finalCells = finishCells(cells);
   const pairwise = finishPairwise(deltas);
   const reportDraft = {
-    schemaVersion: 1 as const,
+    schemaVersion: artifacts.matrix.schemaVersion,
     matrixKind: "attention-command" as const,
     modelVersion: artifacts.matrix.modelVersion,
     matrixId: artifacts.matrix.matrixId,

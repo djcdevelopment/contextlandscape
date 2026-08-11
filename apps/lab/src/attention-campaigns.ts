@@ -1,6 +1,7 @@
 import {
   AttentionMatrixDraftSchema,
   AttentionModelVariantSchema,
+  AttentionPolicyProgramSchema,
   AttentionScenarioSchema,
   type AttentionCampaignKind,
   type AttentionCoordinate,
@@ -8,10 +9,18 @@ import {
   type AttentionMatrixMatchup,
   type AttentionModelDefinition,
   type AttentionModelVariant,
+  type AttentionPolicyProgram,
   type AttentionScenario,
   type AttentionTraceMode
 } from "@landscape/contracts";
-import { attentionCompositions, defaultAttentionModel } from "@landscape/engine";
+import {
+  attentionCompositions,
+  createAttentionV3ArtilleryModel,
+  createAttentionV3Model,
+  createAttentionV3SpatialModel,
+  defaultAttentionModel,
+  defaultAttentionV3ArtilleryModel
+} from "@landscape/engine";
 import { attentionPolicyPrograms } from "@landscape/simulator/attention-policies";
 
 const MODEL_VERSION = "duel-capacity-v1" as const;
@@ -156,6 +165,137 @@ export const holdoutAttentionVariants: AttentionModelVariant[] = [
   capacityVariant("capacity-gate", { holdoutCapacityGate: true })
 ];
 
+function v3Variant(variantId: string, factorLevels: Record<string, string | number | boolean>): AttentionModelVariant {
+  return AttentionModelVariantSchema.parse({
+    variantId,
+    factorLevels,
+    model: structuredClone(defaultAttentionV3ArtilleryModel)
+  });
+}
+
+export const v3AttentionVariants: AttentionModelVariant[] = [
+  v3Variant("v3-static-front", { scenario: "static-front", mechanics: "uap-spatial-artillery" }),
+  v3Variant("v3-shifting-front", { scenario: "shifting-front", mechanics: "uap-spatial-artillery" }),
+  v3Variant("v3-escort-corridor", { scenario: "escort-corridor", mechanics: "uap-spatial-artillery" }),
+  v3Variant("v3-flare-pocket", { scenario: "flare-pocket", mechanics: "uap-spatial-artillery" })
+];
+
+const causalStages = [
+  { id: "a", mechanics: "uap", model: () => createAttentionV3Model() },
+  { id: "b", mechanics: "uap-spatial", model: () => createAttentionV3SpatialModel() },
+  { id: "c", mechanics: "uap-spatial-artillery", model: () => createAttentionV3ArtilleryModel() }
+] as const;
+const causalSoundness = [0.25, 0.5, 0.75, 0.95] as const;
+const causalCouplings = ["binary-front", "global", "distance-weighted-front"] as const;
+
+export const v3ArtilleryCausalVariants: AttentionModelVariant[] = causalStages.flatMap((stage) =>
+  causalSoundness.flatMap((soundnessRate) => causalCouplings.map((objectiveCoupling) => {
+    const model = stage.model();
+    model.rules.driftLimit = 5;
+    model.rules.soundnessRate = soundnessRate;
+    model.extensions = {
+      objectiveCoupling,
+      stationaryQualification: "resolved-zero",
+      capacityTopology: "shared-exclusive",
+      abilityUnlockBasis: "personal-claim-count",
+      abilityPackage: "complete",
+      unresolvedDisposition: "auto-accept"
+    };
+    return AttentionModelVariantSchema.parse({
+      variantId: `v3-${stage.id}-s${Math.round(soundnessRate * 100)}-${objectiveCoupling}`,
+      factorLevels: {
+        capabilityStage: stage.id.toUpperCase(),
+        mechanics: stage.mechanics,
+        soundnessRate,
+        objectiveCoupling,
+        driftLimit: 5
+      },
+      model
+    });
+  }))
+);
+
+const alwaysPass = (ruleId = "doctrine-pass", reasonCode = "doctrine-pass") => ({
+  ruleId,
+  when: [{ kind: "always" as const }],
+  action: "pass" as const,
+  reasonCode,
+  targetBasis: "none" as const
+});
+
+function causalPolicy(
+  policyId: string,
+  label: string,
+  uap: "hold" | "baseline-move" | "scout-recon" | "line-support" | "siege-uplink-range",
+  command: "accept" | "local-verify",
+  artilleryRules: NonNullable<AttentionPolicyProgram["v3Doctrine"]>["artilleryRules"] = [alwaysPass()]
+): AttentionPolicyProgram {
+  return AttentionPolicyProgramSchema.parse({
+    schemaVersion: 1,
+    policyId,
+    label,
+    movementRules: [],
+    movementFallback: "hold",
+    capacityStrategy: "never",
+    commandRules: [],
+    maxCommandActions: 64,
+    v3Doctrine: { uap, command, artilleryRules }
+  });
+}
+
+const flareRules = (
+  ruleId: string,
+  reasonCode: string,
+  targetBasis: "enemy-formation-cluster" | "enemy-artifact-density" | "far-enemy-objective"
+) => [{
+  ruleId,
+  when: [{ kind: "shell-available" as const, shell: "flare" as const }],
+  action: "fire-flare" as const,
+  reasonCode,
+  targetBasis
+}, alwaysPass(`${ruleId}-fallback`, "shell-unavailable")];
+
+export const v3ArtilleryCausalPolicies: AttentionPolicyProgram[] = [
+  causalPolicy("v3-control-accept-pass", "Accept / hold / pass control", "hold", "accept"),
+  causalPolicy("v3-baseline-move-verify-pass", "Movement / local verify / pass baseline", "baseline-move", "local-verify"),
+  causalPolicy("v3-scout-recon-pass", "Scout active recon / pass", "scout-recon", "local-verify"),
+  causalPolicy("v3-line-support-pass", "Line step-up and Support Scan / pass", "line-support", "local-verify"),
+  causalPolicy("v3-siege-uplink-range-pass", "Siege uplink and range shift / pass", "siege-uplink-range", "local-verify"),
+  causalPolicy("v3-flare-cluster", "Flare enemy formation cluster", "baseline-move", "local-verify",
+    flareRules("flare-enemy-cluster", "enemy-cluster", "enemy-formation-cluster")),
+  causalPolicy("v3-flare-density", "Flare enemy artifact density", "baseline-move", "local-verify",
+    flareRules("flare-enemy-density", "enemy-artifact-density", "enemy-artifact-density")),
+  causalPolicy("v3-flare-far-objective", "Flare far enemy objective", "baseline-move", "local-verify",
+    flareRules("flare-far-objective", "far-objective", "far-enemy-objective")),
+  causalPolicy("v3-chaff-screen", "Chaff own formation against hostile Flare", "baseline-move", "local-verify", [{
+    ruleId: "chaff-hostile-flare-screen",
+    when: [{ kind: "shell-available", shell: "chaff" }, { kind: "hostile-flare-available" }],
+    action: "fire-chaff",
+    reasonCode: "hostile-flare-available",
+    targetBasis: "own-formation-screen"
+  }, alwaysPass("chaff-screen-fallback", "hostile-flare-unavailable")]),
+  causalPolicy("v3-adaptive-artillery", "Adaptive public-exposure Chaff", "baseline-move", "local-verify", [{
+    ruleId: "chaff-high-own-exposure",
+    when: [
+      { kind: "shell-available", shell: "chaff" },
+      { kind: "hostile-flare-available" },
+      { kind: "own-low-confidence-at-least", count: 4, confidenceAtMost: 0.5 }
+    ],
+    action: "fire-chaff",
+    reasonCode: "high-own-exposure",
+    targetBasis: "own-low-confidence-density"
+  }, alwaysPass("adaptive-exposure-fallback", "exposure-below-trigger")])
+];
+
+const allAttentionPolicies = [...attentionPolicyPrograms, ...v3ArtilleryCausalPolicies];
+
+// Keep the v3 shape screen at the frozen 9.216M budget: four scenario cells × 12×12
+// policy pairings × 16,000 fresh seeds. The omitted legacy no-flare policy is redundant
+// here because v3 artillery is supplied by the runtime adapter below.
+const v3PolicyIds = attentionPolicyPrograms
+  .map((policy) => policy.policyId)
+  .filter((policyId) => policyId !== "capacity-follower-no-flare");
+
 const stationaryPolicies = [
   "accept-all", "verify-lowest-confidence", "verify-arbitrary", "seize-cheapest",
   "front-mobile-verify", "recon-lock-reject", "line-escort-lock", "uplink-seize"
@@ -164,7 +304,7 @@ const capacityPolicies = ["capacity-ignore", "capacity-pioneer", "capacity-follo
 const capacityOpponents = ["verify-lowest-confidence", "front-mobile-verify", "capacity-pioneer"];
 
 function assertPolicyIds(ids: readonly string[]): string[] {
-  const available = new Set(attentionPolicyPrograms.map((policy) => policy.policyId));
+  const available = new Set(allAttentionPolicies.map((policy) => policy.policyId));
   const missing = ids.filter((id) => !available.has(id));
   if (missing.length > 0) throw new Error(`Attention campaign references unavailable policies: ${missing.join(", ")}`);
   return [...ids];
@@ -222,6 +362,42 @@ function holdoutMatchups(): AttentionMatrixMatchup[] {
   ];
 }
 
+function v3ShapeMatchups(): AttentionMatrixMatchup[] {
+  const scenarios = ["static-front", "shifting-front", "escort-corridor", "flare-pocket"];
+  return scenarios.map((scenarioId, index) => matchup({
+    matchupId: `v3-${scenarioId}`,
+    scenarioId,
+    playerOneCompositionId: "balanced",
+    playerTwoCompositionId: index % 2 === 0 ? "scout-homogeneous" : "siege-homogeneous",
+    variantIds: [v3AttentionVariants[index].variantId],
+    playerOnePolicyIds: assertPolicyIds(v3PolicyIds),
+    playerTwoPolicyIds: assertPolicyIds(v3PolicyIds)
+  }));
+}
+
+function v3ArtilleryCausalMatchups(): AttentionMatrixMatchup[] {
+  const pairs = [
+    ["static-front", "balanced", "siege-homogeneous"],
+    ["shifting-front", "balanced", "scout-homogeneous"],
+    ["escort-corridor", "escort", "balanced"],
+    ["flare-pocket", "scout-homogeneous", "siege-homogeneous"]
+  ] as const;
+  const policyIds = v3ArtilleryCausalPolicies.map((policy) => policy.policyId);
+  const variantIds = v3ArtilleryCausalVariants.map((variant) => variant.variantId);
+  return pairs.flatMap(([scenarioId, compositionA, compositionB]) => [
+    matchup({
+      matchupId: `v3-causal-${scenarioId}-ab`, scenarioId,
+      playerOneCompositionId: compositionA, playerTwoCompositionId: compositionB,
+      variantIds, playerOnePolicyIds: policyIds, playerTwoPolicyIds: policyIds
+    }),
+    matchup({
+      matchupId: `v3-causal-${scenarioId}-ba`, scenarioId,
+      playerOneCompositionId: compositionB, playerTwoCompositionId: compositionA,
+      variantIds, playerOnePolicyIds: policyIds, playerTwoPolicyIds: policyIds
+    })
+  ]);
+}
+
 export type AttentionCampaignOptions = {
   matrixId?: string;
   seedStart?: number;
@@ -235,31 +411,43 @@ export function createAttentionCampaignDraft(
   campaignKind: Exclude<AttentionCampaignKind, "custom">,
   options: AttentionCampaignOptions = {}
 ): AttentionMatrixDraft {
-  const defaultSeeds = campaignKind === "holdout" ? 5000 : 250;
+  const defaultSeeds = campaignKind === "holdout" ? 5000
+    : campaignKind === "v3-shape" ? 16000
+      : campaignKind === "v3-artillery-causal" ? 320
+        : 250;
   const variants = campaignKind === "stationary-train" ? stationaryAttentionVariants
     : campaignKind === "capacity-train" ? capacityAttentionVariants
-      : holdoutAttentionVariants;
+      : campaignKind === "holdout" ? holdoutAttentionVariants
+        : campaignKind === "v3-shape" ? v3AttentionVariants
+          : v3ArtilleryCausalVariants;
   const matchups = campaignKind === "stationary-train" ? stationaryMatchups()
     : campaignKind === "capacity-train" ? capacityMatchups()
-      : holdoutMatchups();
+      : campaignKind === "holdout" ? holdoutMatchups()
+        : campaignKind === "v3-shape" ? v3ShapeMatchups()
+          : v3ArtilleryCausalMatchups();
   const referencedScenarioIds = new Set(matchups.map((entry) => entry.scenarioId));
   const referencedCompositionIds = new Set(matchups.flatMap((entry) => [entry.playerOneCompositionId, entry.playerTwoCompositionId]));
-  const policies = attentionPolicyPrograms.filter((policy) =>
+  const policies = allAttentionPolicies.filter((policy) =>
     matchups.some((entry) => entry.playerOnePolicyIds.includes(policy.policyId) || entry.playerTwoPolicyIds.includes(policy.policyId))
   );
   return AttentionMatrixDraftSchema.parse({
-    schemaVersion: 1,
+    schemaVersion: campaignKind === "v3-artillery-causal" ? 2 : 1,
     matrixId: options.matrixId ?? `attention-${campaignKind}-v1`,
     matrixKind: "attention-command",
-    modelVersion: MODEL_VERSION,
+    modelVersion: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal"
+      ? defaultAttentionV3ArtilleryModel.modelVersion : MODEL_VERSION,
     campaignKind,
-    model: defaultAttentionModel,
+    model: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal"
+      ? defaultAttentionV3ArtilleryModel : defaultAttentionModel,
     scenarios: attentionCampaignScenarios.filter((entry) => referencedScenarioIds.has(entry.scenarioId)),
     compositions: Object.values(attentionCompositions).filter((entry) => referencedCompositionIds.has(entry.compositionId)),
     variants,
     policies,
     matchups,
-    seedStart: options.seedStart ?? (campaignKind === "holdout" ? 9_000_000 : 100_000),
+    seedStart: options.seedStart ?? (campaignKind === "holdout" ? 9_000_000
+      : campaignKind === "v3-shape" ? 20_000_000
+        : campaignKind === "v3-artillery-causal" ? 30_000_000
+          : 100_000),
     seedsPerCell: options.seedsPerCell ?? defaultSeeds,
     shardCount: options.shardCount ?? 12,
     traceMode: options.traceMode ?? "summary",

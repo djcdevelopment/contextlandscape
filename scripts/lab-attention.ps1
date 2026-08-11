@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [ValidateSet('all', 'stationary-train', 'capacity-train', 'holdout')]
+  [ValidateSet('all', 'stationary-train', 'capacity-train', 'holdout', 'v3-shape', 'v3-artillery-causal')]
   [string] $AttentionCampaign = 'all',
   [string] $MatrixId = "attention-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss'))",
   [int] $Runs = 0,
@@ -136,7 +136,9 @@ function New-DefaultExperiments {
   $definitions = @(
     @{ Kind = 'stationary-train'; RunsPerSeed = 1920; DefaultSeeds = 250; DefaultSeedStart = 100000 },
     @{ Kind = 'capacity-train'; RunsPerSeed = 576; DefaultSeeds = 250; DefaultSeedStart = 100000 },
-    @{ Kind = 'holdout'; RunsPerSeed = 10; DefaultSeeds = 5000; DefaultSeedStart = 9000000 }
+    @{ Kind = 'holdout'; RunsPerSeed = 10; DefaultSeeds = 5000; DefaultSeedStart = 9000000 },
+    @{ Kind = 'v3-shape'; RunsPerSeed = 576; DefaultSeeds = 16000; DefaultSeedStart = 20000000 },
+    @{ Kind = 'v3-artillery-causal'; RunsPerSeed = 28800; DefaultSeeds = 320; DefaultSeedStart = 30000000 }
   )
   $selected = if ($AttentionCampaign -eq 'all') { $definitions } else { @($definitions | Where-Object Kind -eq $AttentionCampaign) }
   foreach ($definition in $selected) {
@@ -291,6 +293,38 @@ try {
     return
   }
 
+  # The artillery campaign earns permission to launch by completing the exact production
+  # catalog at one common seed (36 variants × 8 orientations × 10×10 policies = 28,800 runs).
+  foreach ($experiment in @($experiments | Where-Object Kind -eq 'v3-artillery-causal')) {
+    $preflightId = "$($experiment.MatrixId)-preflight-$($sourceTree.Substring(0, 8).ToLowerInvariant())"
+    Assert-SafeMatrixId $preflightId
+    $preflightDir = Join-Path $repo "data/lab/$preflightId"
+    $preflightManifest = "data/lab/$preflightId/manifest.json"
+    $preparePreflight = @('-p', $project, '-f', 'infra/compose.lab.yml', 'run', '--rm') + $provenanceEnv + @(
+      'worker', 'node', 'apps/lab/dist/main.js', '--attention-campaign=v3-artillery-causal',
+      "--matrix=$preflightId", '--runs=1', '--shards=1', '--seed-start=30000000',
+      "--canonical=$canonicalValue", '--prepare=true'
+    )
+    Invoke-DockerChecked $preparePreflight "Unable to freeze artillery preflight $preflightId"
+    $runPreflight = @('-p', $project, '-f', 'infra/compose.lab.yml', 'run', '--rm') + $provenanceEnv + @(
+      'worker', 'node', 'apps/lab/dist/main.js', "--manifest=$preflightManifest",
+      "--canonical=$canonicalValue", '--all-shards=true'
+    )
+    Invoke-DockerChecked $runPreflight "Artillery production-shape preflight execution failed"
+    $validatePreflight = @('-p', $project, '-f', 'infra/compose.lab.yml', 'run', '--rm') + $provenanceEnv + @(
+      'worker', 'node', 'apps/lab/dist/main.js', "--attention-artillery-preflight=data/lab/$preflightId"
+    )
+    Invoke-DockerChecked $validatePreflight "Artillery production-shape preflight gates failed"
+    $preflightShard = Join-Path $preflightDir 'shard-0000.jsonl.gz'
+    [double]$bytesPerRun = (Get-Item -LiteralPath $preflightShard).Length / 28800.0
+    [int64]$projectedWithMargin = [math]::Ceiling($bytesPerRun * 9216000.0 * 1.25)
+    $drive = [System.IO.DriveInfo]::new([System.IO.Path]::GetPathRoot($repo))
+    if ($drive.AvailableFreeSpace -lt $projectedWithMargin) {
+      throw "Artillery campaign projection plus 25% margin requires $projectedWithMargin bytes; only $($drive.AvailableFreeSpace) are free"
+    }
+    Write-Host "ATTENTION ARTILLERY PREFLIGHT PASS: matrix=$preflightId projectedBytesWithMargin=$projectedWithMargin" -ForegroundColor Green
+  }
+
   foreach ($experiment in $experiments) {
     Assert-FreeSpace
     $campaignJobs = @()
@@ -354,7 +388,35 @@ try {
     )
     if ($experiment.ManifestDocument.provenance.canonical) { $auditArgs += '--strict=true' }
     Invoke-DockerChecked $auditArgs "Attention provenance audit failed for $($experiment.MatrixId)"
+    if ($experiment.Kind -eq 'v3-artillery-causal') {
+      $fullGateArgs = @('-p', $project, '-f', 'infra/compose.lab.yml', 'run', '--rm') + $provenanceEnv + @(
+        'worker', 'node', 'apps/lab/dist/main.js', "--attention-artillery-preflight=data/lab/$($experiment.MatrixId)"
+      )
+      Invoke-DockerChecked $fullGateArgs "Completed artillery campaign failed its full telemetry and reachability gates"
+    }
     Write-Host "ATTENTION CAMPAIGN PASS: data/lab/$($experiment.MatrixId)/report.json" -ForegroundColor Green
+    if ($experiment.Kind -eq 'v3-artillery-causal') {
+      $analysisRelative = "data/lab/$($experiment.MatrixId)-analysis"
+      & node scripts/analyze-attention-v3-artillery-causal.mjs "--matrix=data/lab/$($experiment.MatrixId)" "--out=$analysisRelative"
+      if ($LASTEXITCODE -ne 0) { throw 'Artillery causal analysis failed' }
+      & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/render-attention-v3-artillery-png.ps1 -AnalysisDir $analysisRelative
+      if ($LASTEXITCODE -ne 0) { throw 'Artillery PNG rendering failed' }
+      $archiveRelative = "data/archives/$($experiment.MatrixId).zip"
+      $archiveFull = Join-Path $repo $archiveRelative
+      if (!(Test-Path -LiteralPath $archiveFull)) {
+        & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/archive-attention-v3-artillery.ps1 `
+          -MatrixDir "data/lab/$($experiment.MatrixId)" -AnalysisDir $analysisRelative -ArchivePath $archiveRelative
+        if ($LASTEXITCODE -ne 0) { throw 'Artillery result archive failed verification' }
+      } else {
+        $sidecarPath = "$archiveFull.json"
+        if (!(Test-Path -LiteralPath $sidecarPath)) { throw 'Existing artillery archive has no verification sidecar' }
+        $sidecar = Get-Content -LiteralPath $sidecarPath -Raw | ConvertFrom-Json
+        if ($sidecar.archiveHash -ne "sha256:$((Get-FileHash -LiteralPath $archiveFull -Algorithm SHA256).Hash.ToLowerInvariant())") {
+          throw 'Existing artillery archive failed its sidecar hash check'
+        }
+      }
+      Write-Host "ATTENTION ARTILLERY ANALYSIS + ARCHIVE PASS: $archiveRelative" -ForegroundColor Green
+    }
   }
 } finally {
   $campaignJobs | Remove-Job -Force -ErrorAction SilentlyContinue

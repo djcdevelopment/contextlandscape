@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="560" viewBox="0 0 1160 560">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="42" y="48" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage C2 · frozen training selector</text>
+  <text x="42" y="78" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Cyan: minimum pressure score · violet: pooled local-verification score</text>
+  <text x="45" y="134" fill="#f4f7ff" font-size="19" font-family="Segoe UI, sans-serif">risk ≥ 4</text>
+<rect x="190" y="106" width="76.52451175767244" height="25" rx="5" fill="#35f2d0"/>
+<rect x="190" y="135" width="225.98644878437628" height="18" rx="4" fill="#8b7cff"/>
+<text x="720" y="133" fill="#dbe5ff" font-size="15" font-family="Cascadia Mono, monospace">min 0.4453  pooled 0.5039  chaff 98%</text>
+<text x="45" y="212" fill="#f4f7ff" font-size="19" font-family="Segoe UI, sans-serif">risk ≥ 5</text>
+<rect x="190" y="184" width="116.3810282981268" height="25" rx="5" fill="#35f2d0"/>
+<rect x="190" y="213" width="275.8070944599442" height="18" rx="4" fill="#8b7cff"/>
+<text x="720" y="211" fill="#dbe5ff" font-size="15" font-family="Cascadia Mono, monospace">min 0.4609  pooled 0.5234  chaff 84%</text>
+<text x="45" y="290" fill="#f4f7ff" font-size="19" font-family="Segoe UI, sans-serif">risk ≥ 6</text>
+<rect x="190" y="262" width="335.5918692706258" height="25" rx="5" fill="#35f2d0"/>
+<rect x="190" y="291" width="360.5021921084097" height="18" rx="4" fill="#8b7cff"/>
+<text x="720" y="289" fill="#dbe5ff" font-size="15" font-family="Cascadia Mono, monospace">min 0.5469  pooled 0.5566  chaff 57%</text>
+<text x="45" y="368" fill="#f4f7ff" font-size="19" font-family="Segoe UI, sans-serif">risk ≥ 7</text>
+<rect x="190" y="340" width="295.7353527301714" height="25" rx="5" fill="#35f2d0"/>
+<rect x="190" y="369" width="480.0717417297728" height="18" rx="4" fill="#8b7cff"/>
+<text x="720" y="367" fill="#dbe5ff" font-size="15" font-family="Cascadia Mono, monospace">min 0.5313  pooled 0.6035  chaff 25%</text>
+<text x="45" y="446" fill="#f4f7ff" font-size="19" font-family="Segoe UI, sans-serif">risk ≥ 8</text>
+<rect x="190" y="418" width="176.16580310880832" height="25" rx="5" fill="#35f2d0"/>
+<rect x="190" y="447" width="500" height="18" rx="4" fill="#8b7cff"/>
+<text x="720" y="445" fill="#dbe5ff" font-size="15" font-family="Cascadia Mono, monospace">min 0.4844  pooled 0.6113  chaff 7%</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="680" viewBox="0 0 1180 680">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="42" y="48" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage C1 · progress retained vs drift avoided</text>
+  <text x="42" y="78" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Paired deltas from hold under the same hostile-Flare worlds · upper-right is jointly favorable</text>
+  <rect x="120" y="120" width="900" height="430" fill="#101c31" stroke="#253656"/>
+  <line x1="901.9672131147541" y1="120" x2="901.9672131147541" y2="550" stroke="#7f90b2" stroke-width="2"/>
+  <line x1="120" y1="427.42475367795925" x2="1020" y2="427.42475367795925" stroke="#7f90b2" stroke-width="2"/>
+  <text x="570" y="620" fill="#dbe5ff" font-size="17" text-anchor="middle" font-family="Segoe UI, sans-serif">Progress delta →</text>
+  <text x="35" y="335" fill="#dbe5ff" font-size="17" text-anchor="middle" transform="rotate(-90 35 335)" font-family="Segoe UI, sans-serif">Drift avoided →</text>
+  <circle cx="901.9672131147541" cy="427.42475367795925" r="11" fill="#c2ccdf" stroke="#09111f" stroke-width="3"/>
+<text x="916.9672131147541" y="395.42475367795925" fill="#c2ccdf" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">hold-pass</text>
+<text x="916.9672131147541" y="413.42475367795925" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ 0.0000</text>
+<circle cx="184.381520119225" cy="285.81320016196514" r="11" fill="#ff6b85" stroke="#09111f" stroke-width="3"/>
+<text x="199.381520119225" y="313.81320016196514" fill="#ff6b85" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">full-evacuate</text>
+<text x="199.381520119225" y="331.81320016196514" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ -0.1602</text>
+<circle cx="580.3390461997019" cy="361.55216628424887" r="11" fill="#ff6b85" stroke="#09111f" stroke-width="3"/>
+<text x="595.3390461997019" y="345.55216628424887" fill="#ff6b85" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">scout-peel</text>
+<text x="595.3390461997019" y="363.55216628424887" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ -0.0475</text>
+<circle cx="620.2980625931446" cy="210.07423403968141" r="11" fill="#35f2d0" stroke="#09111f" stroke-width="3"/>
+<text x="635.2980625931446" y="174.07423403968141" fill="#35f2d0" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">scout-peel-support</text>
+<text x="635.2980625931446" y="192.07423403968141" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ 0.0658</text>
+<circle cx="516.9076005961251" cy="445.7065730867863" r="11" fill="#ff6b85" stroke="#09111f" stroke-width="3"/>
+<text x="531.9076005961251" y="429.7065730867863" fill="#ff6b85" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">compress-support</text>
+<text x="531.9076005961251" y="447.7065730867863" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ -0.0872</text>
+<circle cx="413.23770491803276" cy="186.85922526656765" r="11" fill="#ff6b85" stroke="#09111f" stroke-width="3"/>
+<text x="428.23770491803276" y="157.85922526656765" fill="#ff6b85" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">always-chaff</text>
+<text x="428.23770491803276" y="175.85922526656765" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ -0.0215</text>
+<circle cx="511.5983606557377" cy="234.15980564178705" r="11" fill="#ff6b85" stroke="#09111f" stroke-width="3"/>
+<text x="526.5983606557377" y="275.15980564178705" fill="#ff6b85" font-size="15" font-weight="700" font-family="Segoe UI, sans-serif">risk-chaff</text>
+<text x="526.5983606557377" y="293.15980564178705" fill="#a9b6d3" font-size="12" font-family="Cascadia Mono, monospace">score Δ -0.0286</text>
+</svg>

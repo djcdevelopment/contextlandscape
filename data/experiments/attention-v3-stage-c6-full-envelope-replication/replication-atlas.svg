@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1460" height="1650" viewBox="0 0 1460 1650">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="32" y="47" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage C6 - full-envelope replication atlas</text>
+  <text x="32" y="77" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Orange: best static | cyan: within 0.075 | red: frozen replication failure</text>
+  <text x="32" y="142" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-25 / local-verify</text>
+<rect x="520" y="119" width="254.58333333333331" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="139" width="254.58333333333331" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="142" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4896  best 0.4896  gap 0.0000</text>
+<text x="32" y="203" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-35 / local-verify</text>
+<rect x="520" y="180" width="276.25" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="200" width="243.75" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="203" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4688  best 0.5313  gap -0.0625</text>
+<text x="32" y="264" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-45 / local-verify</text>
+<rect x="520" y="241" width="227.5" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="261" width="222.08333333333331" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="264" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4271  best 0.4375  gap -0.0104</text>
+<text x="32" y="325" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-55 / local-verify</text>
+<rect x="520" y="302" width="319.58333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="322" width="265.41666666666663" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="325" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5104  best 0.6146  gap -0.1042</text>
+<text x="32" y="386" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-65 / local-verify</text>
+<rect x="520" y="363" width="297.91666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="383" width="254.58333333333331" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="386" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4896  best 0.5729  gap -0.0833</text>
+<text x="32" y="447" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-75 / local-verify</text>
+<rect x="520" y="424" width="276.25" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="444" width="227.5" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="447" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4375  best 0.5313  gap -0.0938</text>
+<text x="32" y="508" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-85 / local-verify</text>
+<rect x="520" y="485" width="368.33333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="505" width="330.41666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="508" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6354  best 0.7083  gap -0.0729</text>
+<text x="32" y="569" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">binary-sound-95 / local-verify</text>
+<rect x="520" y="546" width="281.66666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="566" width="232.91666666666669" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="569" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4479  best 0.5417  gap -0.0937</text>
+<text x="32" y="630" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-25 / local-verify</text>
+<rect x="520" y="607" width="222.08333333333331" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="627" width="162.5" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="630" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.3125  best 0.4271  gap -0.1146</text>
+<text x="32" y="691" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-35 / local-verify</text>
+<rect x="520" y="668" width="270.83333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="688" width="211.25" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="691" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4063  best 0.5208  gap -0.1146</text>
+<text x="32" y="752" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-45 / local-verify</text>
+<rect x="520" y="729" width="173.33333333333331" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="749" width="184.16666666666669" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="752" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.3542  best 0.3333  gap 0.0208</text>
+<text x="32" y="813" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-55 / local-verify</text>
+<rect x="520" y="790" width="292.5" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="810" width="281.66666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="813" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5417  best 0.5625  gap -0.0208</text>
+<text x="32" y="874" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-65 / local-verify</text>
+<rect x="520" y="851" width="368.33333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="871" width="341.25" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="874" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6563  best 0.7083  gap -0.0521</text>
+<text x="32" y="935" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-75 / local-verify</text>
+<rect x="520" y="912" width="390" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="932" width="346.66666666666663" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="935" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6667  best 0.7500  gap -0.0833</text>
+<text x="32" y="996" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-85 / local-verify</text>
+<rect x="520" y="973" width="400.83333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="993" width="379.16666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="996" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.7292  best 0.7708  gap -0.0417</text>
+<text x="32" y="1057" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">global-sound-95 / local-verify</text>
+<rect x="520" y="1034" width="411.66666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1054" width="411.66666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1057" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.7917  best 0.7917  gap 0.0000</text>
+<text x="32" y="1118" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-25 / local-verify</text>
+<rect x="520" y="1095" width="216.66666666666669" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1115" width="195" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1118" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.3750  best 0.4167  gap -0.0417</text>
+<text x="32" y="1179" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-35 / local-verify</text>
+<rect x="520" y="1156" width="227.5" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1176" width="227.5" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1179" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4375  best 0.4375  gap 0.0000</text>
+<text x="32" y="1240" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-45 / local-verify</text>
+<rect x="520" y="1217" width="292.5" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1237" width="265.41666666666663" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1240" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5104  best 0.5625  gap -0.0521</text>
+<text x="32" y="1301" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-55 / local-verify</text>
+<rect x="520" y="1278" width="292.5" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1298" width="173.33333333333331" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="1301" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.3333  best 0.5625  gap -0.2292</text>
+<text x="32" y="1362" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-65 / local-verify</text>
+<rect x="520" y="1339" width="308.75" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1359" width="211.25" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="1362" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.4063  best 0.5938  gap -0.1875</text>
+<text x="32" y="1423" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-75 / local-verify</text>
+<rect x="520" y="1400" width="335.83333333333337" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1420" width="341.25" height="15" rx="4" fill="#35f2d0"/>
+<text x="1090" y="1423" fill="#35f2d0" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6563  best 0.6458  gap 0.0104</text>
+<text x="32" y="1484" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-85 / local-verify</text>
+<rect x="520" y="1461" width="379.16666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1481" width="319.58333333333337" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="1484" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.6146  best 0.7292  gap -0.1146</text>
+<text x="32" y="1545" fill="#f4f7ff" font-size="13" font-family="Cascadia Mono, monospace">distance-sound-95 / local-verify</text>
+<rect x="520" y="1522" width="346.66666666666663" height="15" rx="4" fill="#ff9f43"/>
+<rect x="520" y="1542" width="292.5" height="15" rx="4" fill="#ff6b7a"/>
+<text x="1090" y="1545" fill="#ff6b7a" font-size="14" font-family="Cascadia Mono, monospace">adaptive 0.5625  best 0.6667  gap -0.1042</text>
+</svg>

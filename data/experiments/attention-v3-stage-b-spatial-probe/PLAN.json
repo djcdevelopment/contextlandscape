@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "experiment": "attention-v3-stage-b-spatial-differential-probe",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "resolverVersion": "attention-v3-stage-b-resolver-1",
+  "contrasts": [
+    {
+      "id": "artifact-chase-vs-hold",
+      "treatment": "chase",
+      "control": "hold",
+      "gateMetric": "movementDistance",
+      "direction": 1
+    },
+    {
+      "id": "line-support-vs-hold",
+      "treatment": "support",
+      "control": "hold",
+      "gateMetric": "supportScans",
+      "direction": 1
+    },
+    {
+      "id": "range-compress-vs-default",
+      "treatment": "compress",
+      "control": "hold",
+      "gateMetric": "meanArtifactDistance",
+      "direction": -1
+    },
+    {
+      "id": "range-expand-vs-default",
+      "treatment": "expand",
+      "control": "hold",
+      "gateMetric": "meanArtifactDistance",
+      "direction": 1
+    }
+  ],
+  "pressureSamples": [
+    {
+      "id": "binary-sound-70",
+      "objectiveCoupling": "binary-front",
+      "soundnessRate": 0.7
+    },
+    {
+      "id": "global-sound-55",
+      "objectiveCoupling": "global",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "distance-sound-55",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.55
+    },
+    {
+      "id": "distance-sound-80",
+      "objectiveCoupling": "distance-weighted-front",
+      "soundnessRate": 0.8
+    }
+  ],
+  "commandModes": [
+    "accept-all",
+    "confidence-threshold",
+    "local-verify"
+  ],
+  "seeds": [
+    72000,
+    72001,
+    72002,
+    72003,
+    72004,
+    72005,
+    72006,
+    72007,
+    72008,
+    72009,
+    72010,
+    72011,
+    72012,
+    72013,
+    72014,
+    72015,
+    72016,
+    72017,
+    72018,
+    72019,
+    72020,
+    72021,
+    72022,
+    72023,
+    72024,
+    72025,
+    72026,
+    72027,
+    72028,
+    72029,
+    72030,
+    72031,
+    72032,
+    72033,
+    72034,
+    72035,
+    72036,
+    72037,
+    72038,
+    72039,
+    72040,
+    72041,
+    72042,
+    72043,
+    72044,
+    72045,
+    72046,
+    72047
+  ],
+  "orientations": [
+    "focal-alpha",
+    "focal-bravo"
+  ],
+  "arms": [
+    "treatment",
+    "control"
+  ],
+  "composition": "balanced",
+  "baseModelHash": "sha256:42b8b949f671eedf48c59429a8144c7e6ce55d66a8c79eeacd71e5938cb7b606",
+  "uapModelHash": "sha256:396eeb7bba35633c8be78e12a639993bdfa84fecfcb7367dc5810e21630ae5fd",
+  "spatialModelHash": "sha256:023005393e0d1da931ad127591cc9764fb9414537bb2944f908b08eed7dc7d18",
+  "scenarioHash": "sha256:033ef8c114e01d2275d6342d10fe333ed5e7c5c0c69a341f3e12f86673b0c618",
+  "compositionHash": "sha256:40ae8ceaf1e03b9375ca81f7a4fa3827b8245891f77bf03e6e6c1c0a61029b57",
+  "worldStreamNamespace": "attention-v3-stage-b-spatial-world-v1",
+  "capacityPolicy": "pass",
+  "artillery": "disabled",
+  "planId": "attention-v3-stage-b-bbb15898fd681c4c",
+  "planHash": "sha256:bbb15898fd681c4cd783a3c053f1742f629ec3706809dd464f1ee6390b9524da"
+}

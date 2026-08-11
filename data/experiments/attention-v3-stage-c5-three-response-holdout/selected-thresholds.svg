@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="520" viewBox="0 0 1320 520">
+  <rect width="100%" height="100%" fill="#09111f"/>
+  <text x="38" y="47" fill="#ffffff" font-size="28" font-weight="700" font-family="Segoe UI, sans-serif">Stage C5 · selected public three-response thresholds</text>
+  <text x="38" y="77" fill="#94a3c7" font-size="16" font-family="Segoe UI, sans-serif">Action by public count L of pending artifacts below 0.50 confidence</text>
+  <text x="469" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=0</text>
+<text x="561" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=1</text>
+<text x="653" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=2</text>
+<text x="745" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=3</text>
+<text x="837" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=4</text>
+<text x="929" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=5</text>
+<text x="1021" y="105" text-anchor="middle" fill="#94a3c7" font-size="15" font-family="Cascadia Mono, monospace">L=6</text><text x="38" y="150" fill="#f4f7ff" font-size="18" font-family="Segoe UI, sans-serif">binary-front</text><text x="250" y="150" fill="#a9b6d3" font-size="14" font-family="Cascadia Mono, monospace">hold-le-0-chaff-ge-3</text><rect x="430" y="121" width="78" height="46" rx="7" fill="#5ab4ff"/><text x="469" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">hold</text>
+<rect x="522" y="121" width="78" height="46" rx="7" fill="#8b7cff"/><text x="561" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="614" y="121" width="78" height="46" rx="7" fill="#8b7cff"/><text x="653" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="706" y="121" width="78" height="46" rx="7" fill="#35f2d0"/><text x="745" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<rect x="798" y="121" width="78" height="46" rx="7" fill="#35f2d0"/><text x="837" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<rect x="890" y="121" width="78" height="46" rx="7" fill="#35f2d0"/><text x="929" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<rect x="982" y="121" width="78" height="46" rx="7" fill="#35f2d0"/><text x="1021" y="150" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<text x="38" y="258" fill="#f4f7ff" font-size="18" font-family="Segoe UI, sans-serif">global</text><text x="250" y="258" fill="#a9b6d3" font-size="14" font-family="Cascadia Mono, monospace">hold-le-0-chaff-ge-4</text><rect x="430" y="229" width="78" height="46" rx="7" fill="#5ab4ff"/><text x="469" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">hold</text>
+<rect x="522" y="229" width="78" height="46" rx="7" fill="#8b7cff"/><text x="561" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="614" y="229" width="78" height="46" rx="7" fill="#8b7cff"/><text x="653" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="706" y="229" width="78" height="46" rx="7" fill="#8b7cff"/><text x="745" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="798" y="229" width="78" height="46" rx="7" fill="#35f2d0"/><text x="837" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<rect x="890" y="229" width="78" height="46" rx="7" fill="#35f2d0"/><text x="929" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<rect x="982" y="229" width="78" height="46" rx="7" fill="#35f2d0"/><text x="1021" y="258" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+<text x="38" y="366" fill="#f4f7ff" font-size="18" font-family="Segoe UI, sans-serif">distance-weighted-front</text><text x="250" y="366" fill="#a9b6d3" font-size="14" font-family="Cascadia Mono, monospace">hold-le-0-chaff-ge-6</text><rect x="430" y="337" width="78" height="46" rx="7" fill="#5ab4ff"/><text x="469" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">hold</text>
+<rect x="522" y="337" width="78" height="46" rx="7" fill="#8b7cff"/><text x="561" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="614" y="337" width="78" height="46" rx="7" fill="#8b7cff"/><text x="653" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="706" y="337" width="78" height="46" rx="7" fill="#8b7cff"/><text x="745" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="798" y="337" width="78" height="46" rx="7" fill="#8b7cff"/><text x="837" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="890" y="337" width="78" height="46" rx="7" fill="#8b7cff"/><text x="929" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">peel</text>
+<rect x="982" y="337" width="78" height="46" rx="7" fill="#35f2d0"/><text x="1021" y="366" text-anchor="middle" fill="#07121e" font-size="14" font-weight="700" font-family="Segoe UI, sans-serif">chaff</text>
+</svg>

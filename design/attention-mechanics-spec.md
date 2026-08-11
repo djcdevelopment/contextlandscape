@@ -12,7 +12,7 @@ The primary target of this specification is a **builder agent** tasked with impl
 ### 1.1 Baseline System Architecture
 The core engine models cognitive orchestration under a strict bottleneck:
 *   **Default Turn Budget**: 3 attention per round [8].
-*   **The Scoring Matrix**: Matches are won at 12 progress, and lost immediately if accumulated "drift" reaches 4 [8].
+*   **The Scoring Matrix**: Matches are won at 12 progress, and lost immediately if accumulated "drift" reaches 5 [8]. Drift 4 remains active. Sealed historical manifests with a four-drift limit retain their original behavior.
 *   **Action Resolution**: Unresolved artifacts auto-accept at round end, creating the central tension: *"What do I leave unseen?"* [10, 11].
 *   **Soundness Baseline**: All artifacts share an underlying 70% probability of being sound (producing progress), and 30% of being unsound (producing drift) [8, 9].
 
@@ -109,7 +109,7 @@ Unlocking ranks on the capacity track grants access to powerful, limited-use "Sc
 #### Milestone 3: "Macro Flare" (Spatial AoE)
 *   **Cooldown**: One-time token use per match.
 *   **Mechanical Effect**: Deploys a $3 \times 3$ grid zone for **2 rounds**. All units (allied and enemy) located within this zone double their artifact output per round (Scout: 6, Line: 4, Heavy: 2) [8].
-*   **The Drift Trap (Offensive Utility)**: Since unverified work is automatically accepted at round end and unsound work generates drift, forcing a 3x3 Macro Flare on an enemy fleet floods their attention budget [10, 11]. If they lack the attention to verify or reject this sudden influx, they are pushed past the 4-drift defeat threshold [8].
+*   **The Drift Trap (Offensive Utility)**: Since unverified work is automatically accepted at round end and unsound work generates drift, forcing a 3x3 Macro Flare on an enemy fleet floods their attention budget [10, 11]. If they lack the attention to verify or reject this sudden influx, reaching 5 drift defeats them [8].
 
 ---
 
@@ -156,7 +156,7 @@ When implementing these changes in `apps/simulator/src/command-policies.test.ts`
 *   **Validation Metric**: Policy simulation win rate of specialized policies must exceed "verify-lowest-confidence" by $\ge 15\%$ on homogeneous fleets.
 
 ### Test Case 2: The Drift-Flooding Strategy
-*   **Hypothesis**: Deploying the Macro Flare on a high-volume enemy fleet (e.g., Scouts) without sufficient attention depth will successfully induce immediate defeat via drift saturation ($>4$ drift) [8].
+*   **Hypothesis**: Deploying the Macro Flare on a high-volume enemy fleet (e.g., Scouts) without sufficient attention depth will successfully induce immediate defeat via drift saturation ($\geq 5$ drift) [8].
 *   **Validation Metric**: Simulation demonstrates at least an 80% success rate in inducing enemy drift defeat when the opponent's attention-to-artifact ratio drops below $0.25$.
 
 ### Test Case 3: The Stationary Escort Loop

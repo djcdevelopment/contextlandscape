@@ -11,6 +11,8 @@ data/playtests/
 data/visual-checks/
 data/archive-verify/
 data/archives/*.zip
+data/experiments/archives/*.zip
+data/experiments/**/* - Copy.txt
 data/lab/**
 !data/lab/sleep-01-summary.json
 !data/lab/sleep-01-analysis/
