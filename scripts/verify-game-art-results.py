@@ -29,7 +29,12 @@ def main() -> int:
         if not paths["sidecar"].is_file():
             continue
         sidecar = json.loads(paths["sidecar"].read_text(encoding="utf-8"))
-        for key in ("project", "campaign", "subjectType", "subjectId", "artDirection", "qualityLane", "comparisonId", "registryVersion", "sourceRefs"):
+        for key in (
+            "project", "campaign", "subjectType", "subjectId", "artDirection",
+            "qualityLane", "comparisonId", "registryVersion", "sourceRefs",
+            "parentJobId", "parentRank", "parentAesthetic", "parentPromptClip",
+            "referenceMethod", "referenceStrength", "referenceImage"
+        ):
             if sidecar.get(key) != job.get(key):
                 problems.append(f"{job_id}: sidecar mismatch for {key}")
         endpoint = sidecar.get("metrics", {}).get("endpoint")
