@@ -1,0 +1,1217 @@
+{
+  "schemaVersion": "context-landscape-game-art-analysis/v1",
+  "campaign": "context-landscape-lookdev-20260813-v1",
+  "manifestJobs": 120,
+  "completeJobs": 120,
+  "missingJobs": [],
+  "scoredJobs": 120,
+  "vlmJudgedJobs": 120,
+  "artifactBytes": 18671285,
+  "overall": {
+    "n": 120,
+    "scored": 120,
+    "vlmJudged": 120,
+    "renderSeconds": {
+      "mean": 32.5953,
+      "median": 32.89,
+      "p95": 37.47
+    },
+    "aesthetic": {
+      "mean": 6.2161,
+      "median": 6.179
+    },
+    "clip": {
+      "mean": 0.2689,
+      "median": 0.2747
+    },
+    "vlm": {
+      "craftMean": 62.0833,
+      "originalityMean": 70.7083,
+      "merchAppealMean": 58.7917,
+      "verdicts": {
+        "bazaar": 120
+      },
+      "defectCounts": {
+        "anatomy_or_geometry_errors": 0,
+        "compression_or_artifacts": 0,
+        "garbled_text": 0,
+        "generic_ai_stock_feel": 120,
+        "low_res_or_muddy": 0
+      },
+      "defectRates": {
+        "anatomy_or_geometry_errors": 0.0,
+        "compression_or_artifacts": 0.0,
+        "garbled_text": 0.0,
+        "generic_ai_stock_feel": 1.0,
+        "low_res_or_muddy": 0.0
+      }
+    }
+  },
+  "groups": {
+    "qualityLane": {
+      "bf16": {
+        "n": 30,
+        "scored": 30,
+        "vlmJudged": 30,
+        "renderSeconds": {
+          "mean": 28.201,
+          "median": 22.06,
+          "p95": 97.6
+        },
+        "aesthetic": {
+          "mean": 6.2336,
+          "median": 6.1108
+        },
+        "clip": {
+          "mean": 0.2652,
+          "median": 0.276
+        },
+        "vlm": {
+          "craftMean": 62.0,
+          "originalityMean": 69.0,
+          "merchAppealMean": 57.5,
+          "verdicts": {
+            "bazaar": 30
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 30,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "q8": {
+        "n": 90,
+        "scored": 90,
+        "vlmJudged": 90,
+        "renderSeconds": {
+          "mean": 34.06,
+          "median": 33.025,
+          "p95": 37.47
+        },
+        "aesthetic": {
+          "mean": 6.2102,
+          "median": 6.2126
+        },
+        "clip": {
+          "mean": 0.2702,
+          "median": 0.2747
+        },
+        "vlm": {
+          "craftMean": 62.1111,
+          "originalityMean": 71.2778,
+          "merchAppealMean": 59.2222,
+          "verdicts": {
+            "bazaar": 90
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 90,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      }
+    },
+    "artDirection": {
+      "command-table-painterly": {
+        "n": 40,
+        "scored": 40,
+        "vlmJudged": 40,
+        "renderSeconds": {
+          "mean": 33.5748,
+          "median": 32.89,
+          "p95": 37.15
+        },
+        "aesthetic": {
+          "mean": 6.4807,
+          "median": 6.5424
+        },
+        "clip": {
+          "mean": 0.253,
+          "median": 0.2599
+        },
+        "vlm": {
+          "craftMean": 63.0,
+          "originalityMean": 69.0,
+          "merchAppealMean": 58.25,
+          "verdicts": {
+            "bazaar": 40
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 40,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "signal-graphic-retrofuture": {
+        "n": 40,
+        "scored": 40,
+        "vlmJudged": 40,
+        "renderSeconds": {
+          "mean": 30.431,
+          "median": 32.89,
+          "p95": 33.69
+        },
+        "aesthetic": {
+          "mean": 6.0375,
+          "median": 6.045
+        },
+        "clip": {
+          "mean": 0.2931,
+          "median": 0.2975
+        },
+        "vlm": {
+          "craftMean": 62.25,
+          "originalityMean": 70.25,
+          "merchAppealMean": 61.875,
+          "verdicts": {
+            "bazaar": 40
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 40,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "tactical-industrial": {
+        "n": 40,
+        "scored": 40,
+        "vlmJudged": 40,
+        "renderSeconds": {
+          "mean": 33.78,
+          "median": 32.93,
+          "p95": 53.17
+        },
+        "aesthetic": {
+          "mean": 6.1301,
+          "median": 5.9776
+        },
+        "clip": {
+          "mean": 0.2607,
+          "median": 0.2738
+        },
+        "vlm": {
+          "craftMean": 61.0,
+          "originalityMean": 72.875,
+          "merchAppealMean": 56.25,
+          "verdicts": {
+            "bazaar": 40
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 40,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      }
+    },
+    "subjectType": {
+      "ability": {
+        "n": 24,
+        "scored": 24,
+        "vlmJudged": 24,
+        "renderSeconds": {
+          "mean": 30.5854,
+          "median": 33.0,
+          "p95": 33.69
+        },
+        "aesthetic": {
+          "mean": 6.1153,
+          "median": 6.0263
+        },
+        "clip": {
+          "mean": 0.2501,
+          "median": 0.2481
+        },
+        "vlm": {
+          "craftMean": 63.3333,
+          "originalityMean": 74.1667,
+          "merchAppealMean": 59.7917,
+          "verdicts": {
+            "bazaar": 24
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 24,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "artillery": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.5992,
+          "median": 33.145,
+          "p95": 33.69
+        },
+        "aesthetic": {
+          "mean": 5.9914,
+          "median": 5.9963
+        },
+        "clip": {
+          "mean": 0.2771,
+          "median": 0.2768
+        },
+        "vlm": {
+          "craftMean": 60.0,
+          "originalityMean": 51.6667,
+          "merchAppealMean": 35.8333,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "battlefield": {
+        "n": 24,
+        "scored": 24,
+        "vlmJudged": 24,
+        "renderSeconds": {
+          "mean": 30.2162,
+          "median": 32.64,
+          "p95": 33.29
+        },
+        "aesthetic": {
+          "mean": 6.5338,
+          "median": 6.6387
+        },
+        "clip": {
+          "mean": 0.2469,
+          "median": 0.255
+        },
+        "vlm": {
+          "craftMean": 60.8333,
+          "originalityMean": 65.0,
+          "merchAppealMean": 45.4167,
+          "verdicts": {
+            "bazaar": 24
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 24,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "commander": {
+        "n": 24,
+        "scored": 24,
+        "vlmJudged": 24,
+        "renderSeconds": {
+          "mean": 30.1758,
+          "median": 32.635,
+          "p95": 33.29
+        },
+        "aesthetic": {
+          "mean": 6.3849,
+          "median": 6.3629
+        },
+        "clip": {
+          "mean": 0.2645,
+          "median": 0.2718
+        },
+        "vlm": {
+          "craftMean": 62.0833,
+          "originalityMean": 72.2917,
+          "merchAppealMean": 62.2917,
+          "verdicts": {
+            "bazaar": 24
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 24,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "mech": {
+        "n": 36,
+        "scored": 36,
+        "vlmJudged": 36,
+        "renderSeconds": {
+          "mean": 37.7994,
+          "median": 33.165,
+          "p95": 97.6
+        },
+        "aesthetic": {
+          "mean": 6.0338,
+          "median": 5.9558
+        },
+        "clip": {
+          "mean": 0.2964,
+          "median": 0.2983
+        },
+        "vlm": {
+          "craftMean": 62.7778,
+          "originalityMean": 77.5,
+          "merchAppealMean": 72.3611,
+          "verdicts": {
+            "bazaar": 36
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 36,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      }
+    },
+    "subjectId": {
+      "ability-macro-flare": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.5225,
+          "median": 32.985,
+          "p95": 33.69
+        },
+        "aesthetic": {
+          "mean": 6.0271,
+          "median": 6.0549
+        },
+        "clip": {
+          "mean": 0.2267,
+          "median": 0.2366
+        },
+        "vlm": {
+          "craftMean": 64.1667,
+          "originalityMean": 75.8333,
+          "merchAppealMean": 55.8333,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "ability-overclock": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.6483,
+          "median": 33.145,
+          "p95": 33.81
+        },
+        "aesthetic": {
+          "mean": 6.2035,
+          "median": 5.9695
+        },
+        "clip": {
+          "mean": 0.2735,
+          "median": 0.2763
+        },
+        "vlm": {
+          "craftMean": 62.5,
+          "originalityMean": 72.5,
+          "merchAppealMean": 63.75,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "artillery-desperation-he": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.5992,
+          "median": 33.145,
+          "p95": 33.69
+        },
+        "aesthetic": {
+          "mean": 5.9914,
+          "median": 5.9963
+        },
+        "clip": {
+          "mean": 0.2771,
+          "median": 0.2768
+        },
+        "vlm": {
+          "craftMean": 60.0,
+          "originalityMean": 51.6667,
+          "merchAppealMean": 35.8333,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "battlefield-context-furnace": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.2492,
+          "median": 32.64,
+          "p95": 33.69
+        },
+        "aesthetic": {
+          "mean": 6.5408,
+          "median": 6.5974
+        },
+        "clip": {
+          "mean": 0.2611,
+          "median": 0.2624
+        },
+        "vlm": {
+          "craftMean": 61.6667,
+          "originalityMean": 72.5,
+          "merchAppealMean": 52.5,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "battlefield-documentation-fortress": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.1833,
+          "median": 32.63,
+          "p95": 33.29
+        },
+        "aesthetic": {
+          "mean": 6.5267,
+          "median": 6.6752
+        },
+        "clip": {
+          "mean": 0.2327,
+          "median": 0.244
+        },
+        "vlm": {
+          "craftMean": 60.0,
+          "originalityMean": 57.5,
+          "merchAppealMean": 38.3333,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "commander-adaptive-siege-anchor": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.17,
+          "median": 32.62,
+          "p95": 33.29
+        },
+        "aesthetic": {
+          "mean": 6.3904,
+          "median": 6.3459
+        },
+        "clip": {
+          "mean": 0.2508,
+          "median": 0.247
+        },
+        "vlm": {
+          "craftMean": 60.8333,
+          "originalityMean": 70.8333,
+          "merchAppealMean": 58.75,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "commander-scout-mobile-focus": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.1817,
+          "median": 32.755,
+          "p95": 33.29
+        },
+        "aesthetic": {
+          "mean": 6.3794,
+          "median": 6.3784
+        },
+        "clip": {
+          "mean": 0.2781,
+          "median": 0.2773
+        },
+        "vlm": {
+          "craftMean": 63.3333,
+          "originalityMean": 73.75,
+          "merchAppealMean": 65.8333,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "mech-line": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.5642,
+          "median": 32.89,
+          "p95": 37.15
+        },
+        "aesthetic": {
+          "mean": 6.0356,
+          "median": 6.038
+        },
+        "clip": {
+          "mean": 0.2978,
+          "median": 0.2972
+        },
+        "vlm": {
+          "craftMean": 60.8333,
+          "originalityMean": 75.0,
+          "merchAppealMean": 75.4167,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "mech-scout": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 52.0408,
+          "median": 43.16,
+          "p95": 127.03
+        },
+        "aesthetic": {
+          "mean": 6.0939,
+          "median": 6.0255
+        },
+        "clip": {
+          "mean": 0.2976,
+          "median": 0.3075
+        },
+        "vlm": {
+          "craftMean": 64.1667,
+          "originalityMean": 78.3333,
+          "merchAppealMean": 69.1667,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "mech-siege": {
+        "n": 12,
+        "scored": 12,
+        "vlmJudged": 12,
+        "renderSeconds": {
+          "mean": 30.7933,
+          "median": 33.29,
+          "p95": 37.47
+        },
+        "aesthetic": {
+          "mean": 5.972,
+          "median": 5.9339
+        },
+        "clip": {
+          "mean": 0.2939,
+          "median": 0.2954
+        },
+        "vlm": {
+          "craftMean": 63.3333,
+          "originalityMean": 79.1667,
+          "merchAppealMean": 72.5,
+          "verdicts": {
+            "bazaar": 12
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 12,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      }
+    },
+    "endpoint": {
+      "http://127.0.0.1:8188": {
+        "n": 72,
+        "scored": 72,
+        "vlmJudged": 72,
+        "renderSeconds": {
+          "mean": 31.4983,
+          "median": 32.55,
+          "p95": 53.02
+        },
+        "aesthetic": {
+          "mean": 6.2391,
+          "median": 6.179
+        },
+        "clip": {
+          "mean": 0.2675,
+          "median": 0.2755
+        },
+        "vlm": {
+          "craftMean": 62.0833,
+          "originalityMean": 69.5139,
+          "merchAppealMean": 58.4028,
+          "verdicts": {
+            "bazaar": 72
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 72,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      },
+      "http://127.0.0.1:8189": {
+        "n": 48,
+        "scored": 48,
+        "vlmJudged": 48,
+        "renderSeconds": {
+          "mean": 34.2406,
+          "median": 33.29,
+          "p95": 37.47
+        },
+        "aesthetic": {
+          "mean": 6.1815,
+          "median": 6.1762
+        },
+        "clip": {
+          "mean": 0.2711,
+          "median": 0.2747
+        },
+        "vlm": {
+          "craftMean": 62.0833,
+          "originalityMean": 72.5,
+          "merchAppealMean": 59.375,
+          "verdicts": {
+            "bazaar": 48
+          },
+          "defectCounts": {
+            "anatomy_or_geometry_errors": 0,
+            "compression_or_artifacts": 0,
+            "garbled_text": 0,
+            "generic_ai_stock_feel": 48,
+            "low_res_or_muddy": 0
+          },
+          "defectRates": {
+            "anatomy_or_geometry_errors": 0.0,
+            "compression_or_artifacts": 0.0,
+            "garbled_text": 0.0,
+            "generic_ai_stock_feel": 1.0,
+            "low_res_or_muddy": 0.0
+          }
+        }
+      }
+    }
+  },
+  "pairedQuality": {
+    "n": 30,
+    "aestheticDeltaBf16MinusQ8": {
+      "mean": 0.0153,
+      "median": 0.0138,
+      "standardDeviation": 0.1129,
+      "ci95": [
+        -0.0268,
+        0.0575
+      ],
+      "bf16HigherShare": 0.5667
+    },
+    "clipDeltaBf16MinusQ8": {
+      "mean": -0.0032,
+      "median": -0.0001,
+      "standardDeviation": 0.0193,
+      "ci95": [
+        -0.0104,
+        0.004
+      ],
+      "bf16HigherShare": 0.5
+    },
+    "renderSecondsDeltaBf16MinusQ8": {
+      "mean": -6.311,
+      "median": -11.0,
+      "standardDeviation": 18.1252,
+      "ci95": [
+        -13.0783,
+        0.4563
+      ],
+      "bf16HigherShare": 0.0667
+    },
+    "pairs": [
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-scout:tactical-industrial:2026081300",
+        "subjectId": "mech-scout",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": 44.58,
+        "aestheticDelta": 0.015,
+        "clipDelta": -0.0009
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-scout:command-table-painterly:2026081300",
+        "subjectId": "mech-scout",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": 73.23,
+        "aestheticDelta": -0.0087,
+        "clipDelta": -0.0002
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-scout:signal-graphic-retrofuture:2026081300",
+        "subjectId": "mech-scout",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.05,
+        "aestheticDelta": -0.0414,
+        "clipDelta": 0.0094
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-line:tactical-industrial:2026081300",
+        "subjectId": "mech-line",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -10.83,
+        "aestheticDelta": -0.0015,
+        "clipDelta": 0.0039
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-line:command-table-painterly:2026081300",
+        "subjectId": "mech-line",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -10.83,
+        "aestheticDelta": 0.0418,
+        "clipDelta": 0.0009
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-line:signal-graphic-retrofuture:2026081300",
+        "subjectId": "mech-line",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": 0.0239,
+        "clipDelta": -0.0073
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-siege:tactical-industrial:2026081300",
+        "subjectId": "mech-siege",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -11.29,
+        "aestheticDelta": 0.0407,
+        "clipDelta": 0.0001
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-siege:command-table-painterly:2026081300",
+        "subjectId": "mech-siege",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -11.35,
+        "aestheticDelta": -0.2066,
+        "clipDelta": 0.0027
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:mech-siege:signal-graphic-retrofuture:2026081300",
+        "subjectId": "mech-siege",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.36,
+        "aestheticDelta": -0.0748,
+        "clipDelta": 0.0073
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:ability-overclock:tactical-industrial:2026081300",
+        "subjectId": "ability-overclock",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -10.95,
+        "aestheticDelta": 0.0716,
+        "clipDelta": 0.0023
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:ability-overclock:command-table-painterly:2026081300",
+        "subjectId": "ability-overclock",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -10.54,
+        "aestheticDelta": -0.0093,
+        "clipDelta": -0.0012
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:ability-overclock:signal-graphic-retrofuture:2026081300",
+        "subjectId": "ability-overclock",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": -0.0027,
+        "clipDelta": -0.03
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:ability-macro-flare:tactical-industrial:2026081300",
+        "subjectId": "ability-macro-flare",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -10.74,
+        "aestheticDelta": 0.0376,
+        "clipDelta": 0.0332
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:ability-macro-flare:command-table-painterly:2026081300",
+        "subjectId": "ability-macro-flare",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": -0.0572,
+        "clipDelta": -0.0078
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:ability-macro-flare:signal-graphic-retrofuture:2026081300",
+        "subjectId": "ability-macro-flare",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -10.55,
+        "aestheticDelta": -0.0572,
+        "clipDelta": 0.0045
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:artillery-desperation-he:tactical-industrial:2026081300",
+        "subjectId": "artillery-desperation-he",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": 0.09,
+        "clipDelta": -0.0076
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:artillery-desperation-he:command-table-painterly:2026081300",
+        "subjectId": "artillery-desperation-he",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -10.54,
+        "aestheticDelta": 0.0968,
+        "clipDelta": 0.0009
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:artillery-desperation-he:signal-graphic-retrofuture:2026081300",
+        "subjectId": "artillery-desperation-he",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": 0.0944,
+        "clipDelta": 0.0065
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:battlefield-context-furnace:tactical-industrial:2026081300",
+        "subjectId": "battlefield-context-furnace",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -10.53,
+        "aestheticDelta": 0.4046,
+        "clipDelta": -0.0107
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:battlefield-context-furnace:command-table-painterly:2026081300",
+        "subjectId": "battlefield-context-furnace",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": 0.0589,
+        "clipDelta": -0.0258
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:battlefield-context-furnace:signal-graphic-retrofuture:2026081300",
+        "subjectId": "battlefield-context-furnace",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -10.58,
+        "aestheticDelta": 0.0156,
+        "clipDelta": 0.0285
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:battlefield-documentation-fortress:tactical-industrial:2026081300",
+        "subjectId": "battlefield-documentation-fortress",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": -0.0903,
+        "clipDelta": -0.0433
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:battlefield-documentation-fortress:command-table-painterly:2026081300",
+        "subjectId": "battlefield-documentation-fortress",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -10.56,
+        "aestheticDelta": 0.0127,
+        "clipDelta": -0.028
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:battlefield-documentation-fortress:signal-graphic-retrofuture:2026081300",
+        "subjectId": "battlefield-documentation-fortress",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": -0.0361,
+        "clipDelta": -0.0241
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:commander-adaptive-siege-anchor:tactical-industrial:2026081300",
+        "subjectId": "commander-adaptive-siege-anchor",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -10.58,
+        "aestheticDelta": 0.0016,
+        "clipDelta": 0.0028
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:commander-adaptive-siege-anchor:command-table-painterly:2026081300",
+        "subjectId": "commander-adaptive-siege-anchor",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": -0.1196,
+        "clipDelta": -0.0287
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:commander-adaptive-siege-anchor:signal-graphic-retrofuture:2026081300",
+        "subjectId": "commander-adaptive-siege-anchor",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -10.54,
+        "aestheticDelta": 0.0756,
+        "clipDelta": -0.0252
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:commander-scout-mobile-focus:tactical-industrial:2026081300",
+        "subjectId": "commander-scout-mobile-focus",
+        "artDirection": "tactical-industrial",
+        "renderSecondsDelta": -11.23,
+        "aestheticDelta": 0.2239,
+        "clipDelta": 0.0116
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:commander-scout-mobile-focus:command-table-painterly:2026081300",
+        "subjectId": "commander-scout-mobile-focus",
+        "artDirection": "command-table-painterly",
+        "renderSecondsDelta": -10.57,
+        "aestheticDelta": -0.1838,
+        "clipDelta": 0.0453
+      },
+      {
+        "comparisonId": "context-landscape-lookdev-20260813-v1:commander-scout-mobile-focus:signal-graphic-retrofuture:2026081300",
+        "subjectId": "commander-scout-mobile-focus",
+        "artDirection": "signal-graphic-retrofuture",
+        "renderSecondsDelta": -11.45,
+        "aestheticDelta": 0.0441,
+        "clipDelta": -0.0138
+      }
+    ]
+  }
+}

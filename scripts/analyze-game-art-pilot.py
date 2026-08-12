@@ -25,6 +25,23 @@ def percentile(values: list[float], fraction: float) -> float | None:
     return round(ordered[index], 4)
 
 
+def paired_delta_summary(values: list[float]) -> dict:
+    if not values:
+        return {"mean": None, "median": None, "standardDeviation": None, "ci95": [None, None], "bf16HigherShare": None}
+    average = statistics.fmean(values)
+    standard_deviation = statistics.stdev(values) if len(values) > 1 else 0.0
+    # 2.045 is the two-sided 95% Student-t critical value for this campaign's 29 df.
+    critical = 2.045 if len(values) == 30 else 1.96
+    margin = critical * standard_deviation / math.sqrt(len(values))
+    return {
+        "mean": round(average, 4),
+        "median": median(values),
+        "standardDeviation": round(standard_deviation, 4),
+        "ci95": [round(average - margin, 4), round(average + margin, 4)],
+        "bf16HigherShare": round(sum(value > 0 for value in values) / len(values), 4),
+    }
+
+
 def metric_summary(records: list[dict]) -> dict:
     seconds = [record["sidecar"]["metrics"].get("t_total_s") for record in records]
     seconds = [float(value) for value in seconds if value is not None]
@@ -126,9 +143,9 @@ def main() -> int:
         },
         "pairedQuality": {
             "n": len(pair_rows),
-            "aestheticDeltaMeanBf16MinusQ8": mean([row["aestheticDelta"] for row in pair_rows if row["aestheticDelta"] is not None]),
-            "clipDeltaMeanBf16MinusQ8": mean([row["clipDelta"] for row in pair_rows if row["clipDelta"] is not None]),
-            "renderSecondsDeltaMeanBf16MinusQ8": mean([row["renderSecondsDelta"] for row in pair_rows]),
+            "aestheticDeltaBf16MinusQ8": paired_delta_summary([row["aestheticDelta"] for row in pair_rows if row["aestheticDelta"] is not None]),
+            "clipDeltaBf16MinusQ8": paired_delta_summary([row["clipDelta"] for row in pair_rows if row["clipDelta"] is not None]),
+            "renderSecondsDeltaBf16MinusQ8": paired_delta_summary([row["renderSecondsDelta"] for row in pair_rows]),
             "pairs": pair_rows,
         },
     }
