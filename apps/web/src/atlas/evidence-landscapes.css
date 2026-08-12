@@ -1,0 +1,63 @@
+.evidence-shell { --terrain-low: #071522; --terrain-high: #fff0b0; }
+.return-field { padding: 9px 12px; border: 1px solid var(--atlas-line); border-radius: 7px; color: #8ce5cd; text-decoration: none; }
+.evidence-nav { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 10px; padding: 7px; border: 1px solid var(--atlas-line); border-radius: 10px; background: rgba(8,18,27,.88); }
+.evidence-nav a { flex: 0 0 auto; padding: 9px 13px; border-radius: 7px; color: var(--atlas-muted); text-decoration: none; font-size: .78rem; }
+.evidence-nav a:hover { color: var(--atlas-ink); background: #122432; }
+.evidence-nav a.active { color: #07130f; background: #77d9be; }
+.evidence-controls { display: flex; align-items: end; gap: 12px; margin-bottom: 10px; padding: 10px; border: 1px solid var(--atlas-line); border-radius: 10px; background: rgba(8,18,27,.88); }
+.evidence-controls label { display: grid; gap: 4px; color: #8da5b5; font-size: .68rem; }
+.evidence-controls select { min-width: 190px; }
+.evidence-controls select, .evidence-controls button { min-height: 36px; border: 1px solid #36505e; border-radius: 7px; padding: 7px 10px; color: #dceae4; background: #0d1a24; }
+.evidence-definition { margin-left: auto; color: #d9ca8e; font-size: .72rem; }
+.evidence-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 12px; }
+.terrain-panel, .evidence-inspector, .evidence-table { border: 1px solid var(--atlas-line); border-radius: 12px; background: rgba(8,18,27,.9); box-shadow: 0 18px 50px rgba(0,0,0,.25); }
+.terrain-panel { min-height: 600px; overflow: hidden; }
+.terrain-panel svg { display: block; width: 100%; max-height: 73vh; min-height: 590px; }
+.terrain-cell, .artillery-hill { cursor: pointer; }
+.terrain-cell:hover { stroke: #fff !important; stroke-width: 2px; }
+.terrain-cell:focus, .artillery-hill:focus { outline: none; filter: brightness(1.35); }
+.minor-boundary { stroke: #d8ece5; stroke-opacity: .09; }
+.major-boundary { stroke: #d8ece5; stroke-opacity: .26; stroke-width: 1.5; }
+.terrain-axis { fill: #8da5b5; font: 12px ui-monospace,monospace; }
+.terrain-legend { display: flex; align-items: center; justify-content: center; gap: 8px; margin: -40px 18px 14px; color: #839bab; font: 10px ui-monospace,monospace; }
+.terrain-legend i { width: 170px; height: 8px; border-radius: 8px; background: linear-gradient(90deg,#071522,#0d3446,#16616a,#318b73,#7eaa70,#d1bd70,#fff0b0); }
+.terrain-legend b { margin-left: 14px; color: #b5c5cc; font-weight: 400; }
+.evidence-inspector { padding: 18px; }
+.evidence-inspector h2 { margin: 5px 0 12px; font-size: 1.25rem; overflow-wrap: anywhere; }
+.evidence-kicker { margin: 0; color: #75d7bd; font: .64rem ui-monospace,monospace; letter-spacing: .11em; text-transform: uppercase; }
+.hero-number { display: block; color: #fff0b0; font-size: 2.1rem; line-height: 1; }
+.hero-unit { display: block; margin: 5px 0 20px; color: #8198a7; font-size: .7rem; }
+.evidence-inspector dl { display: grid; grid-template-columns: 125px minmax(0,1fr); gap: 8px; font-size: .73rem; }
+.evidence-inspector dt { color: #758d9d; }
+.evidence-inspector dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.outcome-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 18px; }
+.outcome-strip span { display: grid; gap: 3px; padding: 9px; border: 1px solid #263b48; border-radius: 7px; }
+.outcome-strip small { color: #77909f; }.outcome-strip strong { color: #dceae4; }
+.source-note { margin-top: 20px; color: #6f8797; font-size: .67rem; overflow-wrap: anywhere; }
+.source-note code, .run-id { color: #d8c98e; font-size: .62rem; overflow-wrap: anywhere; }
+.hill-value { fill: #e7f1ec; font: 12px ui-monospace,monospace; }
+.method-box, .trace-boundary { margin-top: 18px; padding: 12px; border: 1px solid #41513a; border-radius: 8px; color: #a8b5aa; background: #121b17; font-size: .68rem; line-height: 1.45; }
+.method-box strong { color: #e2d390; }.method-box p { margin: 6px 0; }
+.causal-card { margin-top: 16px; padding: 11px; border: 1px solid #355568; border-radius: 8px; background: #0b1923; }
+.causal-card > strong, .causal-card > span { display: block; }.causal-card > strong { color: #7ddfc5; font-size: .75rem; }.causal-card > span { margin: 3px 0 9px; color: #718997; font-size: .62rem; }.causal-card dl { grid-template-columns: 85px 1fr; font-size: .62rem; }
+.evidence-table { margin-top: 10px; overflow: hidden; }
+.evidence-table summary { cursor: pointer; padding: 13px 16px; color: #99b0bd; font-size: .75rem; }
+.evidence-table > div { max-height: 460px; overflow: auto; }
+.evidence-table table { width: 100%; border-collapse: collapse; font-size: .67rem; }
+.evidence-table th { position: sticky; top: 0; z-index: 1; color: #d9ca8e; background: #0d1923; }
+.evidence-table th, .evidence-table td { padding: 7px 9px; border-top: 1px solid #223642; text-align: left; white-space: nowrap; }
+.segmented { display: flex; }.segmented button.active { color: #07130f; background: #77d9be; }
+.desperation-controls input[type=range] { flex: 1 1 150px; accent-color: #77d9be; }.desperation-controls output { color: #fff0b0; font: .72rem ui-monospace,monospace; }
+.board-heading { display: flex; justify-content: space-between; gap: 15px; padding: 16px 18px; color: #78909f; font-size: .7rem; }.board-heading strong { color: #d8c98e; }
+.desperation-grid { display: grid; grid-template-columns: repeat(10,1fr); aspect-ratio: 1; max-height: 650px; margin: 0 auto; padding: 20px; gap: 3px; perspective: 700px; }
+.desperation-cell { position: relative; display: grid; place-items: end start; min-width: 0; border: 1px solid #27404d; border-radius: 4px; background: #0a1b27; transform-style: preserve-3d; }
+.desperation-cell i { position: absolute; inset: calc(42% - var(--elevation) * 35%) 8% 8%; border: 2px solid var(--outcome); border-radius: 50% 50% 36% 36%; background: radial-gradient(circle at 40% 28%,#fff4c5,var(--terrain) 36%,#0b3040 80%); box-shadow: 0 calc(var(--elevation) * 13px) 24px rgba(0,0,0,.5); transform: translateY(calc(var(--elevation) * -15px)); transition: all .45s ease; }
+.desperation-cell span { z-index: 1; padding: 3px; color: #5f7888; font: 8px ui-monospace,monospace; }.desperation-cell strong { z-index: 1; justify-self: end; padding: 3px; color: #fff0b0; font: 9px ui-monospace,monospace; }
+.desperation-cell.impact { border-color: #fff0b0; box-shadow: inset 0 0 20px rgba(255,220,120,.3),0 0 22px rgba(255,220,120,.28); }
+.desperation-legend { display: flex; justify-content: space-between; gap: 10px; padding: 0 20px 16px; color: #76909f; font-size: .64rem; }
+
+@media (max-width: 900px) {
+  .evidence-layout { grid-template-columns: 1fr; }.evidence-controls { align-items: stretch; flex-direction: column; }.evidence-definition { margin-left: 0; }
+  .terrain-panel { min-height: 460px; }.terrain-panel svg { min-height: 440px; }.terrain-legend { margin-top: -25px; flex-wrap: wrap; }
+  .desperation-grid { padding: 8px; }.board-heading,.desperation-legend { flex-direction: column; }.evidence-header { align-items: stretch; }
+}

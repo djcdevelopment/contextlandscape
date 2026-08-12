@@ -10,6 +10,7 @@ import type {
 } from "@landscape/contracts";
 import { CommanderView } from "./commander/CommanderView.js";
 import { LabAtlasView } from "./atlas/LabAtlasView.js";
+import { EvidenceLandscapeView } from "./atlas/EvidenceLandscapeView.js";
 import "./style.css";
 
 const actions = ["scout", "build_contract", "implement", "review", "defend", "full_send", "consolidate"] as const;
@@ -805,6 +806,11 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 const requestedView = new URLSearchParams(window.location.search).get("view");
+const requestedLandscape = new URLSearchParams(window.location.search).get("landscape");
 createRoot(document.getElementById("root")!).render(
-  requestedView === "commander" ? <CommanderView /> : requestedView === "atlas" ? <LabAtlasView /> : <App />
+  requestedView === "commander" ? <CommanderView /> : requestedView === "atlas"
+    ? requestedLandscape === "commander" || requestedLandscape === "artillery" || requestedLandscape === "desperation"
+      ? <EvidenceLandscapeView mode={requestedLandscape} />
+      : <LabAtlasView />
+    : <App />
 );

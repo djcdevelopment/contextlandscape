@@ -30,6 +30,12 @@ type Atlas = {
   nodes: AtlasNode[];
   fields: Record<MetricId, AtlasField>;
 };
+type LandscapeCatalogEntry = {
+  id: string;
+  purpose: string;
+  adapter: "commander-field" | "artillery-relief" | "desperation-theatre" | null;
+  capabilities: Record<string, boolean>;
+};
 
 const metricOrder: MetricId[] = ["runVolume", "evidenceDepth", "artifactCompleteness"];
 const viewport = { width: 1200, height: 760 };
@@ -48,8 +54,16 @@ function artifactList(node: AtlasNode) {
   return [node.hasManifest && "manifest", node.hasReport && "report", node.hasAssessment && "assessment"].filter(Boolean).join(" · ") || "none cataloged";
 }
 
+function landscapeFor(entry: LandscapeCatalogEntry | undefined) {
+  if (entry?.adapter === "commander-field") return "commander";
+  if (entry?.adapter === "artillery-relief") return "artillery";
+  if (entry?.adapter === "desperation-theatre") return "desperation";
+  return null;
+}
+
 export function LabAtlasView() {
   const [atlas, setAtlas] = useState<Atlas | null>(null);
+  const [landscapeCatalog, setLandscapeCatalog] = useState<LandscapeCatalogEntry[]>([]);
   const [error, setError] = useState("");
   const [metric, setMetric] = useState<MetricId>("runVolume");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -68,9 +82,19 @@ export function LabAtlasView() {
         setSelectedId(payload.nodes.reduce((largest, node) => (node.runs ?? -1) > (largest.runs ?? -1) ? node : largest, payload.nodes[0])?.id ?? null);
       })
       .catch((caught) => setError(String(caught)));
+    void fetch("/atlas/lab-landscapes-v1.json.gz").then(async (response) => {
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        if (response.headers.get("content-encoding")?.includes("gzip")) return response.json() as Promise<{ catalog: LandscapeCatalogEntry[] }>;
+        const decompressed = response.body?.pipeThrough(new DecompressionStream("gzip"));
+        if (!decompressed) throw new Error("This browser cannot decompress the landscape catalog.");
+        return new Response(decompressed).json() as Promise<{ catalog: LandscapeCatalogEntry[] }>;
+      })
+      .then((payload) => setLandscapeCatalog(payload.catalog))
+      .catch(() => undefined);
   }, []);
 
   const selected = atlas?.nodes.find((node) => node.id === selectedId) ?? null;
+  const selectedLandscape = selected ? landscapeCatalog.find((entry) => entry.id === selected.id) : undefined;
   const field = atlas?.fields[metric];
   const contourPath = useMemo(() => {
     if (!field) return "";
@@ -141,6 +165,13 @@ export function LabAtlasView() {
         <a href="/">Return to field lab</a>
       </div>
     </header>
+
+    <nav className="evidence-nav" aria-label="Landscape mode">
+      <a className="active" href="/?view=atlas">Research atlas</a>
+      <a href="/?view=atlas&landscape=commander">Commander Field</a>
+      <a href="/?view=atlas&landscape=artillery">Artillery Relief</a>
+      <a href="/?view=atlas&landscape=desperation">Desperation Theatre</a>
+    </nav>
 
     <section className="atlas-toolbar" aria-label="Map controls">
       <div className="atlas-metrics">
@@ -216,10 +247,12 @@ export function LabAtlasView() {
             <dt>Model version</dt><dd>{selected.modelVersion ?? "Not cataloged"}</dd>
             <dt>Artifacts</dt><dd>{artifactList(selected)}</dd>
             <dt>Source</dt><dd><code>{selected.path}</code></dd>
+            {selectedLandscape && <><dt>Lab purpose</dt><dd>{selectedLandscape.purpose}</dd><dt>Landscape data</dt><dd>{Object.entries(selectedLandscape.capabilities).filter(([, available]) => available).map(([name]) => name).join(" · ")}</dd></>}
           </dl>
           <div className="atlas-mini-bars">
             {metricOrder.map((id) => <div key={id}><span>{atlas.metrics[id].label}</span><i><b style={{ width: `${(selected.metrics[id] ?? 0) * 100}%` }} /></i><output>{selected.metrics[id] === null ? "unknown" : `${Math.round((selected.metrics[id] ?? 0) * 100)}%`}</output></div>)}
           </div>
+          {landscapeFor(selectedLandscape) ? <a className="atlas-open-landscape" href={`/?view=atlas&landscape=${landscapeFor(selectedLandscape)}`}>Open evidence landscape</a> : <p className="atlas-no-landscape">Catalog-level evidence only in this release.</p>}
         </> : <p>Select a lab marker to inspect its provenance.</p>}
         <div className="atlas-method-note">
           <strong>Map semantics</strong>

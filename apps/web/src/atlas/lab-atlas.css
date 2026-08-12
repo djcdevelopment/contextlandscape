@@ -56,6 +56,8 @@
 .atlas-mini-bars b { display: block; height: 100%; background: #78d9be; }
 .atlas-mini-bars output { text-align: right; color: #d9e8e2; font: .62rem ui-monospace, monospace; }
 .atlas-method-note { margin-top: 22px; padding: 13px; border: 1px solid #394837; border-radius: 8px; color: #9eac9f; background: #121b17; font-size: .72rem; line-height: 1.45; }
+.atlas-open-landscape { display: block; margin-top: 16px; padding: 10px; border: 1px solid #3c695d; border-radius: 7px; color: #80e0c6; text-align: center; text-decoration: none; font-size: .75rem; }
+.atlas-no-landscape { margin: 16px 0 0; color: #6e8796; font-size: .68rem; }
 .atlas-method-note strong { color: #e2d390; }
 .atlas-method-note p:last-child { margin-bottom: 0; }
 .atlas-provenance { display: flex; justify-content: space-between; gap: 15px; margin-top: 9px; color: #667f8e; font-size: .65rem; }

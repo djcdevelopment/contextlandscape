@@ -214,11 +214,14 @@ The research atlas turns the substantive all-labs catalog into a deterministic t
 
 ```powershell
 npm run build:lab-topography
+npm run build:lab-landscapes
 npm run dev:web
 ./scripts/stage-lab-topography-am4.ps1
 ```
 
 The canonical package is [data/lab/lab-topography-atlas-v1](data/lab/lab-topography-atlas-v1/ASSESSMENT.md). Its render job stages a future ComfyUI style pass without letting generated imagery alter data geometry or labels.
+
+Evidence views are available at `?view=atlas&landscape=commander`, `?view=atlas&landscape=artillery`, and `?view=atlas&landscape=desperation`. Their generated source and telemetry boundaries are documented in [LANDSCAPES.md](data/lab/lab-topography-atlas-v1/LANDSCAPES.md).
 
 ## Common commands
 
