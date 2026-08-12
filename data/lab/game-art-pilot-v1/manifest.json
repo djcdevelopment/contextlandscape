@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "context-landscape-game-art-manifest/v1",
+  "registryVersion": "game-art-v1",
+  "project": "context-landscape",
+  "campaign": "context-landscape-lookdev-20260813-v1",
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "jobCount": 120,
+  "q8Jobs": 90,
+  "bf16Jobs": 30,
+  "matchedComparisons": 30,
+  "subjectCount": 10,
+  "directionCount": 3,
+  "manifestHash": "sha256:e816d0ac87d41df04958794b01b5941b30fa93fe01b103145dae99231e204859"
+}

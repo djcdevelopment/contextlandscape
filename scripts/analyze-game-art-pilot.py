@@ -33,6 +33,8 @@ def metric_summary(records: list[dict]) -> dict:
     clip = [record["score"].get("clip") for record in records if record.get("score")]
     clip = [float(value) for value in clip if value is not None]
     vlm_records = [record["score"]["vlm"] for record in records if (record.get("score") or {}).get("vlm")]
+    defect_names = sorted({name for item in vlm_records for name in item.get("defects", {})})
+    defect_counts = {name: sum(bool(item.get("defects", {}).get(name)) for item in vlm_records) for name in defect_names}
     return {
         "n": len(records),
         "scored": len(aesthetic),
@@ -45,6 +47,8 @@ def metric_summary(records: list[dict]) -> dict:
             "originalityMean": mean([float(item["originality"]) for item in vlm_records if item.get("originality") is not None]),
             "merchAppealMean": mean([float(item["merch_appeal"]) for item in vlm_records if item.get("merch_appeal") is not None]),
             "verdicts": dict(sorted(Counter(item.get("predicted_verdict", "unknown") for item in vlm_records).items())),
+            "defectCounts": defect_counts,
+            "defectRates": {name: round(count / len(vlm_records), 4) if vlm_records else None for name, count in defect_counts.items()},
         },
     }
 

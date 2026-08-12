@@ -44,6 +44,10 @@ data/lab/**
 !data/lab/lab-topography-atlas-v1/*.svg
 !data/lab/lab-topography-atlas-v1/*.png
 !data/lab/lab-topography-atlas-v1/*.gz
+!data/lab/game-art-pilot-v1/
+!data/lab/game-art-pilot-v1/manifest.json
+!data/lab/game-art-pilot-v1/assessment.json
+!data/lab/game-art-pilot-v1/ASSESSMENT.md
 # Raw attempt shards stay local; the compact reports and manifests are the evidence a
 # retrospective cites, so they are tracked the same way the sleep-01 summary is.
 data/bank/**
