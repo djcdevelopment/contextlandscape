@@ -241,7 +241,8 @@ async function runAttentionCommand(
     "holdout",
     "v3-shape",
     "v3-artillery-causal",
-    "v3-artillery-mechanism-screen"
+    "v3-artillery-mechanism-screen",
+    "v3-desperation-artillery"
   ] as const;
   if (requestedCampaign && !campaignKinds.includes(requestedCampaign as typeof campaignKinds[number])) {
     throw new Error(`invalid attention campaign: ${requestedCampaign}`);

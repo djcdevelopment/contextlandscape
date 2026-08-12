@@ -9,6 +9,7 @@ import type {
   AttentionCommandIntent,
   AttentionComposition,
   AttentionCoordinate,
+  AttentionDesperationOpportunity,
   AttentionIntent,
   AttentionMatchState,
   AttentionModelDefinition,
@@ -164,6 +165,7 @@ export type AttentionRunResult = {
     uap?: Record<string, AttentionUapSimulationCounters>;
     spatial?: Record<string, AttentionSpatialSimulationCounters>;
     artillery?: Record<string, AttentionArtillerySimulationCounters>;
+    desperation?: AttentionDesperationOpportunity[];
   };
   events?: EventEnvelope[];
 };
@@ -575,7 +577,9 @@ export function createAttentionMatch(setup: AttentionMatchSetup): AttentionMatch
       artillery: {
         hand: {
           flare: model.artillery.startingHand.flare,
-          chaff: model.artillery.startingHand.chaff
+          chaff: model.artillery.startingHand.chaff,
+          he: model.artillery.startingHand.he,
+          smoke: model.artillery.startingHand.smoke
         }
       }
     } : {})
@@ -638,7 +642,7 @@ export function createAttentionMatch(setup: AttentionMatchSetup): AttentionMatch
     units,
     artifacts: [],
     flares: [],
-    ...(model.artillery ? { chaffs: [] } : {}),
+    ...(model.artillery ? { chaffs: [], smokes: [] } : {}),
     capacityTrack: { nextSlot: scenario.initialCapacitySlot, claims: [] }
   };
   const parsed = AttentionMatchStateSchema.parse(state);
@@ -669,6 +673,12 @@ function emitArtifacts(match: AttentionMatch, state: InternalState, events: Even
 
   for (const mech of orderedUnits) {
     const profile = model.profiles[mech.chassis];
+    const affectingSmokes = (state.smokes ?? []).filter((smoke) =>
+      smoke.ownerPlayerId !== mech.ownerPlayerId && smoke.roundsRemaining > 0 &&
+      insideZone(mech.position, smoke.center, model.artillery?.zone.width ?? 3, model.artillery?.zone.height ?? 3)
+    );
+    const smoked = affectingSmokes.length > 0;
+    const emissionCalibration = smoked ? 0.2 : mech.emissionCalibration;
     const affectingFlares = state.flares.filter((flare) => {
       const halfWidth = Math.floor(model.flareWidth / 2);
       const halfHeight = Math.floor(model.flareHeight / 2);
@@ -698,7 +708,7 @@ function emitArtifacts(match: AttentionMatch, state: InternalState, events: Even
       const signal = sound ? 0.75 : 0.25;
       const noise = unit(state.seed, state.randomStreamId, `noise:${drawKey}`);
       const reportedConfidence = Number(
-        (mech.emissionCalibration * signal + (1 - mech.emissionCalibration) * noise).toFixed(4)
+        (emissionCalibration * signal + (1 - emissionCalibration) * noise).toFixed(4)
       );
       const position = spatialCells
         ? spatialCells[Math.floor(unit(state.seed, state.randomStreamId, `position:${drawKey}`) * spatialCells.length)]
@@ -734,7 +744,9 @@ function emitArtifacts(match: AttentionMatch, state: InternalState, events: Even
       // Overlapping allied and hostile Flares are non-stacking, so neither is
       // individually causal. Attribution is unambiguous only for one owner.
       causalFlareOwnerIds: flareOwnerIds.length === 1 ? flareOwnerIds : [],
-      calibration: mech.emissionCalibration,
+      calibration: emissionCalibration,
+      smoked,
+      smokeOwnerIds: [...new Set(affectingSmokes.map((smoke) => smoke.ownerPlayerId))].sort(),
       objectiveEligible: objectiveEligible(match, state, mech),
       ...(spatialCells ? {
         spatial: true,
@@ -789,13 +801,19 @@ function reloadArtilleryHands(
     const hand = player.artillery!.hand;
     const flare = Math.max(0, artillery.startingHand.flare - hand.flare);
     const chaff = Math.max(0, artillery.startingHand.chaff - hand.chaff);
-    if (flare === 0 && chaff === 0) continue;
+    const he = Math.max(0, artillery.startingHand.he - hand.he);
+    const smoke = Math.max(0, artillery.startingHand.smoke - hand.smoke);
+    if (flare === 0 && chaff === 0 && he === 0 && smoke === 0) continue;
     hand.flare += flare;
     hand.chaff += chaff;
+    hand.he += he;
+    hand.smoke += smoke;
     events.push(event(state, "attention.artillery.hand.reloaded", player.playerId, {
       playerId: player.playerId,
       flare,
       chaff,
+      he,
+      smoke,
       hand: { ...hand }
     }));
   }
@@ -871,6 +889,59 @@ export function resolveAttentionArtillery(
     validShots.push(shot);
   }
 
+  const opportunityBaselines = new Map<string, {
+    opportunityId: string;
+    progress: number;
+    drift: number;
+    affectedArtifactCount: number;
+    affectedUnitCount: number;
+  }>();
+  for (const player of state.players) {
+    const opponent = state.players.find((candidate) => candidate.playerId !== player.playerId)!;
+    const ownPending = state.artifacts.filter((artifact) =>
+      artifact.ownerPlayerId === player.playerId && artifact.resolution === "pending"
+    );
+    if (player.progress > 6 || opponent.progress < 10 || ownPending.length < 3) continue;
+    const shot = validShots.find((candidate) => candidate.playerId === player.playerId);
+    const cohort = shot?.shell === "he"
+      ? "hail-mary-he"
+      : shot?.shell === "smoke"
+        ? "disruptive-smoke"
+        : shot ? "other" : "passive";
+    const affectedArtifactCount = shot?.shell === "he"
+      ? ownPending.filter((artifact) => insideZone(artifact.position, shot.center, artillery.zone.width, artillery.zone.height)).length
+      : 0;
+    const affectedUnitCount = shot?.shell === "smoke"
+      ? state.units.filter((unitState) =>
+        unitState.ownerPlayerId !== player.playerId &&
+        insideZone(unitState.position, shot.center, artillery.zone.width, artillery.zone.height)
+      ).length
+      : 0;
+    const opportunityId = `${state.matchId}:desperation:r${state.round}:${player.playerId}`;
+    opportunityBaselines.set(player.playerId, {
+      opportunityId,
+      progress: player.progress,
+      drift: player.drift,
+      affectedArtifactCount,
+      affectedUnitCount
+    });
+    events.push(event(state, "attention.desperation.opportunity", player.playerId, {
+      opportunityId,
+      round: state.round,
+      playerId: player.playerId,
+      cohort,
+      selfProgress: player.progress,
+      opponentProgress: opponent.progress,
+      progressGap: opponent.progress - player.progress,
+      selfDrift: player.drift,
+      opponentDrift: opponent.drift,
+      ownUnverifiedArtifacts: ownPending.length,
+      shell: shot?.shell ?? null,
+      affectedArtifactCount,
+      affectedUnitCount
+    }));
+  }
+
   // Chaff is established first so a same-phase defensive declaration can neutralize a
   // hostile Flare aimed into its 3x3 screen. Chaff itself is never intercepted.
   for (const shot of validShots.filter((candidate) => candidate.shell === "chaff")) {
@@ -936,11 +1007,155 @@ export function resolveAttentionArtillery(
     }));
   }
 
+  for (const shot of validShots.filter((candidate) => candidate.shell === "smoke")) {
+    const player = state.players.find((candidate) => candidate.playerId === shot.playerId)!;
+    player.artillery!.hand.smoke -= 1;
+    events.push(event(state, "attention.artillery.shell.fired", shot.playerId, {
+      playerId: shot.playerId,
+      shell: shot.shell,
+      center: shot.center,
+      remaining: player.artillery!.hand.smoke
+    }));
+    const blockers = (state.chaffs ?? []).filter((chaff) =>
+      chaff.ownerPlayerId !== shot.playerId &&
+      insideZone(shot.center, chaff.center, artillery.zone.width, artillery.zone.height)
+    );
+    if (blockers.length > 0) {
+      events.push(event(state, "attention.artillery.shell.blocked", shot.playerId, {
+        playerId: shot.playerId,
+        shell: shot.shell,
+        center: shot.center,
+        blockerPlayerIds: [...new Set(blockers.map((blocker) => blocker.ownerPlayerId))].sort(),
+        chaffIds: blockers.map((blocker) => blocker.chaffId).sort()
+      }));
+      continue;
+    }
+    const smokeId = `${state.matchId}:smoke:${shot.playerId}:${state.round}`;
+    const affectedUnitIds = state.units.filter((unitState) =>
+      unitState.ownerPlayerId !== shot.playerId &&
+      insideZone(unitState.position, shot.center, artillery.zone.width, artillery.zone.height)
+    ).map((unitState) => unitState.unitId).sort();
+    state.smokes = [...(state.smokes ?? []), {
+      smokeId,
+      ownerPlayerId: shot.playerId,
+      center: { ...shot.center },
+      roundsRemaining: artillery.smokeDurationRounds
+    }];
+    events.push(event(state, "attention.artillery.smoke.established", shot.playerId, {
+      playerId: shot.playerId,
+      smokeId,
+      center: shot.center,
+      rounds: artillery.smokeDurationRounds,
+      affectedUnitIds
+    }));
+  }
+
+  for (const shot of validShots.filter((candidate) => candidate.shell === "he")) {
+    const player = state.players.find((candidate) => candidate.playerId === shot.playerId)!;
+    player.artillery!.hand.he -= 1;
+    events.push(event(state, "attention.artillery.shell.fired", shot.playerId, {
+      playerId: shot.playerId,
+      shell: shot.shell,
+      center: shot.center,
+      remaining: player.artillery!.hand.he
+    }));
+    const blockers = (state.chaffs ?? []).filter((chaff) =>
+      chaff.ownerPlayerId !== shot.playerId &&
+      insideZone(shot.center, chaff.center, artillery.zone.width, artillery.zone.height)
+    );
+    if (blockers.length > 0) {
+      events.push(event(state, "attention.artillery.shell.blocked", shot.playerId, {
+        playerId: shot.playerId,
+        shell: shot.shell,
+        center: shot.center,
+        blockerPlayerIds: [...new Set(blockers.map((blocker) => blocker.ownerPlayerId))].sort(),
+        chaffIds: blockers.map((blocker) => blocker.chaffId).sort()
+      }));
+      continue;
+    }
+    const affected = state.artifacts.filter((artifact) =>
+      artifact.resolution === "pending" &&
+      insideZone(artifact.position, shot.center, artillery.zone.width, artillery.zone.height)
+    ).sort((left, right) => left.artifactId.localeCompare(right.artifactId));
+    let soundCount = 0;
+    let unsoundCount = 0;
+    for (const artifact of affected) {
+      const owner = state.players.find((candidate) => candidate.playerId === artifact.ownerPlayerId)!;
+      const sound = unit(state.seed, state.randomStreamId, `he:r${state.round}:${shot.playerId}:${artifact.artifactId}`) < artillery.heSoundnessRate;
+      artifact.resolution = "accepted";
+      if (sound) {
+        soundCount += 1;
+        if (artifact.objectiveEligible) owner.progress += 1;
+        events.push(event(state, "attention.artifact.resolved.sound", owner.playerId, {
+          artifactId: artifact.artifactId,
+          latentSound: artifact.sound,
+          guarantee: null,
+          objectiveEligible: artifact.objectiveEligible,
+          resolutionSource: "he",
+          resolvedSound: true
+        }));
+      } else {
+        unsoundCount += 1;
+        const driftBefore = owner.drift;
+        owner.drift += 1;
+        events.push(event(state, "attention.artifact.resolved.unsound", owner.playerId, {
+          artifactId: artifact.artifactId,
+          latentSound: artifact.sound,
+          guarantee: null,
+          objectiveEligible: artifact.objectiveEligible,
+          driftBefore,
+          driftAfter: owner.drift,
+          resolutionSource: "he",
+          resolvedSound: false
+        }));
+      }
+    }
+    const affectedIds = new Set(affected.map((artifact) => artifact.artifactId));
+    state.artifacts = state.artifacts.filter((artifact) => !affectedIds.has(artifact.artifactId));
+    events.push(event(state, "attention.artillery.he.resolved", shot.playerId, {
+      playerId: shot.playerId,
+      center: shot.center,
+      artifactCount: affected.length,
+      soundCount,
+      unsoundCount
+    }));
+  }
+
+  for (const player of state.players) {
+    player.status = player.drift >= model.driftLimit
+      ? "defeat"
+      : player.progress >= model.objectiveTarget
+        ? "victory"
+        : "active";
+  }
+  const terminalPlayers = state.players.filter((player) => player.status !== "active");
+  if (terminalPlayers.length > 0) {
+    const bilateral = terminalPlayers.length === state.players.length;
+    const reason = bilateral ? "simultaneous" : terminalPlayers[0].status === "defeat" ? "drift" : "objective";
+    finishMatch(state, reason);
+  }
+
+  for (const player of state.players) {
+    const baseline = opportunityBaselines.get(player.playerId);
+    if (!baseline) continue;
+    events.push(event(state, "attention.desperation.action.resolved", player.playerId, {
+      opportunityId: baseline.opportunityId,
+      playerId: player.playerId,
+      immediateProgressGain: player.progress - baseline.progress,
+      immediateDriftGain: player.drift - baseline.drift,
+      sameRoundDriftDefeat: baseline.drift < model.driftLimit && player.drift >= model.driftLimit,
+      affectedArtifactCount: baseline.affectedArtifactCount,
+      affectedUnitCount: baseline.affectedUnitCount
+    }));
+  }
+
   state.chaffs = (state.chaffs ?? [])
     .map((chaff) => ({ ...chaff, artilleryPhasesRemaining: chaff.artilleryPhasesRemaining - 1 }))
     .filter((chaff) => chaff.artilleryPhasesRemaining > 0);
-  state.phase = "movement";
-  events.push(event(state, "attention.phase.movement", null, { round: state.round }));
+  if (state.status === "active") {
+    state.phase = "movement";
+    events.push(event(state, "attention.phase.movement", null, { round: state.round }));
+  }
   return { match: withState(match, state), events };
 }
 
@@ -1903,6 +2118,10 @@ export function resolveAttentionRound(match: AttentionMatch): AttentionTransitio
     state.phase = model.spatial ? "emission" : "movement";
   }
 
+  state.smokes = (state.smokes ?? [])
+    .map((smoke) => ({ ...smoke, roundsRemaining: smoke.roundsRemaining - 1 }))
+    .filter((smoke) => smoke.roundsRemaining > 0);
+
   events.push(event(state, "attention.round.resolved", null, {
     completedRound: current.round,
     nextRound: state.round,
@@ -1986,6 +2205,8 @@ function emptyArtilleryCounters(): AttentionArtillerySimulationCounters {
     shellsFired: 0,
     flareShellsFired: 0,
     chaffShellsFired: 0,
+    heShellsFired: 0,
+    smokeShellsFired: 0,
     flareShellsEstablished: 0,
     hostileShellsBlocked: 0,
     ownShellsBlocked: 0,
@@ -1994,15 +2215,28 @@ function emptyArtilleryCounters(): AttentionArtillerySimulationCounters {
     chaffShellsReloaded: 0,
     flareArtifactsGenerated: 0,
     flareUnsoundAccepts: 0,
-    flareDriftDefeatsInduced: 0
+    flareDriftDefeatsInduced: 0,
+    heArtifactsResolved: 0,
+    heSoundResolutions: 0,
+    heUnsoundResolutions: 0,
+    smokeUnitsAffected: 0,
+    smokeArtifactsSuppressed: 0
   };
 }
+
+type InternalDesperationOpportunity = Omit<AttentionDesperationOpportunity,
+  "playerSlot" | "won" | "finalProgress" | "finalDrift" | "terminalReason"> & {
+    playerId: string;
+    actionRoundEndProgress: number | null;
+  };
 
 type CounterContext = {
   players: Record<string, AttentionSimulationCounters>;
   uap: Record<string, AttentionUapSimulationCounters> | null;
   spatial: Record<string, AttentionSpatialSimulationCounters> | null;
   artillery: Record<string, AttentionArtillerySimulationCounters> | null;
+  playerSlots: Map<string, 1 | 2>;
+  desperation: Map<string, InternalDesperationOpportunity>;
   flareOwnersByArtifact: Map<string, string[]>;
   driftLimit: number;
   roundDriftByVictim: Map<string, {
@@ -2105,6 +2339,13 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
         }
         for (const artifactId of addedArtifacts) context.flareOwnersByArtifact.set(artifactId, causalOwners);
       }
+      const smokeOwners = Array.isArray(data.smokeOwnerIds)
+        ? data.smokeOwnerIds.filter((value): value is string => typeof value === "string")
+        : [];
+      for (const smokeOwner of smokeOwners) {
+        const artillery = playerArtilleryCounters(context, smokeOwner);
+        if (artillery) artillery.smokeArtifactsSuppressed = (artillery.smokeArtifactsSuppressed ?? 0) + count;
+      }
       break;
     }
     case "attention.phase.capacity": {
@@ -2164,6 +2405,65 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
         artilleryCounters.shellsFired += 1;
         if (data.shell === "flare") artilleryCounters.flareShellsFired += 1;
         else if (data.shell === "chaff") artilleryCounters.chaffShellsFired += 1;
+        else if (data.shell === "he") artilleryCounters.heShellsFired = (artilleryCounters.heShellsFired ?? 0) + 1;
+        else if (data.shell === "smoke") artilleryCounters.smokeShellsFired = (artilleryCounters.smokeShellsFired ?? 0) + 1;
+      }
+      break;
+    }
+    case "attention.artillery.he.resolved": {
+      const artilleryCounters = playerArtilleryCounters(context, data.playerId);
+      if (artilleryCounters) {
+        artilleryCounters.heArtifactsResolved = (artilleryCounters.heArtifactsResolved ?? 0) +
+          (typeof data.artifactCount === "number" ? data.artifactCount : 0);
+        artilleryCounters.heSoundResolutions = (artilleryCounters.heSoundResolutions ?? 0) +
+          (typeof data.soundCount === "number" ? data.soundCount : 0);
+        artilleryCounters.heUnsoundResolutions = (artilleryCounters.heUnsoundResolutions ?? 0) +
+          (typeof data.unsoundCount === "number" ? data.unsoundCount : 0);
+      }
+      break;
+    }
+    case "attention.artillery.smoke.established": {
+      const artilleryCounters = playerArtilleryCounters(context, data.playerId);
+      if (artilleryCounters) artilleryCounters.smokeUnitsAffected = (artilleryCounters.smokeUnitsAffected ?? 0) +
+        (Array.isArray(data.affectedUnitIds) ? data.affectedUnitIds.length : 0);
+      break;
+    }
+    case "attention.desperation.opportunity": {
+      const playerId = typeof data.playerId === "string" ? data.playerId : null;
+      if (!playerId || context.desperation.has(playerId)) break;
+      context.desperation.set(playerId, {
+        opportunityId: String(data.opportunityId),
+        round: Number(data.round),
+        playerId,
+        cohort: data.cohort as InternalDesperationOpportunity["cohort"],
+        selfProgress: Number(data.selfProgress),
+        opponentProgress: Number(data.opponentProgress),
+        progressGap: Number(data.progressGap),
+        selfDrift: Number(data.selfDrift),
+        opponentDrift: Number(data.opponentDrift),
+        ownUnverifiedArtifacts: Number(data.ownUnverifiedArtifacts),
+        shell: (data.shell ?? null) as InternalDesperationOpportunity["shell"],
+        affectedArtifactCount: Number(data.affectedArtifactCount),
+        affectedUnitCount: Number(data.affectedUnitCount),
+        immediateProgressGain: 0,
+        immediateDriftGain: 0,
+        sameRoundDriftDefeat: false,
+        actionRoundProgressGain: null,
+        nextRoundProgressGain: null,
+        actionRoundEndProgress: null
+      });
+      break;
+    }
+    case "attention.desperation.action.resolved": {
+      const opportunity = [...context.desperation.values()].find((candidate) =>
+        candidate.opportunityId === data.opportunityId
+      );
+      if (opportunity) {
+        opportunity.immediateProgressGain = Number(data.immediateProgressGain);
+        opportunity.immediateDriftGain = Number(data.immediateDriftGain);
+        opportunity.sameRoundDriftDefeat = data.sameRoundDriftDefeat === true;
+        opportunity.affectedArtifactCount = Number(data.affectedArtifactCount);
+        opportunity.affectedUnitCount = Number(data.affectedUnitCount);
       }
       break;
     }
@@ -2306,6 +2606,15 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
         const snapshot = raw as Record<string, unknown>;
         const counters = playerCounters(context, snapshot.playerId);
         if (!counters) continue;
+        const opportunity = typeof snapshot.playerId === "string" ? context.desperation.get(snapshot.playerId) : null;
+        if (opportunity && typeof snapshot.progress === "number") {
+          if (data.completedRound === opportunity.round) {
+            opportunity.actionRoundProgressGain = snapshot.progress - opportunity.selfProgress;
+            opportunity.actionRoundEndProgress = snapshot.progress;
+          } else if (data.completedRound === opportunity.round + 1 && opportunity.actionRoundEndProgress !== null) {
+            opportunity.nextRoundProgressGain = snapshot.progress - opportunity.actionRoundEndProgress;
+          }
+        }
         if (snapshot.drift === 4 && snapshot.status === "active") counters.driftFourSurvivals = (counters.driftFourSurvivals ?? 0) + 1;
         if (typeof snapshot.drift === "number" && snapshot.drift >= 5 && snapshot.status === "defeat") {
           counters.driftFiveDefeats = (counters.driftFiveDefeats ?? 0) + 1;
@@ -2349,6 +2658,8 @@ export function runAttentionMatch(
     artillery: runModel.artillery
       ? Object.fromEntries(stateOf(match).players.map((player) => [player.playerId, emptyArtilleryCounters()]))
       : null,
+    playerSlots: new Map(stateOf(match).players.map((player, index) => [player.playerId, (index + 1) as 1 | 2])),
+    desperation: new Map(),
     flareOwnersByArtifact: new Map(),
     driftLimit: runModel.driftLimit,
     roundDriftByVictim: new Map(),
@@ -2387,6 +2698,7 @@ export function runAttentionMatch(
       operations += declarations.length;
       add(resolveAttentionArtillery(match, declarations));
     }
+    if (stateOf(match).status !== "active") continue;
     const state = stateOf(match);
     const movement: AttentionMovementIntent[] = [];
     for (const player of state.players) {
@@ -2449,6 +2761,19 @@ export function runAttentionMatch(
   }
 
   eventHash.update("]");
+  const finalState = stateOf(match);
+  const desperation = [...counterContext.desperation.values()].map(({ playerId, actionRoundEndProgress: _end, ...opportunity }) => {
+    const player = finalState.players.find((candidate) => candidate.playerId === playerId)!;
+    return {
+      ...opportunity,
+      playerSlot: counterContext.playerSlots.get(playerId)!,
+      actionRoundProgressGain: opportunity.actionRoundProgressGain ?? opportunity.immediateProgressGain,
+      won: finalState.winnerPlayerId === playerId,
+      finalProgress: player.progress,
+      finalDrift: player.drift,
+      terminalReason: finalState.terminalReason!
+    } satisfies AttentionDesperationOpportunity;
+  });
   const result: AttentionRunResult = {
     match,
     traceHash: `sha256:${eventHash.digest("hex")}`,
@@ -2459,7 +2784,8 @@ export function runAttentionMatch(
       players: counterContext.players,
       ...(counterContext.uap ? { uap: counterContext.uap } : {}),
       ...(counterContext.spatial ? { spatial: counterContext.spatial } : {}),
-      ...(counterContext.artillery ? { artillery: counterContext.artillery } : {})
+      ...(counterContext.artillery ? { artillery: counterContext.artillery } : {}),
+      ...(desperation.length > 0 ? { desperation } : {})
     }
   };
   if (fullEvents) result.events = fullEvents;

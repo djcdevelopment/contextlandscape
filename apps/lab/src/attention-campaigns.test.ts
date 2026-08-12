@@ -9,7 +9,9 @@ import {
   stationaryAttentionVariants,
   v3ArtilleryCausalPolicies,
   v3ArtilleryCausalVariants,
-  v3ArtilleryMechanismVariants
+  v3ArtilleryMechanismVariants,
+  v3DesperationArtilleryPolicies,
+  v3DesperationArtilleryVariants
 } from "./attention-campaigns.js";
 
 describe("attention campaign manifests", () => {
@@ -73,6 +75,21 @@ describe("attention campaign manifests", () => {
       .toEqual(new Set(["none", "one-shot", "reload"]));
     expect(new Set(draft.variants.map((variant) => variant.model.spatial?.spawnMinimumDistance)))
       .toEqual(new Set([1, 2]));
+  });
+
+  it("freezes the balanced desperation artillery campaign at 720,000 runs", () => {
+    const draft = createAttentionCampaignDraft("v3-desperation-artillery", {
+      createdAt: "2026-08-11T00:00:00.000Z"
+    });
+    expect(AttentionMatrixDraftSchema.parse(draft)).toEqual(draft);
+    expect(draft.schemaVersion).toBe(2);
+    expect(draft.seedStart).toBe(50_000_000);
+    expect(draft.seedsPerCell).toBe(5_000);
+    expect(draft.matchups).toHaveLength(8);
+    expect(v3DesperationArtilleryVariants).toHaveLength(6);
+    expect(v3DesperationArtilleryPolicies).toHaveLength(4);
+    expect(attentionCampaignRunCount(draft)).toBe(720_000);
+    expect(new Set(draft.variants.map((variant) => variant.model.rules.driftLimit))).toEqual(new Set([5]));
   });
 
   it("stores resolved models for every declared factor level", () => {

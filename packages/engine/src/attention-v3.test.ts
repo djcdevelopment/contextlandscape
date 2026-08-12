@@ -424,7 +424,7 @@ describe("duel-capacity-v3 Stage B spatial resolver", () => {
 describe("duel-capacity-v3 Stage C Flare/Chaff artillery", () => {
   const shot = (
     playerId: string,
-    shell: "flare" | "chaff",
+    shell: "flare" | "chaff" | "he" | "smoke",
     center: { x: number; y: number }
   ): AttentionArtilleryIntent => ({ kind: "fire-artillery", playerId, shell, center });
 
@@ -435,8 +435,8 @@ describe("duel-capacity-v3 Stage C Flare/Chaff artillery", () => {
     });
     const match = createSpatial("artillery-hand", 1, true);
     expect(match.state.players.map((player) => player.artillery?.hand)).toEqual([
-      { flare: 1, chaff: 1 },
-      { flare: 1, chaff: 1 }
+      { flare: 1, chaff: 1, he: 0, smoke: 0 },
+      { flare: 1, chaff: 1, he: 0, smoke: 0 }
     ]);
     expect(match.state.phase).toBe("emission");
     expect(resolveAttentionEmission(match).match.state.phase).toBe("artillery");
@@ -509,6 +509,56 @@ describe("duel-capacity-v3 Stage C Flare/Chaff artillery", () => {
     expect(nextEmission.events.filter((item) =>
       item.eventType === "attention.artifacts.emitted" && item.data.playerId === "bravo"
     ).every((item) => item.data.flared === true)).toBe(true);
+  });
+
+  it("resolves HE at fixed soundness and carries Smoke into the following emission", () => {
+    const context = spatialContext(true);
+    context.model = AttentionModelDefinitionSchema.parse({
+      ...context.model,
+      rules: { ...context.model.rules, objectiveTarget: 100, driftLimit: 100 },
+      artillery: {
+        ...context.model.artillery!,
+        startingHand: { flare: 0, chaff: 0, he: 1, smoke: 1 }
+      }
+    });
+    const create = (matchId: string) => createAttentionMatch({
+      matchId,
+      seed: 31,
+      context,
+      players: [
+        { playerId: "alpha", composition: attentionCompositions.balanced },
+        { playerId: "bravo", composition: attentionCompositions.balanced }
+      ]
+    });
+
+    let heMatch = resolveAttentionEmission(create("he-resolution")).match;
+    heMatch.state.players[0].progress = 6;
+    heMatch.state.players[1].progress = 10;
+    const ownArtifact = heMatch.state.artifacts.find((artifact) => artifact.ownerPlayerId === "alpha")!;
+    const he = resolveAttentionArtillery(heMatch, [
+      shot("alpha", "he", ownArtifact.position),
+      { kind: "pass-artillery", playerId: "bravo" }
+    ]);
+    expect(he.events.find((item) => item.eventType === "attention.desperation.opportunity")?.data)
+      .toMatchObject({ cohort: "hail-mary-he", selfProgress: 6, opponentProgress: 10 });
+    expect(he.events.find((item) => item.eventType === "attention.artillery.he.resolved")?.data.artifactCount)
+      .toBeGreaterThan(0);
+    expect(he.match.state.players[0].artillery?.hand.he).toBe(0);
+
+    let smokeMatch = resolveAttentionEmission(create("smoke-suppression")).match;
+    smokeMatch.state.players[0].progress = 6;
+    smokeMatch.state.players[1].progress = 10;
+    const target = smokeMatch.state.units.find((unit) => unit.ownerPlayerId === "bravo")!;
+    smokeMatch = resolveAttentionArtillery(smokeMatch, [
+      shot("alpha", "smoke", target.position),
+      { kind: "pass-artillery", playerId: "bravo" }
+    ]).match;
+    smokeMatch = finishRound(resolveAttentionMovement(smokeMatch, []).match);
+    const nextEmission = resolveAttentionEmission(smokeMatch);
+    expect(nextEmission.events.some((item) =>
+      item.eventType === "attention.artifacts.emitted" && item.data.playerId === "bravo" &&
+      item.data.smoked === true && item.data.calibration === 0.2
+    )).toBe(true);
   });
 
   it("exposes causal Flare/Chaff counters in a complete deterministic run", () => {

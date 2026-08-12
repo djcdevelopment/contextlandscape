@@ -15,7 +15,7 @@ import {
 
 export const ATTENTION_V3_RESOLVER_VERSION = "attention-v3-stage-a-resolver-1" as const;
 export const ATTENTION_V3_SPATIAL_RESOLVER_VERSION = "attention-v3-stage-b-resolver-1" as const;
-export const ATTENTION_V3_ARTILLERY_RESOLVER_VERSION = "attention-v3-stage-c-resolver-1" as const;
+export const ATTENTION_V3_ARTILLERY_RESOLVER_VERSION = "attention-v3-stage-c-resolver-2" as const;
 
 export const defaultAttentionV3Uap: AttentionUapModel = {
   budgets: { scout: 3, line: 2, siege: 1 },
@@ -42,11 +42,13 @@ export const defaultAttentionV3Spatial: AttentionSpatialModel = {
 };
 
 export const defaultAttentionV3Artillery: AttentionArtilleryModel = {
-  startingHand: { flare: 1, chaff: 1 },
+  startingHand: { flare: 1, chaff: 1, he: 0, smoke: 0 },
   zone: { width: 3, height: 3 },
   outputMultiplier: 2,
   flareDurationEmissions: 2,
   chaffDurationArtilleryPhases: 2,
+  smokeDurationRounds: 2,
+  heSoundnessRate: 0.7,
   reload: false
 };
 

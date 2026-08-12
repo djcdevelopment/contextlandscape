@@ -274,6 +274,44 @@ export const v3ArtilleryMechanismVariants: AttentionModelVariant[] = mechanismLo
   }))
 );
 
+const desperationSoundness = [0.6, 0.75, 0.9] as const;
+const desperationSpatialPressure = [1, 2] as const;
+
+export const v3DesperationArtilleryVariants: AttentionModelVariant[] = desperationSoundness.flatMap((soundnessRate) =>
+  desperationSpatialPressure.map((spawnMinimumDistance) => {
+    const model = createAttentionV3ArtilleryModel();
+    model.rules.objectiveTarget = 24;
+    model.rules.driftLimit = 5;
+    model.rules.soundnessRate = soundnessRate;
+    model.spatial!.spawnMinimumDistance = spawnMinimumDistance;
+    model.spatial!.ranges.siege.defaultRange = spawnMinimumDistance;
+    model.artillery!.startingHand = { flare: 0, chaff: 0, he: 1, smoke: 1 };
+    model.artillery!.reload = false;
+    model.extensions = {
+      objectiveCoupling: "global",
+      stationaryQualification: "resolved-zero",
+      capacityTopology: "shared-exclusive",
+      abilityUnlockBasis: "personal-claim-count",
+      abilityPackage: "complete",
+      unresolvedDisposition: "auto-accept"
+    };
+    return AttentionModelVariantSchema.parse({
+      variantId: `v3-desperation-s${Math.round(soundnessRate * 100)}-d${spawnMinimumDistance}`,
+      factorLevels: {
+        experiment: "desperation-artillery",
+        soundnessRate,
+        spawnMinimumDistance,
+        objectiveCoupling: "global",
+        objectiveTarget: 24,
+        driftLimit: 5,
+        heSoundnessRate: 0.7,
+        smokeDurationRounds: 2
+      },
+      model
+    });
+  })
+);
+
 const alwaysPass = (ruleId = "doctrine-pass", reasonCode = "doctrine-pass") => ({
   ruleId,
   when: [{ kind: "always" as const }],
@@ -346,7 +384,35 @@ export const v3ArtilleryCausalPolicies: AttentionPolicyProgram[] = [
   }, alwaysPass("adaptive-exposure-fallback", "exposure-below-trigger")])
 ];
 
-const allAttentionPolicies = [...attentionPolicyPrograms, ...v3ArtilleryCausalPolicies];
+const desperationTrigger = {
+  kind: "desperation-state" as const,
+  selfProgressAtMost: 6,
+  opponentProgressAtLeast: 10,
+  ownUnverifiedAtLeast: 3
+};
+
+export const v3DesperationArtilleryPolicies: AttentionPolicyProgram[] = [
+  causalPolicy("v3-desperation-passive", "Desperation passive control", "baseline-move", "local-verify", [
+    alwaysPass("desperation-passive", "passive-triage")
+  ]),
+  causalPolicy("v3-desperation-he", "Desperation Hail Mary HE", "baseline-move", "local-verify", [{
+    ruleId: "desperation-he-own-backlog",
+    when: [desperationTrigger, { kind: "shell-available", shell: "he" }],
+    action: "fire-he",
+    reasonCode: "severe-deficit-own-backlog",
+    targetBasis: "own-artifact-density"
+  }, alwaysPass("desperation-he-fallback", "desperation-trigger-unavailable")]),
+  causalPolicy("v3-desperation-smoke", "Desperation disruptive Smoke", "baseline-move", "local-verify", [{
+    ruleId: "desperation-smoke-leader",
+    when: [desperationTrigger, { kind: "shell-available", shell: "smoke" }],
+    action: "fire-smoke",
+    reasonCode: "severe-deficit-disrupt-leader",
+    targetBasis: "enemy-stationary-leader"
+  }, alwaysPass("desperation-smoke-fallback", "desperation-trigger-unavailable")]),
+  causalPolicy("v3-desperation-pressure", "Stationary Recon Lock pressure opponent", "hold", "local-verify")
+];
+
+const allAttentionPolicies = [...attentionPolicyPrograms, ...v3ArtilleryCausalPolicies, ...v3DesperationArtilleryPolicies];
 
 // Keep the v3 shape screen at the frozen 9.216M budget: four scenario cells × 12×12
 // policy pairings × 16,000 fresh seeds. The omitted legacy no-flare policy is redundant
@@ -480,6 +546,24 @@ function v3ArtilleryMechanismMatchups(): AttentionMatrixMatchup[] {
   ]);
 }
 
+function v3DesperationArtilleryMatchups(): AttentionMatrixMatchup[] {
+  const focalPolicies = ["v3-desperation-passive", "v3-desperation-he", "v3-desperation-smoke"];
+  const leaderPolicy = ["v3-desperation-pressure"];
+  const variantIds = v3DesperationArtilleryVariants.map((variant) => variant.variantId);
+  return ["static-front", "shifting-front", "escort-corridor", "flare-pocket"].flatMap((scenarioId) => [
+    matchup({
+      matchupId: `v3-desperation-${scenarioId}-focal-p1`, scenarioId,
+      playerOneCompositionId: "siege-homogeneous", playerTwoCompositionId: "scout-homogeneous",
+      variantIds, playerOnePolicyIds: assertPolicyIds(focalPolicies), playerTwoPolicyIds: assertPolicyIds(leaderPolicy)
+    }),
+    matchup({
+      matchupId: `v3-desperation-${scenarioId}-focal-p2`, scenarioId,
+      playerOneCompositionId: "scout-homogeneous", playerTwoCompositionId: "siege-homogeneous",
+      variantIds, playerOnePolicyIds: assertPolicyIds(leaderPolicy), playerTwoPolicyIds: assertPolicyIds(focalPolicies)
+    })
+  ]);
+}
+
 export type AttentionCampaignOptions = {
   matrixId?: string;
   seedStart?: number;
@@ -497,32 +581,35 @@ export function createAttentionCampaignDraft(
     : campaignKind === "v3-shape" ? 16000
       : campaignKind === "v3-artillery-causal" ? 320
         : campaignKind === "v3-artillery-mechanism-screen" ? 42
+          : campaignKind === "v3-desperation-artillery" ? 5000
         : 250;
   const variants = campaignKind === "stationary-train" ? stationaryAttentionVariants
     : campaignKind === "capacity-train" ? capacityAttentionVariants
       : campaignKind === "holdout" ? holdoutAttentionVariants
         : campaignKind === "v3-shape" ? v3AttentionVariants
           : campaignKind === "v3-artillery-causal" ? v3ArtilleryCausalVariants
-            : v3ArtilleryMechanismVariants;
+            : campaignKind === "v3-artillery-mechanism-screen" ? v3ArtilleryMechanismVariants
+              : v3DesperationArtilleryVariants;
   const matchups = campaignKind === "stationary-train" ? stationaryMatchups()
     : campaignKind === "capacity-train" ? capacityMatchups()
       : campaignKind === "holdout" ? holdoutMatchups()
         : campaignKind === "v3-shape" ? v3ShapeMatchups()
           : campaignKind === "v3-artillery-causal" ? v3ArtilleryCausalMatchups()
-            : v3ArtilleryMechanismMatchups();
+            : campaignKind === "v3-artillery-mechanism-screen" ? v3ArtilleryMechanismMatchups()
+              : v3DesperationArtilleryMatchups();
   const referencedScenarioIds = new Set(matchups.map((entry) => entry.scenarioId));
   const referencedCompositionIds = new Set(matchups.flatMap((entry) => [entry.playerOneCompositionId, entry.playerTwoCompositionId]));
   const policies = allAttentionPolicies.filter((policy) =>
     matchups.some((entry) => entry.playerOnePolicyIds.includes(policy.policyId) || entry.playerTwoPolicyIds.includes(policy.policyId))
   );
   return AttentionMatrixDraftSchema.parse({
-    schemaVersion: campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen" ? 2 : 1,
+    schemaVersion: campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen" || campaignKind === "v3-desperation-artillery" ? 2 : 1,
     matrixId: options.matrixId ?? `attention-${campaignKind}-v1`,
     matrixKind: "attention-command",
-    modelVersion: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen"
+    modelVersion: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen" || campaignKind === "v3-desperation-artillery"
       ? defaultAttentionV3ArtilleryModel.modelVersion : MODEL_VERSION,
     campaignKind,
-    model: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen"
+    model: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen" || campaignKind === "v3-desperation-artillery"
       ? defaultAttentionV3ArtilleryModel : defaultAttentionModel,
     scenarios: attentionCampaignScenarios.filter((entry) => referencedScenarioIds.has(entry.scenarioId)),
     compositions: Object.values(attentionCompositions).filter((entry) => referencedCompositionIds.has(entry.compositionId)),
@@ -533,6 +620,7 @@ export function createAttentionCampaignDraft(
       : campaignKind === "v3-shape" ? 20_000_000
         : campaignKind === "v3-artillery-causal" ? 30_000_000
           : campaignKind === "v3-artillery-mechanism-screen" ? 40_000_000
+            : campaignKind === "v3-desperation-artillery" ? 50_000_000
           : 100_000),
     seedsPerCell: options.seedsPerCell ?? defaultSeeds,
     shardCount: options.shardCount ?? 12,

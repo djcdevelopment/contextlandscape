@@ -320,6 +320,8 @@ function emptyArtilleryDecisionAudit(): ArtilleryDecisionAudit {
       passes: 0,
       flareDeclarations: 0,
       chaffDeclarations: 0,
+      heDeclarations: 0,
+      smokeDeclarations: 0,
       availableButPassed: 0,
       byReason: {},
       byTargetBasis: {}
@@ -342,6 +344,23 @@ function averageCoordinate(
     x: Math.max(0, Math.min(board.width - 1, Math.round(source.reduce((sum, item) => sum + item.x, 0) / source.length))),
     y: Math.max(0, Math.min(board.height - 1, Math.round(source.reduce((sum, item) => sum + item.y, 0) / source.length)))
   };
+}
+
+function densestArtilleryCenter(
+  coordinates: readonly { x: number; y: number }[],
+  fallback: { x: number; y: number },
+  board: { width: number; height: number }
+): { x: number; y: number } {
+  if (coordinates.length === 0) return fallback;
+  return Array.from({ length: board.width * board.height }, (_, index) => ({
+    x: index % board.width,
+    y: Math.floor(index / board.width)
+  })).sort((left, right) => {
+    const leftCount = coordinates.filter((point) => distance(point, left) <= 1).length;
+    const rightCount = coordinates.filter((point) => distance(point, right) <= 1).length;
+    return rightCount - leftCount || distance(left, fallback) - distance(right, fallback) ||
+      left.x - right.x || left.y - right.y;
+  })[0];
 }
 
 function openStep(
@@ -445,16 +464,28 @@ function createRuntimeController(
       const ownLowConfidence = projection.artifacts.filter((artifact) =>
         artifact.ownerPlayerId === playerId && artifact.resolution === "pending" && artifact.reportedConfidence <= 0.5
       );
+      const ownUnverified = projection.artifacts.filter((artifact) =>
+        artifact.ownerPlayerId === playerId && artifact.resolution === "pending"
+      );
       const publicInputs = {
         flareAvailable: (player.artillery?.hand.flare ?? 0) > 0,
         chaffAvailable: (player.artillery?.hand.chaff ?? 0) > 0,
+        heAvailable: (player.artillery?.hand.he ?? 0) > 0,
+        smokeAvailable: (player.artillery?.hand.smoke ?? 0) > 0,
         hostileFlareAvailable: (hostile.artillery?.hand.flare ?? 0) > 0,
-        ownLowConfidenceCount: ownLowConfidence.length
+        ownLowConfidenceCount: ownLowConfidence.length,
+        ownUnverifiedCount: ownUnverified.length,
+        selfProgress: player.progress,
+        opponentProgress: hostile.progress
       };
       const matches = (predicate: NonNullable<AttentionPolicyProgram["v3Doctrine"]>["artilleryRules"][number]["when"][number]) => {
         if (predicate.kind === "always") return true;
-        if (predicate.kind === "shell-available") return predicate.shell === "flare" ? publicInputs.flareAvailable : publicInputs.chaffAvailable;
+        if (predicate.kind === "shell-available") return predicate.shell === "flare" ? publicInputs.flareAvailable
+          : predicate.shell === "chaff" ? publicInputs.chaffAvailable
+            : predicate.shell === "he" ? publicInputs.heAvailable : publicInputs.smokeAvailable;
         if (predicate.kind === "hostile-flare-available") return publicInputs.hostileFlareAvailable;
+        if (predicate.kind === "desperation-state") return player.progress <= predicate.selfProgressAtMost &&
+          hostile.progress >= predicate.opponentProgressAtLeast && ownUnverified.length >= predicate.ownUnverifiedAtLeast;
         return projection.artifacts.filter((artifact) =>
           artifact.ownerPlayerId === playerId && artifact.resolution === "pending" &&
           artifact.reportedConfidence <= predicate.confidenceAtMost
@@ -466,23 +497,38 @@ function createRuntimeController(
       const hostileArtifacts = projection.artifacts.filter((artifact) => artifact.ownerPlayerId !== playerId && artifact.resolution === "pending");
       const ownFront = projection.activeFronts.find((front) => front.playerId === playerId)?.center ?? { x: 5, y: 5 };
       const hostileFront = projection.activeFronts.find((front) => front.playerId !== playerId)?.center ?? { x: 5, y: 5 };
+      const enemyStationaryLeader = [...enemyUnits].sort((a, b) =>
+        b.stationaryStreak - a.stationaryStreak ||
+        ({ scout: 0, siege: 1, line: 2 }[a.chassis] - { scout: 0, siege: 1, line: 2 }[b.chassis]) ||
+        a.unitId.localeCompare(b.unitId)
+      )[0];
       const targetCoordinates = rule.targetBasis === "enemy-formation-cluster" ? enemyUnits.map((unit) => unit.position)
         : rule.targetBasis === "enemy-artifact-density" ? hostileArtifacts.map((artifact) => artifact.position)
           : rule.targetBasis === "far-enemy-objective" ? [hostileFront]
             : rule.targetBasis === "own-formation-screen" ? ownUnits.map((unit) => unit.position)
               : rule.targetBasis === "own-low-confidence-density" ? ownLowConfidence.map((artifact) => artifact.position)
+                : rule.targetBasis === "own-artifact-density" ? ownUnverified.map((artifact) => artifact.position)
+                  : rule.targetBasis === "enemy-stationary-leader" && enemyStationaryLeader ? [enemyStationaryLeader.position]
                 : [];
       const fallback = rule.targetBasis.startsWith("own-") ? ownFront : hostileFront;
-      const center = rule.action === "pass" ? null : averageCoordinate(targetCoordinates, fallback, context.scenario.board);
-      const decision = rule.action === "fire-flare" ? "flare" as const : rule.action === "fire-chaff" ? "chaff" as const : "pass" as const;
+      const center = rule.action === "pass" ? null
+        : rule.targetBasis === "own-artifact-density"
+          ? densestArtilleryCenter(targetCoordinates, fallback, context.scenario.board)
+          : averageCoordinate(targetCoordinates, fallback, context.scenario.board);
+      const decision = rule.action === "fire-flare" ? "flare" as const
+        : rule.action === "fire-chaff" ? "chaff" as const
+          : rule.action === "fire-he" ? "he" as const
+            : rule.action === "fire-smoke" ? "smoke" as const : "pass" as const;
       audit.summary.phasesConsidered += 1;
       audit.summary.byReason[rule.reasonCode] = (audit.summary.byReason[rule.reasonCode] ?? 0) + 1;
       audit.summary.byTargetBasis[rule.targetBasis] = (audit.summary.byTargetBasis[rule.targetBasis] ?? 0) + 1;
       if (decision === "pass") {
         audit.summary.passes += 1;
-        if (publicInputs.flareAvailable || publicInputs.chaffAvailable) audit.summary.availableButPassed += 1;
+        if (publicInputs.flareAvailable || publicInputs.chaffAvailable || publicInputs.heAvailable || publicInputs.smokeAvailable) audit.summary.availableButPassed += 1;
       } else if (decision === "flare") audit.summary.flareDeclarations += 1;
-      else audit.summary.chaffDeclarations += 1;
+      else if (decision === "chaff") audit.summary.chaffDeclarations += 1;
+      else if (decision === "he") audit.summary.heDeclarations = (audit.summary.heDeclarations ?? 0) + 1;
+      else audit.summary.smokeDeclarations = (audit.summary.smokeDeclarations ?? 0) + 1;
       if (context.sampleArtilleryTrace) audit.trace.push({
         round: projection.round,
         ruleId: rule.ruleId,
@@ -554,6 +600,7 @@ function runAttentionSpec(matrix: AttentionMatrixManifest, spec: AttentionRunSpe
     terminalReason: state.terminalReason,
     rounds: state.round,
     players,
+    ...(result.summary.desperation ? { desperationOpportunities: structuredClone(result.summary.desperation) } : {}),
     stateHash
   };
   const record = AttentionSimulationRunSchema.parse({
@@ -724,6 +771,7 @@ function validateOutcomeHash(record: AttentionSimulationRun): void {
     terminalReason: record.terminalReason,
     rounds: record.rounds,
     players: record.players,
+    ...(record.desperationOpportunities ? { desperationOpportunities: record.desperationOpportunities } : {}),
     stateHash: record.stateHash
   });
   if (record.outcomeHash !== expected) throw new Error(`Attention run ${record.runId} outcome hash mismatch`);
@@ -807,6 +855,8 @@ export type AttentionArtilleryPreflightResult = {
     supportScans: number;
     flareDeclarations: number;
     chaffDeclarations: number;
+    heDeclarations: number;
+    smokeDeclarations: number;
     shellsFired: number;
     flareEstablished: number;
     hostileShellsBlocked: number;
@@ -814,6 +864,16 @@ export type AttentionArtilleryPreflightResult = {
     flareArtifactsGenerated: number;
     flareUnsoundAccepts: number;
     flareDriftDefeatsInduced: number;
+    heArtifactsResolved: number;
+    smokeUnitsAffected: number;
+    smokeArtifactsSuppressed: number;
+  };
+  desperation?: {
+    cohorts: Record<string, number>;
+    immediateDriftDefeats: number;
+    nextRoundObserved: Record<string, number>;
+    heOpportunitiesAffected: number;
+    smokeOpportunitiesAffected: number;
   };
   uapRejectionReasons: Record<string, number>;
   reasons: string[];
@@ -825,13 +885,16 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   const matrix = artifacts.matrix;
   const issues: string[] = [];
   const supportedKind = matrix.campaignKind === "v3-artillery-causal" ||
-    matrix.campaignKind === "v3-artillery-mechanism-screen";
+    matrix.campaignKind === "v3-artillery-mechanism-screen" ||
+    matrix.campaignKind === "v3-desperation-artillery";
   if (!supportedKind || matrix.schemaVersion !== 2 || matrix.provenance.contractVersion !== 2) {
     issues.push("preflight requires a v2 artillery campaign manifest");
   }
-  const expectedVariants = matrix.campaignKind === "v3-artillery-mechanism-screen" ? 42 : 36;
-  if (matrix.variants.length !== expectedVariants || matrix.matchups.length !== 8 || matrix.policies.length !== 10) {
-    issues.push(`preflight manifest does not retain the production ${expectedVariants}x8x10 catalog shape`);
+  const desperationCampaign = matrix.campaignKind === "v3-desperation-artillery";
+  const expectedVariants = desperationCampaign ? 6 : matrix.campaignKind === "v3-artillery-mechanism-screen" ? 42 : 36;
+  const expectedPolicies = desperationCampaign ? 4 : 10;
+  if (matrix.variants.length !== expectedVariants || matrix.matchups.length !== 8 || matrix.policies.length !== expectedPolicies) {
+    issues.push(`preflight manifest does not retain the production ${expectedVariants}x8x${expectedPolicies} catalog shape`);
   }
   if (matrix.variants.some((variant) => variant.model.rules.driftLimit !== 5)) issues.push("not every variant uses the five-drift rule");
   const orientationKeys = new Set(matrix.matchups.map((matchup) =>
@@ -844,9 +907,17 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   }
   const totals = {
     plansRejected: 0, turboCharges: 0, stepUps: 0, uplinks: 0,
-    rangeShifts: 0, supportScans: 0, flareDeclarations: 0, chaffDeclarations: 0,
+    rangeShifts: 0, supportScans: 0, flareDeclarations: 0, chaffDeclarations: 0, heDeclarations: 0, smokeDeclarations: 0,
     shellsFired: 0, flareEstablished: 0, hostileShellsBlocked: 0,
-    reloads: 0, flareArtifactsGenerated: 0, flareUnsoundAccepts: 0, flareDriftDefeatsInduced: 0
+    reloads: 0, flareArtifactsGenerated: 0, flareUnsoundAccepts: 0, flareDriftDefeatsInduced: 0,
+    heArtifactsResolved: 0, smokeUnitsAffected: 0, smokeArtifactsSuppressed: 0
+  };
+  const desperation = {
+    cohorts: {} as Record<string, number>,
+    immediateDriftDefeats: 0,
+    nextRoundObserved: {} as Record<string, number>,
+    heOpportunitiesAffected: 0,
+    smokeOpportunitiesAffected: 0
   };
   const uapRejectionReasons: Record<string, number> = {};
   const reasons = new Set<string>();
@@ -858,6 +929,15 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
     const expectSpatial = Boolean(variant.model.spatial);
     const expectArtillery = Boolean(variant.model.artillery);
     if (record.randomStreamId !== record.scenarioId) issues.push(`non-common stream identity in ${record.runId}`);
+    for (const opportunity of record.desperationOpportunities ?? []) {
+      desperation.cohorts[opportunity.cohort] = (desperation.cohorts[opportunity.cohort] ?? 0) + 1;
+      if (opportunity.sameRoundDriftDefeat) desperation.immediateDriftDefeats += 1;
+      if (opportunity.nextRoundProgressGain !== null) {
+        desperation.nextRoundObserved[opportunity.cohort] = (desperation.nextRoundObserved[opportunity.cohort] ?? 0) + 1;
+      }
+      if (opportunity.cohort === "hail-mary-he" && opportunity.affectedArtifactCount > 0) desperation.heOpportunitiesAffected += 1;
+      if (opportunity.cohort === "disruptive-smoke" && opportunity.affectedUnitCount > 0) desperation.smokeOpportunitiesAffected += 1;
+    }
     for (const player of record.players) {
       if (!player.uap || Boolean(player.spatial) !== expectSpatial || Boolean(player.artillery) !== expectArtillery ||
         Boolean(player.artilleryDecisionSummary) !== expectArtillery) {
@@ -878,6 +958,8 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
       if (player.artillery && player.artilleryDecisionSummary) {
         totals.flareDeclarations += player.artilleryDecisionSummary.flareDeclarations;
         totals.chaffDeclarations += player.artilleryDecisionSummary.chaffDeclarations;
+        totals.heDeclarations += player.artilleryDecisionSummary.heDeclarations ?? 0;
+        totals.smokeDeclarations += player.artilleryDecisionSummary.smokeDeclarations ?? 0;
         totals.shellsFired += player.artillery.shellsFired;
         totals.flareEstablished += player.artillery.flareShellsEstablished;
         totals.hostileShellsBlocked += player.artillery.hostileShellsBlocked;
@@ -885,7 +967,11 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
         totals.flareArtifactsGenerated += player.artillery.flareArtifactsGenerated ?? 0;
         totals.flareUnsoundAccepts += player.artillery.flareUnsoundAccepts ?? 0;
         totals.flareDriftDefeatsInduced += player.artillery.flareDriftDefeatsInduced ?? 0;
-        if (player.artilleryDecisionSummary.flareDeclarations + player.artilleryDecisionSummary.chaffDeclarations !== player.artillery.shellsFired) {
+        totals.heArtifactsResolved += player.artillery.heArtifactsResolved ?? 0;
+        totals.smokeUnitsAffected += player.artillery.smokeUnitsAffected ?? 0;
+        totals.smokeArtifactsSuppressed += player.artillery.smokeArtifactsSuppressed ?? 0;
+        if (player.artilleryDecisionSummary.flareDeclarations + player.artilleryDecisionSummary.chaffDeclarations +
+          (player.artilleryDecisionSummary.heDeclarations ?? 0) + (player.artilleryDecisionSummary.smokeDeclarations ?? 0) !== player.artillery.shellsFired) {
           issues.push(`artillery declarations did not resolve exactly in ${record.runId}`);
         }
         Object.keys(player.artilleryDecisionSummary.byReason).forEach((reason) => reasons.add(reason));
@@ -905,20 +991,36 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   for (const reason of Object.keys(uapRejectionReasons)) {
     if (!allowedUapRejections.has(reason)) issues.push(`unexpected UAP rejection reason: ${reason}`);
   }
-  for (const [name, value] of Object.entries(totals)) {
-    if (name === "plansRejected") continue;
-    const mechanismOnly = new Set([
-      "reloads", "flareArtifactsGenerated", "flareUnsoundAccepts", "flareDriftDefeatsInduced"
-    ]);
+  if (desperationCampaign) {
+    const cohortCounts = ["passive", "hail-mary-he", "disruptive-smoke"].map((cohort) => desperation.cohorts[cohort] ?? 0);
+    if (cohortCounts.some((count) => count === 0) || new Set(cohortCounts).size !== 1) {
+      issues.push(`desperation cohorts are absent or imbalanced: ${JSON.stringify(desperation.cohorts)}`);
+    }
+    if (desperation.heOpportunitiesAffected !== cohortCounts[1]) issues.push("not every HE opportunity resolved an own artifact");
+    if (desperation.smokeOpportunitiesAffected !== cohortCounts[2]) issues.push("not every Smoke opportunity covered a leader unit");
+    if (desperation.immediateDriftDefeats === 0) issues.push("the preflight did not reach an immediate HE drift defeat");
+    for (const cohort of ["passive", "hail-mary-he", "disruptive-smoke"]) {
+      if ((desperation.nextRoundObserved[cohort] ?? 0) === 0) issues.push(`no next-round progress observation for ${cohort}`);
+    }
+    if (totals.heDeclarations === 0 || totals.smokeDeclarations === 0 || totals.heArtifactsResolved === 0 ||
+      totals.smokeUnitsAffected === 0 || totals.smokeArtifactsSuppressed === 0) {
+      issues.push("HE or Smoke execution telemetry was not reached");
+    }
+  } else for (const [name, value] of Object.entries(totals)) {
+    if (name === "plansRejected" || name === "heDeclarations" || name === "smokeDeclarations" ||
+      name === "heArtifactsResolved" || name === "smokeUnitsAffected" || name === "smokeArtifactsSuppressed") continue;
+    const mechanismOnly = new Set(["reloads", "flareArtifactsGenerated", "flareUnsoundAccepts", "flareDriftDefeatsInduced"]);
     if (mechanismOnly.has(name) && matrix.campaignKind !== "v3-artillery-mechanism-screen") continue;
     if (value === 0) issues.push(`required counter was not reached: ${name}`);
   }
-  const requiredReasons = [
+  const requiredReasons = desperationCampaign ? [
+    "passive-triage", "severe-deficit-own-backlog", "severe-deficit-disrupt-leader", "desperation-trigger-unavailable"
+  ] : [
     "doctrine-pass", "shell-unavailable", "enemy-cluster", "enemy-artifact-density", "far-objective",
     "hostile-flare-available", "hostile-flare-unavailable", "high-own-exposure", "exposure-below-trigger"
   ];
   for (const reason of requiredReasons) if (!reasons.has(reason)) issues.push(`required artillery reason was not reached: ${reason}`);
-  const requiredTargets = [
+  const requiredTargets = desperationCampaign ? ["none", "own-artifact-density", "enemy-stationary-leader"] : [
     "none", "enemy-formation-cluster", "enemy-artifact-density", "far-enemy-objective",
     "own-formation-screen", "own-low-confidence-density"
   ];
@@ -926,7 +1028,7 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   const compressedBytes = (await Promise.all(artifacts.shardNames.map((name) => stat(resolve(artifacts.matrixDir, name)))))
     .reduce((sum, entry) => sum + entry.size, 0);
   const compressedBytesPerRun = compressedBytes / Math.max(1, runs);
-  const productionRuns = matrix.campaignKind === "v3-artillery-mechanism-screen" ? 1_411_200 : 9_216_000;
+  const productionRuns = desperationCampaign ? 720_000 : matrix.campaignKind === "v3-artillery-mechanism-screen" ? 1_411_200 : 9_216_000;
   const projectedCampaignBytes = Math.ceil(compressedBytesPerRun * productionRuns);
   const result: AttentionArtilleryPreflightResult = {
     matrixId: matrix.matrixId,
@@ -936,6 +1038,7 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
     projectedCampaignBytes,
     projectedCampaignBytesWithMargin: Math.ceil(projectedCampaignBytes * 1.25),
     counters: totals,
+    ...(desperationCampaign ? { desperation } : {}),
     uapRejectionReasons,
     reasons: [...reasons].sort(),
     targetBases: [...targetBases].sort()
@@ -1012,12 +1115,15 @@ function addDecisionSummary(
   if (!addition) return current;
   const result = current ? structuredClone(current) : {
     phasesConsidered: 0, passes: 0, flareDeclarations: 0, chaffDeclarations: 0,
+    heDeclarations: 0, smokeDeclarations: 0,
     availableButPassed: 0, byReason: {}, byTargetBasis: {}
   };
   result.phasesConsidered += addition.phasesConsidered;
   result.passes += addition.passes;
   result.flareDeclarations += addition.flareDeclarations;
   result.chaffDeclarations += addition.chaffDeclarations;
+  result.heDeclarations = (result.heDeclarations ?? 0) + (addition.heDeclarations ?? 0);
+  result.smokeDeclarations = (result.smokeDeclarations ?? 0) + (addition.smokeDeclarations ?? 0);
   result.availableButPassed += addition.availableButPassed;
   for (const [key, value] of Object.entries(addition.byReason)) result.byReason[key] = (result.byReason[key] ?? 0) + value;
   for (const [key, value] of Object.entries(addition.byTargetBasis)) result.byTargetBasis[key] = (result.byTargetBasis[key] ?? 0) + value;
