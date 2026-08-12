@@ -11,7 +11,7 @@ case "$lane" in
   q8)
     manifest="$pilot_dir/manifest-q8.jsonl"
     endpoints="http://127.0.0.1:8188,http://127.0.0.1:8189"
-    runner_args=(--governed --hot 90 --cool 80)
+    runner_args=(--alternate)
     ;;
   bf16)
     manifest="$pilot_dir/manifest-bf16.jsonl"
