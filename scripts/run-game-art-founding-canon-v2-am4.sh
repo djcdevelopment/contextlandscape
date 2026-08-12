@@ -18,7 +18,7 @@ case "$lane" in
     ;;
   full)
     manifest="$campaign_dir/manifest-full.jsonl"
-    runner_args=(--governed --hot 92 --cool 82)
+    runner_args=(--alternate)
     ;;
   *) echo "unknown lane: $lane" >&2; exit 2 ;;
 esac
