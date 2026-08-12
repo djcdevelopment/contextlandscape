@@ -28,6 +28,8 @@
     "build:lab-topography": "node scripts/build-lab-topography.mjs",
     "build:lab-landscapes": "node scripts/build-lab-landscapes.mjs",
     "build:commander-field-assets": "node scripts/build-commander-field-assets.mjs",
+    "build:game-art-pilot": "node scripts/build-game-art-pilot.mjs",
+    "verify:game-art-pilot": "node scripts/verify-game-art-pilot.mjs",
     "lab": "npm run lab --workspace=@landscape/lab --",
     "gameplay-lab:preflight": "npm run preflight --workspace=@landscape/server"
   },

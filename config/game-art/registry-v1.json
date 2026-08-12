@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "context-landscape-game-art-registry/v1",
+  "registryVersion": "game-art-v1",
+  "project": "context-landscape",
+  "campaign": "context-landscape-lookdev-20260813-v1",
+  "seeds": [2026081300, 2026081301, 2026081302],
+  "qualityLanes": {
+    "q8": { "model": "flux", "seeds": [2026081300, 2026081301, 2026081302] },
+    "bf16": { "model": "flux_bf16", "seeds": [2026081300] }
+  },
+  "directions": [
+    {
+      "id": "tactical-industrial",
+      "label": "Tactical industrial realism",
+      "prompt": "grounded tactical industrial realism, readable hard-surface silhouette, weathered field-service materials, physically plausible machinery, disciplined cyan amber signal lighting, operational military-science-fiction art direction"
+    },
+    {
+      "id": "command-table-painterly",
+      "label": "Command-table painterly",
+      "prompt": "command-table painterly illustration, atmospheric gouache and restrained oil texture, readable silhouette and effect geometry, deep blue-green shadows, warm amber focal light, deliberate strategic-board composition"
+    },
+    {
+      "id": "signal-graphic-retrofuture",
+      "label": "Signal-graphic retrofuture",
+      "prompt": "high-contrast retrofuture screenprint and lithographic illustration, bold geometric silhouette, limited teal amber ivory and signal-red palette, layered tactical contour shapes, crisp negative space, subtle print grain"
+    }
+  ],
+  "subjects": [
+    {
+      "id": "mech-scout",
+      "label": "Scout mech",
+      "subjectType": "mech",
+      "gameUse": "unit-portrait",
+      "aspect": "portrait",
+      "prompt": "a fast three-legged scout command mech built for reconnaissance and artifact discovery, compact sensor crown, long articulated legs, light modular armor, forward-leaning alert stance, unmistakably lighter and more mobile than line or siege chassis",
+      "sourceRefs": ["packages/scenarios/src/index.ts", "apps/web/src/commander/model.ts"]
+    },
+    {
+      "id": "mech-line",
+      "label": "Line mech",
+      "subjectType": "mech",
+      "gameUse": "unit-portrait",
+      "aspect": "portrait",
+      "prompt": "a balanced line command mech built to hold fronts and assist allied units, sturdy bipedal frame, medium modular armor, visible relay and support equipment, calm braced posture, unmistakably between scout agility and siege mass",
+      "sourceRefs": ["packages/scenarios/src/index.ts", "apps/web/src/commander/model.ts"]
+    },
+    {
+      "id": "mech-siege",
+      "label": "Siege mech",
+      "subjectType": "mech",
+      "gameUse": "unit-portrait",
+      "aspect": "portrait",
+      "prompt": "a massive siege command mech built to anchor a front and seize objectives, broad low center of gravity, heavy layered armor, stabilizing feet and command uplink mast, restrained weapon housings, unmistakably slower and heavier than scout or line chassis",
+      "sourceRefs": ["packages/scenarios/src/index.ts", "apps/web/src/commander/model.ts"]
+    },
+    {
+      "id": "ability-overclock",
+      "label": "Overclock",
+      "subjectType": "ability",
+      "gameUse": "ability-card",
+      "aspect": "square",
+      "prompt": "the Overclock ability activating on a command mech, a brief controlled surge of capacity that makes a costly seize action affordable, concentric power-routing arcs and accelerated actuator motion, risk and precision visible, one clear focal mech",
+      "sourceRefs": ["packages/engine/src/attention.ts", "packages/engine/src/attention.test.ts"]
+    },
+    {
+      "id": "ability-macro-flare",
+      "label": "Macro Flare",
+      "subjectType": "ability",
+      "gameUse": "ability-card",
+      "aspect": "square",
+      "prompt": "the Macro Flare ability illuminating a bounded battlefield zone, a clipped non-stacking signal field revealing multiple artifact contacts across two emissions, rectangular spatial volume, intense amber-white core and teal tactical darkness, top-down readable geometry",
+      "sourceRefs": ["packages/engine/src/attention.ts", "packages/engine/src/attention.test.ts"]
+    },
+    {
+      "id": "artillery-desperation-he",
+      "label": "Desperation HE strike",
+      "subjectType": "artillery",
+      "gameUse": "event-card",
+      "aspect": "square",
+      "prompt": "a desperate high-explosive artillery shell striking the losing commander's own dense cluster of unverified battlefield artifacts to force immediate resolution, top-down 10 by 10 tactical board, violent circular impact basin, fragments becoming accepted or rejected signal shards, visible risk of terminal drift",
+      "sourceRefs": ["packages/engine/src/attention.ts", "data/lab/attention-v3-desperation-artillery-20260811-720k-five-drift-analysis/ASSESSMENT.md"]
+    },
+    {
+      "id": "battlefield-context-furnace",
+      "label": "The Context Furnace",
+      "subjectType": "battlefield",
+      "gameUse": "battlefield-background",
+      "aspect": "landscape",
+      "prompt": "the Context Furnace battlefield seen from an elevated command view, three lanes for loaded context, an overheated active session, and a clean replacement route, a nearly complete objective beside a dangerous thermal collapse, old machinery glowing red while a cool fresh-spawn corridor remains open",
+      "sourceRefs": ["packages/scenarios/src/index.ts"]
+    },
+    {
+      "id": "battlefield-documentation-fortress",
+      "label": "The Documentation Fortress",
+      "subjectType": "battlefield",
+      "gameUse": "battlefield-background",
+      "aspect": "landscape",
+      "prompt": "the Documentation Fortress battlefield seen from an elevated command view, orientation lane, decision-record lane, and verification lane surrounding durable artifact sockets, one useful structure compounds future command efficiency while a sprawling stale archive freezes movement, fortress-scale information architecture",
+      "sourceRefs": ["packages/scenarios/src/index.ts"]
+    },
+    {
+      "id": "commander-adaptive-siege-anchor",
+      "label": "Adaptive Siege Anchor commander",
+      "subjectType": "commander",
+      "gameUse": "commander-portrait",
+      "aspect": "portrait",
+      "prompt": "a veteran battlefield commander whose doctrine combines two scouts with one siege mech, anchors the siege chassis, adapts triage to pressure, and allocates capacity adaptively, composed analytical presence at a volumetric command table, scout mobility and siege stability expressed in the surrounding formation",
+      "sourceRefs": ["data/lab/attention-v2-corrected-shape-screen-analysis/assessment.json#attention-v2-commander-26a6d89583a9a9940556e101"]
+    },
+    {
+      "id": "commander-scout-mobile-focus",
+      "label": "Scout-Mobile Pioneer Focus commander",
+      "subjectType": "commander",
+      "gameUse": "commander-portrait",
+      "aspect": "portrait",
+      "prompt": "a mobile battlefield commander whose doctrine fields three line mechs, directs them with scout-like movement, adapts triage to risk, and pioneers the Perfect Focus ability, decisive forward posture at a sparse command display, precise target locks and disciplined mobility expressed around the formation",
+      "sourceRefs": ["data/lab/attention-v2-corrected-shape-screen-analysis/assessment.json#attention-v2-commander-49608d4dc7ca4dba7f67ad7b"]
+    }
+  ],
+  "promptInvariants": "single coherent game-art subject, Context Landscape original universe, no readable text, no letters, no numbers, no logos, no watermark, no branded insignia, no existing franchise design, no decorative user interface frame"
+}
