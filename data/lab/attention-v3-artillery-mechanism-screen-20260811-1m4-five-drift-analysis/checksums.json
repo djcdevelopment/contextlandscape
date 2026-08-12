@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "assessment.json": "sha256:740d4af69f05dbbe11569e3368dcfd5f8c5465696bfc95244fcc2e916144b453",
+    "ASSESSMENT.md": "sha256:9b939244c8a7594437c946390776aa2d51b4cce95608f2141f9d09491e4b31bc",
+    "desperation-hypothesis-audit.json": "sha256:cfd57e1724b007fa313fb03dc323d13b2db7b0145d07e0d6dd4e434b24e3add0",
+    "DESPERATION-HYPOTHESIS-AUDIT.md": "sha256:c2957abc325c8904282b8615ae66cd8e8acad81af42f39386bd914d9c73a10ec",
+    "mechanism-contrasts.csv": "sha256:4471d8baf03aa42ec74456a34f828a7e7c1b44a07c5744f7a0f9bf931cd9f0e4",
+    "01-artillery-funnel.svg": "sha256:6484dc637f8846a5482641d27705271ebd0730f8fc692e27a9ae31f50cbdc64c",
+    "02-why-artillery-fired.svg": "sha256:0f2651f35081b81a170541d2c131b27a56ca71bc3c8a434d3e665114a381900c",
+    "03-downstream-attribution.svg": "sha256:505efa1fa29d7f6909ede7c6355887c9108d5c7ee0d932d337c4f5b370eb36d0",
+    "04-solo-doctrine-effect.svg": "sha256:4e0920e6c1f86cd42d0e2a80c0149af279a6201ee662ec4971a33f1bc0fd0620",
+    "05-combined-doctrine-effect.svg": "sha256:ade627d7d09a17804279a7c7ad8b5724c1f9b715b4b4ff1fba6fe37fe887fc8b",
+    "06-reload-increment.svg": "sha256:dd780c6a8693e79e1aaac7a105823d8f6c88b16937b5b6b492126902193fbdd1",
+    "07-reload-effect-by-scenario.svg": "sha256:44e95be7b2d9311c7deb4617b80d44e5ba31096f039fb0d48e3c02cdc35ca557",
+    "08-reload-effect-by-soundness.svg": "sha256:a463b2ba261542f2b4a4020493efb47c60c03f8ce378ff18e56c00f9fe6502eb",
+    "09-reload-effect-by-spatial-pressure.svg": "sha256:99325a3cb83d776a8dcafee395cace1dee14f6e8cd28070bd86644cfdd0270f1",
+    "10-uap-rejection-reasons.svg": "sha256:fa5d573d3ac7196307718c6525a61d392f62ab613d1e90ae2678e1871268caa1",
+    "11-hail-mary-identifiability.svg": "sha256:28197bc16487c2ec9e23b1b8df3b5987c8bec761726f945264e2b53b2e5af9e0"
+  }
+}

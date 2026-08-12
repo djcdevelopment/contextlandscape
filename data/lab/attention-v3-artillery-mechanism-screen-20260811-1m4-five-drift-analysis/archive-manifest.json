@@ -1,0 +1,286 @@
+{
+    "schemaVersion":  1,
+    "archiveKind":  "attention-v3-artillery-mechanism-screen-five-drift",
+    "matrixId":  "attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift",
+    "manifestHash":  "sha256:8b5427b07e236bcfe9654301f921da078dc64bb5cd0ff5a9884e4a32132d042c",
+    "reportHash":  "sha256:cbac2d207082796c01f74dc0ac9ea5f98bb538aecfe6b4af2a8b7914db039c75",
+    "analysisHash":  "sha256:6fe1e6be8f50db30a8be58b91b441a1934533fd97f0d8d168caebbcd0991340c",
+    "runs":  1411200,
+    "files":  [
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/manifest.json",
+                      "bytes":  255700,
+                      "sha256":  "sha256:74413b6928f85ba9e64f52ba5a8b24e3b310cf90ae63a2ad8178556ff47b8041"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/report.json",
+                      "bytes":  193543094,
+                      "sha256":  "sha256:f9c65f9f79a361dd179e51a60e5e509aa4c7df8fc8532cbed6931731785df284"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0000.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:63434c5707312f006dee5cde03a4ccbe85d94c1b5dc6dfd4a5829a75177194d6"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0000.jsonl.gz",
+                      "bytes":  20312981,
+                      "sha256":  "sha256:6ed3b3435088f4a7f2ed77c2697b428acdd76647104c4dc9eac0e525029afb60"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0001.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:60d6219bbfbc9da322cb03f3dfca98cd8abe1fded487d2dca9a1f935f1fe1f2e"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0001.jsonl.gz",
+                      "bytes":  19542461,
+                      "sha256":  "sha256:97750a76092bc4f90306818fc857a9ffe7c8160ac8fa9397015025f6a64a2d4d"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0002.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:880078ecba61dab1d153aa3fac51b4f00af78f3097cb91ef718f0c5b56efa95f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0002.jsonl.gz",
+                      "bytes":  19391341,
+                      "sha256":  "sha256:586bf144f0464db735628ca79eb785f438b97de39a6572a2b5d8a3c717fdc02b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0003.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:c40c84305d99e90f6122474d54f21b0a854bd9992ca3ef65f30ce7176f776190"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0003.jsonl.gz",
+                      "bytes":  19476304,
+                      "sha256":  "sha256:30d3d22eecc576d2430a2c4f619db78099d69ddaa50142efb33a8ca61615fe7d"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0004.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:eb5cd090f42808f210b29abe446a32ae0a8176766f8f2a1d8e52d7798e20f2db"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0004.jsonl.gz",
+                      "bytes":  19480450,
+                      "sha256":  "sha256:8a06ec0f70f6410ffe5cf560202437bfc159059e96ae5f6f73c0e0d9c8da65d7"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0005.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:682a307939d0ff5a980c8d92929bdba1907ea74c024d3b3807337b19d8442f71"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0005.jsonl.gz",
+                      "bytes":  19549452,
+                      "sha256":  "sha256:2752031aa0760fefada8d93dcc574c5dd8a2d2236bf001fa53f9b2cb75c7e92d"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0006.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:fd882580571402a756c644b44d39e1c51520b54ccabde24b48d19fa227efd54b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0006.jsonl.gz",
+                      "bytes":  20178720,
+                      "sha256":  "sha256:c68e338d4a1a5eac3b39e282d0a8089b7e7b6e06b0a42aedbbd94521cd71fc06"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0007.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:f9e2d20e1b6414488d0024c37ed56193cd843562d4a184242bca624f2b9df596"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0007.jsonl.gz",
+                      "bytes":  19551307,
+                      "sha256":  "sha256:7d36dfa482d4a206c8bfd8ba1e4af4b828e48dfeefd590b8385e40523d9c3f2f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0008.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:e1234b7fb91613d70ccad09b175cf7a6883096167c6767958d6905710a3290aa"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0008.jsonl.gz",
+                      "bytes":  19426422,
+                      "sha256":  "sha256:e27144f613a721825c18684d77d95b9123e3619bcc742d0e185459285e5f67b4"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0009.complete",
+                      "bytes":  463,
+                      "sha256":  "sha256:0a18e7f5064d494c95f9b7c74f4fcd01baf2ad3fc65f641a5cc2f306bb579807"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0009.jsonl.gz",
+                      "bytes":  19579168,
+                      "sha256":  "sha256:22712f3732524ee8650ffd1f974d6a0657f44bd1bb842924e19e7b2918224efd"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0010.complete",
+                      "bytes":  464,
+                      "sha256":  "sha256:91e4b0bf0285b8258fc6156b250f9212721c0010ff94616f3c8fe02ffef73c27"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0010.jsonl.gz",
+                      "bytes":  19335483,
+                      "sha256":  "sha256:03b373e030b223523064da290cc0240ee6ad6d1db8fb593d30d3e7e9e972db25"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0011.complete",
+                      "bytes":  464,
+                      "sha256":  "sha256:20d80ac94f3a0cd759d58373c7ea07f672b5a073331773e55f7e409a0811807e"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift/shard-0011.jsonl.gz",
+                      "bytes":  19714171,
+                      "sha256":  "sha256:9e01d910a8e18d6d01c97063559e247b72a8cfe064e350d3fced2b713df0fcf1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/01-artillery-funnel.png",
+                      "bytes":  16848,
+                      "sha256":  "sha256:46ae109ae1f8a64217186fa320ab358d14568fe8ea0d9f44ceb101770dc95daa"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/01-artillery-funnel.svg",
+                      "bytes":  1931,
+                      "sha256":  "sha256:6484dc637f8846a5482641d27705271ebd0730f8fc692e27a9ae31f50cbdc64c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/02-why-artillery-fired.png",
+                      "bytes":  25184,
+                      "sha256":  "sha256:debfa095808a20fd0a54ae73f8e2d2ca427253c4d812d658c9028875db01578d"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/02-why-artillery-fired.svg",
+                      "bytes":  3080,
+                      "sha256":  "sha256:0f2651f35081b81a170541d2c131b27a56ca71bc3c8a434d3e665114a381900c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/03-downstream-attribution.png",
+                      "bytes":  14739,
+                      "sha256":  "sha256:9802da411b2b64bdadb0e5cb4901b262bd67afb4e35cb72efb3c422693092e74"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/03-downstream-attribution.svg",
+                      "bytes":  1679,
+                      "sha256":  "sha256:505efa1fa29d7f6909ede7c6355887c9108d5c7ee0d932d337c4f5b370eb36d0"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/04-solo-doctrine-effect.png",
+                      "bytes":  31319,
+                      "sha256":  "sha256:a107f9e7d4c93ae2cd419f28aa5a038482850da529cd0486aacdf1ac8ae80297"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/04-solo-doctrine-effect.svg",
+                      "bytes":  4996,
+                      "sha256":  "sha256:4e0920e6c1f86cd42d0e2a80c0149af279a6201ee662ec4971a33f1bc0fd0620"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/05-combined-doctrine-effect.png",
+                      "bytes":  31643,
+                      "sha256":  "sha256:e18f5d514e36fefb78592d1d246b81b57090cceb304c4989e04ea9b2f994d661"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/05-combined-doctrine-effect.svg",
+                      "bytes":  5130,
+                      "sha256":  "sha256:ade627d7d09a17804279a7c7ad8b5724c1f9b715b4b4ff1fba6fe37fe887fc8b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/06-reload-increment.png",
+                      "bytes":  30642,
+                      "sha256":  "sha256:17a956cc1dd8d1a9f6d124d5d6034ff9b86a6538b32c741150f3a98137d4e0d4"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/06-reload-increment.svg",
+                      "bytes":  5033,
+                      "sha256":  "sha256:dd780c6a8693e79e1aaac7a105823d8f6c88b16937b5b6b492126902193fbdd1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/07-reload-effect-by-scenario.png",
+                      "bytes":  14580,
+                      "sha256":  "sha256:ebbdeb4afd4260dadcb4aa2c66fdd3c51e6ece7630b8215bee6901426daa4fb5"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/07-reload-effect-by-scenario.svg",
+                      "bytes":  2267,
+                      "sha256":  "sha256:44e95be7b2d9311c7deb4617b80d44e5ba31096f039fb0d48e3c02cdc35ca557"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/08-reload-effect-by-soundness.png",
+                      "bytes":  11815,
+                      "sha256":  "sha256:b2e59589e37c7944a97d7485b0b7253514f7cf93381bdb7df6a330d71901e1a6"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/08-reload-effect-by-soundness.svg",
+                      "bytes":  1818,
+                      "sha256":  "sha256:a463b2ba261542f2b4a4020493efb47c60c03f8ce378ff18e56c00f9fe6502eb"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/09-reload-effect-by-spatial-pressure.png",
+                      "bytes":  11068,
+                      "sha256":  "sha256:a985c5db54e6200b90a38a1df4ef1e9f988ec8649e5cd02ddf4b3ac752954f2f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/09-reload-effect-by-spatial-pressure.svg",
+                      "bytes":  1377,
+                      "sha256":  "sha256:99325a3cb83d776a8dcafee395cace1dee14f6e8cd28070bd86644cfdd0270f1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/10-uap-rejection-reasons.png",
+                      "bytes":  8246,
+                      "sha256":  "sha256:62c3c760604f8b46050dd94a7fc32b98e26453c00748b8ea069e6a3a5536c38c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/10-uap-rejection-reasons.svg",
+                      "bytes":  745,
+                      "sha256":  "sha256:fa5d573d3ac7196307718c6525a61d392f62ab613d1e90ae2678e1871268caa1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/11-hail-mary-identifiability.png",
+                      "bytes":  29639,
+                      "sha256":  "sha256:7d7f2ff8d3cd2bbd841d92cfd4b23822a8009f278aaa36aefd8f6da8ce8e6a02"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/11-hail-mary-identifiability.svg",
+                      "bytes":  3119,
+                      "sha256":  "sha256:28197bc16487c2ec9e23b1b8df3b5987c8bec761726f945264e2b53b2e5af9e0"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/assessment.json",
+                      "bytes":  40994,
+                      "sha256":  "sha256:740d4af69f05dbbe11569e3368dcfd5f8c5465696bfc95244fcc2e916144b453"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/ASSESSMENT.md",
+                      "bytes":  3459,
+                      "sha256":  "sha256:9b939244c8a7594437c946390776aa2d51b4cce95608f2141f9d09491e4b31bc"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/checksums.json",
+                      "bytes":  1809,
+                      "sha256":  "sha256:30e825142940765c7e17979ef076d39e167a3517250c06fcd0ab175972d99292"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/desperation-hypothesis-audit.json",
+                      "bytes":  6862,
+                      "sha256":  "sha256:cfd57e1724b007fa313fb03dc323d13b2db7b0145d07e0d6dd4e434b24e3add0"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/DESPERATION-HYPOTHESIS-AUDIT.md",
+                      "bytes":  3208,
+                      "sha256":  "sha256:c2957abc325c8904282b8615ae66cd8e8acad81af42f39386bd914d9c73a10ec"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/mechanism-contrasts.csv",
+                      "bytes":  6795,
+                      "sha256":  "sha256:4471d8baf03aa42ec74456a34f828a7e7c1b44a07c5744f7a0f9bf931cd9f0e4"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/png-checksums.json",
+                      "bytes":  1477,
+                      "sha256":  "sha256:55ee6da3c773cf4a5d04a4759c47dc7de5cca5f49cc3748a6d22a57438c6a617"
+                  }
+              ]
+}

@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "hypothesis": "Desperation Artillery / Hail Mary",
+  "verdict": "not-identifiable-from-these-runs",
+  "campaigns": [
+    {
+      "matrixId": "attention-v3-artillery-causal-20260810-9mm",
+      "runs": 9216000,
+      "manifestHash": "sha256:ce51977c9efdd8491bc855fbcaca6a63727cac3a87c2b140d09eac343505b1d0",
+      "traceMode": "summary-with-sampled-artillery-decisions"
+    },
+    {
+      "matrixId": "attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift",
+      "runs": 1411200,
+      "manifestHash": "sha256:8b5427b07e236bcfe9654301f921da078dc64bb5cd0ff5a9884e4a32132d042c",
+      "traceMode": "summary"
+    }
+  ],
+  "requestedElements": [
+    {
+      "element": "Progress gap at action time (self <= 6, opponent >= 10)",
+      "status": "missing",
+      "reason": "Only terminal progress is retained; artillery decision traces do not snapshot either player's progress."
+    },
+    {
+      "element": "Estimated win probability below 15%",
+      "status": "missing",
+      "reason": "No turn-level win-probability estimate is recorded."
+    },
+    {
+      "element": "At least three own unverified artifacts",
+      "status": "partial-proxy-only",
+      "reason": "Sampled traces retain ownLowConfidenceCount, not own unverified-artifact count, and only for seeds divisible by 64."
+    },
+    {
+      "element": "Passive verification/do-nothing cohort",
+      "status": "partially-present",
+      "reason": "Pass and verification totals exist, but cannot be joined to the requested desperation state at a specific turn."
+    },
+    {
+      "element": "HE / Artifact Exploder on own coordinates",
+      "status": "absent-mechanic",
+      "reason": "Both campaigns implement only Flare and Chaff shells; Flare targets enemy areas and does not instantly resolve own artifacts."
+    },
+    {
+      "element": "EMP / Smoke against leader units",
+      "status": "absent-mechanic",
+      "reason": "Neither EMP nor Smoke exists in the campaign contracts or action telemetry."
+    },
+    {
+      "element": "Immediate same-round drift explosion",
+      "status": "missing",
+      "reason": "Final drift and aggregate flare-induced drift defeats exist, but action-linked same-round drift is not retained."
+    },
+    {
+      "element": "Next-turn progress-gain variance",
+      "status": "missing",
+      "reason": "Per-turn progress deltas are not retained."
+    },
+    {
+      "element": "Terminal win and final drift",
+      "status": "present",
+      "reason": "Available per run, but not conditionable on the missing action-time state and requested actions."
+    }
+  ],
+  "requestedCohorts": {
+    "passiveControl": {
+      "evaluable": false,
+      "n": null,
+      "winRate": null,
+      "winRate95": [
+        null,
+        null
+      ],
+      "averageFinalDrift": null,
+      "drift95": [
+        null,
+        null
+      ]
+    },
+    "hailMaryHE": {
+      "evaluable": false,
+      "n": 0,
+      "winRate": null,
+      "winRate95": [
+        null,
+        null
+      ],
+      "averageFinalDrift": null,
+      "drift95": [
+        null,
+        null
+      ]
+    },
+    "disruptiveSalvo": {
+      "evaluable": false,
+      "n": 0,
+      "winRate": null,
+      "winRate95": [
+        null,
+        null
+      ],
+      "averageFinalDrift": null,
+      "drift95": [
+        null,
+        null
+      ]
+    }
+  },
+  "closestSupportedQuestion": {
+    "question": "Does access to the doctrine's relevant Flare/Chaff shell improve that doctrine's score relative to its movement-identical pass control?",
+    "estimand": "Difference-in-differences of aggregate player score under matched scenario, seat, opponent doctrine, soundness, spatial pressure, and common seed block.",
+    "results": {
+      "flareSoloOneShot": {
+        "n": 2880,
+        "mean": 0.04443617724867731,
+        "sd": 0.1729157140504232,
+        "se": 0.003222094091622181,
+        "ci95": [
+          0.03812098887429853,
+          0.050751365623056086
+        ]
+      },
+      "flareSoloReload": {
+        "n": 2880,
+        "mean": 0.0551876653439154,
+        "sd": 0.20222983543747067,
+        "se": 0.003768330492639836,
+        "ci95": [
+          0.047801873296497245,
+          0.06257345739133356
+        ]
+      },
+      "chaffSoloOneShot": {
+        "n": 1920,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "chaffSoloReload": {
+        "n": 1920,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "combinedOneShot": {
+        "n": 4800,
+        "mean": 0.026661706349206383,
+        "sd": 0.13409946822146884,
+        "se": 0.0019355591018962674,
+        "ci95": [
+          0.022868080219541006,
+          0.03045533247887176
+        ]
+      },
+      "combinedReload": {
+        "n": 4800,
+        "mean": 0.033112599206349264,
+        "sd": 0.15659841959508455,
+        "se": 0.0022603034926973005,
+        "ci95": [
+          0.028682485766532463,
+          0.037542712646166064
+        ]
+      },
+      "combinedChaffReload": {
+        "n": 1920,
+        "mean": 0.01161954365079365,
+        "sd": 0.07505797064396218,
+        "se": 0.0017129559850941102,
+        "ci95": [
+          0.008262211612906864,
+          0.014976875688680434
+        ]
+      },
+      "reloadIncrementFlareSolo": {
+        "n": 2880,
+        "mean": 0.010751488095238121,
+        "sd": 0.05622570854264961,
+        "se": 0.0010477042198704597,
+        "ci95": [
+          0.008698025557841386,
+          0.012804950632634857
+        ]
+      },
+      "reloadIncrementCombined": {
+        "n": 4800,
+        "mean": 0.006450892857142875,
+        "sd": 0.043733151365639655,
+        "se": 0.0006312336678365675,
+        "ci95": [
+          0.005213697602354083,
+          0.007688088111931666
+        ]
+      }
+    },
+    "limitation": "This is an artillery mechanism test, not a severe-deficit Hail Mary test. It must not be relabeled as evidence for HE/EMP/Smoke or desperation-state optimality."
+  },
+  "requiredNextExperiment": [
+    "Implement the requested HE/Artifact Exploder and EMP/Smoke actions with stable action identifiers.",
+    "At every eligible decision, record pre-action self/opponent progress, drift, unverified artifact count, unit locks/uplinks, legal actions, and calibrated win-probability estimate.",
+    "Randomize eligible desperation opportunities between passive, HE, and disruptive salvo policies within the same latent world stream; deterministic self-selection would confound the cohorts.",
+    "Record immediate resolution, same-round drift defeat, next-turn progress delta, and terminal outcome keyed to the action opportunity.",
+    "Pre-register a primary win-rate contrast, Wilson or paired bootstrap interval, multiplicity handling, and minimum detectable effect before launch."
+  ]
+}

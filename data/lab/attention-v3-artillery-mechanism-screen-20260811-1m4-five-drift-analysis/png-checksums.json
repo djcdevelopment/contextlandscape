@@ -1,0 +1,16 @@
+{
+    "schemaVersion":  1,
+    "files":  {
+                  "01-artillery-funnel.png":  "sha256:46ae109ae1f8a64217186fa320ab358d14568fe8ea0d9f44ceb101770dc95daa",
+                  "02-why-artillery-fired.png":  "sha256:debfa095808a20fd0a54ae73f8e2d2ca427253c4d812d658c9028875db01578d",
+                  "03-downstream-attribution.png":  "sha256:9802da411b2b64bdadb0e5cb4901b262bd67afb4e35cb72efb3c422693092e74",
+                  "04-solo-doctrine-effect.png":  "sha256:a107f9e7d4c93ae2cd419f28aa5a038482850da529cd0486aacdf1ac8ae80297",
+                  "05-combined-doctrine-effect.png":  "sha256:e18f5d514e36fefb78592d1d246b81b57090cceb304c4989e04ea9b2f994d661",
+                  "06-reload-increment.png":  "sha256:17a956cc1dd8d1a9f6d124d5d6034ff9b86a6538b32c741150f3a98137d4e0d4",
+                  "07-reload-effect-by-scenario.png":  "sha256:ebbdeb4afd4260dadcb4aa2c66fdd3c51e6ece7630b8215bee6901426daa4fb5",
+                  "08-reload-effect-by-soundness.png":  "sha256:b2e59589e37c7944a97d7485b0b7253514f7cf93381bdb7df6a330d71901e1a6",
+                  "09-reload-effect-by-spatial-pressure.png":  "sha256:a985c5db54e6200b90a38a1df4ef1e9f988ec8649e5cd02ddf4b3ac752954f2f",
+                  "10-uap-rejection-reasons.png":  "sha256:62c3c760604f8b46050dd94a7fc32b98e26453c00748b8ea069e6a3a5536c38c",
+                  "11-hail-mary-identifiability.png":  "sha256:7d7f2ff8d3cd2bbd841d92cfd4b23822a8009f278aaa36aefd8f6da8ce8e6a02"
+              }
+}

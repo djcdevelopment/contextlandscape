@@ -1,0 +1,1647 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "matrixId": "attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift",
+    "manifestHash": "sha256:8b5427b07e236bcfe9654301f921da078dc64bb5cd0ff5a9884e4a32132d042c",
+    "reportHash": "sha256:cbac2d207082796c01f74dc0ac9ea5f98bb538aecfe6b4af2a8b7914db039c75",
+    "runs": 1411200,
+    "cells": 33600
+  },
+  "design": {
+    "driftLimit": 5,
+    "seedsPerCell": 42,
+    "variants": 42,
+    "matchups": 8,
+    "policies": 10,
+    "estimand": "Artillery-doctrine minus movement-identical pass-control advantage, treatment minus no-ammo, over matched aggregate cells.",
+    "inferenceUnit": "matched 42-run aggregate player cell",
+    "caveat": "Intervals summarize matched-cell heterogeneity; they are not raw-seed paired bootstrap intervals."
+  },
+  "artilleryFunnel": {
+    "considered": 10505494,
+    "declared": 1231503,
+    "flareDeclarations": 983106,
+    "chaffDeclarations": 248397,
+    "fired": 1231503,
+    "flareEstablished": 919713,
+    "hostileBlocked": 63393,
+    "passes": 9273991
+  },
+  "downstreamAttribution": {
+    "reloads": 641149,
+    "flareArtifactsGenerated": 3897426,
+    "flareUnsoundAccepts": 543033,
+    "flareDriftDefeatsInduced": 71674
+  },
+  "artilleryReasons": {
+    "exposure-below-trigger": 1053310,
+    "doctrine-pass": 5326265,
+    "hostile-flare-unavailable": 911039,
+    "shell-unavailable": 1983377,
+    "high-own-exposure": 47355,
+    "hostile-flare-available": 201042,
+    "enemy-cluster": 322881,
+    "enemy-artifact-density": 334702,
+    "far-objective": 325523
+  },
+  "artilleryTargets": {
+    "none": 9273991,
+    "own-low-confidence-density": 47355,
+    "own-formation-screen": 201042,
+    "enemy-formation-cluster": 322881,
+    "enemy-artifact-density": 334702,
+    "far-enemy-objective": 325523
+  },
+  "mechanismRates": {
+    "chaff-only:one-shot": {
+      "playerRuns": 403200,
+      "considered": 1597246,
+      "declared": 0,
+      "fired": 0,
+      "flareEstablished": 0,
+      "hostileBlocked": 0,
+      "reloads": 0,
+      "generated": 0,
+      "unsound": 0,
+      "driftDefeats": 0,
+      "declarationRate": 0,
+      "shellsPer1000PlayerRuns": 0,
+      "inducedDriftDefeatsPer1000PlayerRuns": 0
+    },
+    "chaff-only:reload": {
+      "playerRuns": 403200,
+      "considered": 1597246,
+      "declared": 0,
+      "fired": 0,
+      "flareEstablished": 0,
+      "hostileBlocked": 0,
+      "reloads": 0,
+      "generated": 0,
+      "unsound": 0,
+      "driftDefeats": 0,
+      "declarationRate": 0,
+      "shellsPer1000PlayerRuns": 0,
+      "inducedDriftDefeatsPer1000PlayerRuns": 0
+    },
+    "combined:one-shot": {
+      "playerRuns": 403200,
+      "considered": 1450638,
+      "declared": 176977,
+      "fired": 176977,
+      "flareEstablished": 109096,
+      "hostileBlocked": 11864,
+      "reloads": 0,
+      "generated": 800760,
+      "unsound": 118333,
+      "driftDefeats": 15084,
+      "declarationRate": 0.12199942370184705,
+      "shellsPer1000PlayerRuns": 438.9310515873016,
+      "inducedDriftDefeatsPer1000PlayerRuns": 37.410714285714285
+    },
+    "combined:reload": {
+      "playerRuns": 403200,
+      "considered": 1429584,
+      "declared": 569069,
+      "fired": 569069,
+      "flareEstablished": 325160,
+      "hostileBlocked": 51529,
+      "reloads": 397612,
+      "generated": 1024730,
+      "unsound": 135499,
+      "driftDefeats": 18440,
+      "declarationRate": 0.39806615071237506,
+      "shellsPer1000PlayerRuns": 1411.3814484126983,
+      "inducedDriftDefeatsPer1000PlayerRuns": 45.73412698412698
+    },
+    "flare-only:one-shot": {
+      "playerRuns": 403200,
+      "considered": 1428334,
+      "declared": 120960,
+      "fired": 120960,
+      "flareEstablished": 120960,
+      "hostileBlocked": 0,
+      "reloads": 0,
+      "generated": 912317,
+      "unsound": 135004,
+      "driftDefeats": 17195,
+      "declarationRate": 0.08468607482563602,
+      "shellsPer1000PlayerRuns": 300,
+      "inducedDriftDefeatsPer1000PlayerRuns": 42.64632936507937
+    },
+    "flare-only:reload": {
+      "playerRuns": 403200,
+      "considered": 1405200,
+      "declared": 364497,
+      "fired": 364497,
+      "flareEstablished": 364497,
+      "hostileBlocked": 0,
+      "reloads": 243537,
+      "generated": 1159619,
+      "unsound": 154197,
+      "driftDefeats": 20955,
+      "declarationRate": 0.2593915456874466,
+      "shellsPer1000PlayerRuns": 904.0104166666667,
+      "inducedDriftDefeatsPer1000PlayerRuns": 51.97172619047619
+    },
+    "none": {
+      "playerRuns": 403200,
+      "considered": 1597246,
+      "declared": 0,
+      "fired": 0,
+      "flareEstablished": 0,
+      "hostileBlocked": 0,
+      "reloads": 0,
+      "generated": 0,
+      "unsound": 0,
+      "driftDefeats": 0,
+      "declarationRate": 0,
+      "shellsPer1000PlayerRuns": 0,
+      "inducedDriftDefeatsPer1000PlayerRuns": 0
+    }
+  },
+  "overallEffects": {
+    "flareSoloOneShot": {
+      "n": 2880,
+      "mean": 0.04443617724867731,
+      "sd": 0.1729157140504232,
+      "se": 0.003222094091622181,
+      "ci95": [
+        0.03812098887429853,
+        0.050751365623056086
+      ]
+    },
+    "flareSoloReload": {
+      "n": 2880,
+      "mean": 0.0551876653439154,
+      "sd": 0.20222983543747067,
+      "se": 0.003768330492639836,
+      "ci95": [
+        0.047801873296497245,
+        0.06257345739133356
+      ]
+    },
+    "chaffSoloOneShot": {
+      "n": 1920,
+      "mean": 0,
+      "sd": 0,
+      "se": 0,
+      "ci95": [
+        0,
+        0
+      ]
+    },
+    "chaffSoloReload": {
+      "n": 1920,
+      "mean": 0,
+      "sd": 0,
+      "se": 0,
+      "ci95": [
+        0,
+        0
+      ]
+    },
+    "combinedOneShot": {
+      "n": 4800,
+      "mean": 0.026661706349206383,
+      "sd": 0.13409946822146884,
+      "se": 0.0019355591018962674,
+      "ci95": [
+        0.022868080219541006,
+        0.03045533247887176
+      ]
+    },
+    "combinedReload": {
+      "n": 4800,
+      "mean": 0.033112599206349264,
+      "sd": 0.15659841959508455,
+      "se": 0.0022603034926973005,
+      "ci95": [
+        0.028682485766532463,
+        0.037542712646166064
+      ]
+    },
+    "combinedChaffReload": {
+      "n": 1920,
+      "mean": 0.01161954365079365,
+      "sd": 0.07505797064396218,
+      "se": 0.0017129559850941102,
+      "ci95": [
+        0.008262211612906864,
+        0.014976875688680434
+      ]
+    },
+    "reloadIncrementFlareSolo": {
+      "n": 2880,
+      "mean": 0.010751488095238121,
+      "sd": 0.05622570854264961,
+      "se": 0.0010477042198704597,
+      "ci95": [
+        0.008698025557841386,
+        0.012804950632634857
+      ]
+    },
+    "reloadIncrementCombined": {
+      "n": 4800,
+      "mean": 0.006450892857142875,
+      "sd": 0.043733151365639655,
+      "se": 0.0006312336678365675,
+      "ci95": [
+        0.005213697602354083,
+        0.007688088111931666
+      ]
+    }
+  },
+  "doctrineContrasts": [
+    {
+      "treatment": "flare-only:one-shot",
+      "doctrine": "v3-flare-cluster",
+      "score": {
+        "n": 960,
+        "mean": 0.047581845238095256,
+        "sd": 0.19768071425159767,
+        "se": 0.006380117618023541,
+        "ci95": [
+          0.035077044489639636,
+          0.06008664598655088
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.645138888888889,
+        "sd": 0.6523820140404799,
+        "se": 0.021055538964533597,
+        "ci95": [
+          -0.6864069869344547,
+          -0.6038707908433234
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.43139880952380866,
+        "sd": 0.4188575771989726,
+        "se": 0.01351857017437007,
+        "ci95": [
+          -0.45789472018805133,
+          -0.404902898859566
+        ]
+      }
+    },
+    {
+      "treatment": "flare-only:one-shot",
+      "doctrine": "v3-flare-density",
+      "score": {
+        "n": 960,
+        "mean": 0.02836061507936509,
+        "sd": 0.141485408888506,
+        "se": 0.004566421936304421,
+        "ci95": [
+          0.019410592545994768,
+          0.03731063761273541
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.49883432539682376,
+        "sd": 0.6102267478638089,
+        "se": 0.019694983599057036,
+        "ci95": [
+          -0.5374357839270826,
+          -0.46023286686656495
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.30761408730158624,
+        "sd": 0.35615486756525166,
+        "se": 0.011494848922924399,
+        "ci95": [
+          -0.3301435771982471,
+          -0.28508459740492537
+        ]
+      }
+    },
+    {
+      "treatment": "flare-only:one-shot",
+      "doctrine": "v3-flare-far-objective",
+      "score": {
+        "n": 960,
+        "mean": 0.057366071428571516,
+        "sd": 0.17386819107631404,
+        "se": 0.005611571737281444,
+        "ci95": [
+          0.04636759292683702,
+          0.06836454993030601
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.5531994047619039,
+        "sd": 0.5456201716141326,
+        "se": 0.017609815316803067,
+        "ci95": [
+          -0.5877140085572397,
+          -0.5186848009665681
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.4031746031746029,
+        "sd": 0.40614894043171784,
+        "se": 0.013108400686431928,
+        "ci95": [
+          -0.42886659641492964,
+          -0.3774826099342762
+        ]
+      }
+    },
+    {
+      "treatment": "flare-only:reload",
+      "doctrine": "v3-flare-cluster",
+      "score": {
+        "n": 960,
+        "mean": 0.059598214285714254,
+        "sd": 0.22763726263520337,
+        "se": 0.007346961059686554,
+        "ci95": [
+          0.04519843521291038,
+          0.07399799335851813
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.7641865079365057,
+        "sd": 0.7459486596917413,
+        "se": 0.024075389467598813,
+        "ci95": [
+          -0.8113734042067743,
+          -0.716999611666237
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.5001488095238101,
+        "sd": 0.463565932198094,
+        "se": 0.014961526127269455,
+        "ci95": [
+          -0.5294728618870133,
+          -0.47082475716060695
+        ]
+      }
+    },
+    {
+      "treatment": "flare-only:reload",
+      "doctrine": "v3-flare-density",
+      "score": {
+        "n": 960,
+        "mean": 0.039496527777777755,
+        "sd": 0.17420090577493128,
+        "se": 0.005622310058004635,
+        "ci95": [
+          0.02847700255417137,
+          0.05051605300138414
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.5922619047619051,
+        "sd": 0.68824238728138,
+        "se": 0.0222129275341235,
+        "ci95": [
+          -0.6357984427199853,
+          -0.5487253668038249
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.374652777777777,
+        "sd": 0.40744010150407634,
+        "se": 0.013150072730852893,
+        "ci95": [
+          -0.4004264467243309,
+          -0.3488791088312231
+        ]
+      }
+    },
+    {
+      "treatment": "flare-only:reload",
+      "doctrine": "v3-flare-far-objective",
+      "score": {
+        "n": 960,
+        "mean": 0.06646825396825395,
+        "sd": 0.20054427119353302,
+        "se": 0.0064725385209154765,
+        "ci95": [
+          0.05378231157871147,
+          0.07915419635779644
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.6495783730158711,
+        "sd": 0.6614450886071892,
+        "se": 0.021348048438386107,
+        "ci95": [
+          -0.6914197790953244,
+          -0.6077369669364178
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.46106150793650824,
+        "sd": 0.4532330354036972,
+        "se": 0.014628033317246297,
+        "ci95": [
+          -0.489731926402963,
+          -0.4323910894700535
+        ]
+      }
+    },
+    {
+      "treatment": "chaff-only:one-shot",
+      "doctrine": "v3-adaptive-artillery",
+      "score": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "treatment": "chaff-only:one-shot",
+      "doctrine": "v3-chaff-screen",
+      "score": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "treatment": "chaff-only:reload",
+      "doctrine": "v3-adaptive-artillery",
+      "score": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "treatment": "chaff-only:reload",
+      "doctrine": "v3-chaff-screen",
+      "score": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "treatment": "combined:one-shot",
+      "doctrine": "v3-adaptive-artillery",
+      "score": {
+        "n": 960,
+        "mean": 0.0059151785714285695,
+        "sd": 0.029802198814506915,
+        "se": 0.0009618618307412309,
+        "ci95": [
+          0.004029964025071995,
+          0.007800393117785144
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.060119047619047634,
+        "sd": 0.21220166037187602,
+        "se": 0.006848779138815318,
+        "ci95": [
+          -0.0735424080691949,
+          -0.046695687168900366
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.08841765873015871,
+        "sd": 0.3430398379650404,
+        "se": 0.011071563162702434,
+        "ci95": [
+          -0.11011752378161585,
+          -0.06671779367870156
+        ]
+      }
+    },
+    {
+      "treatment": "combined:one-shot",
+      "doctrine": "v3-chaff-screen",
+      "score": {
+        "n": 960,
+        "mean": 0.013926091269841267,
+        "sd": 0.08603503205834859,
+        "se": 0.0027767687196033775,
+        "ci95": [
+          0.008483724586021247,
+          0.019368457953661287
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.23422619047619042,
+        "sd": 0.5758928238631664,
+        "se": 0.018586860966853372,
+        "ci95": [
+          -0.27065576855687634,
+          -0.1977966123955045
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.22199900793650806,
+        "sd": 0.590441595695065,
+        "se": 0.019056420558625997,
+        "ci95": [
+          -0.2593489059056637,
+          -0.18464910996735245
+        ]
+      }
+    },
+    {
+      "treatment": "combined:one-shot",
+      "doctrine": "v3-flare-cluster",
+      "score": {
+        "n": 960,
+        "mean": 0.041369047619047646,
+        "sd": 0.18706500026087375,
+        "se": 0.0060374969222387505,
+        "ci95": [
+          0.029535771094688273,
+          0.05320232414340702
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.5636904761904756,
+        "sd": 0.6440209565228711,
+        "se": 0.020785686993513755,
+        "ci95": [
+          -0.6044296740916852,
+          -0.522951278289266
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.3719742063492054,
+        "sd": 0.40581096241908,
+        "se": 0.013097492492979172,
+        "ci95": [
+          -0.3976448199232283,
+          -0.3463035927751825
+        ]
+      }
+    },
+    {
+      "treatment": "combined:one-shot",
+      "doctrine": "v3-flare-density",
+      "score": {
+        "n": 960,
+        "mean": 0.024342757936507923,
+        "sd": 0.13322916918179917,
+        "se": 0.004299952945584655,
+        "ci95": [
+          0.01591500502794508,
+          0.032770510845070766
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.43722718253968135,
+        "sd": 0.5803333409088602,
+        "se": 0.01873017803824106,
+        "ci95": [
+          -0.4739376569186569,
+          -0.4005167081607058
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.26728670634920604,
+        "sd": 0.3288627421635249,
+        "se": 0.01061399936322863,
+        "ci95": [
+          -0.2880897628330652,
+          -0.24648364986534685
+        ]
+      }
+    },
+    {
+      "treatment": "combined:one-shot",
+      "doctrine": "v3-flare-far-objective",
+      "score": {
+        "n": 960,
+        "mean": 0.04775545634920635,
+        "sd": 0.16641593095242102,
+        "se": 0.005371051076019416,
+        "ci95": [
+          0.03722838968108319,
+          0.058282523017329516
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.49632936507936454,
+        "sd": 0.5409528823821175,
+        "se": 0.017459179204573672,
+        "ci95": [
+          -0.5305487275199596,
+          -0.46211000263876945
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.3509920634920634,
+        "sd": 0.38733231853011113,
+        "se": 0.012501096825958556,
+        "ci95": [
+          -0.37549376303819015,
+          -0.32649036394593667
+        ]
+      }
+    },
+    {
+      "treatment": "combined:reload",
+      "doctrine": "v3-adaptive-artillery",
+      "score": {
+        "n": 960,
+        "mean": 0.005902777777777774,
+        "sd": 0.03399494352903429,
+        "se": 0.0010971820845267616,
+        "ci95": [
+          0.00375234040762274,
+          0.008053215147932807
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.07294146825396819,
+        "sd": 0.25374265272117824,
+        "se": 0.008189508901763462,
+        "ci95": [
+          -0.08899261075249475,
+          -0.05689032575544163
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.09481646825396822,
+        "sd": 0.34364972148413425,
+        "se": 0.011091247068640576,
+        "ci95": [
+          -0.11655491305213919,
+          -0.07307802345579725
+        ]
+      }
+    },
+    {
+      "treatment": "combined:reload",
+      "doctrine": "v3-chaff-screen",
+      "score": {
+        "n": 960,
+        "mean": 0.017336309523809525,
+        "sd": 0.100260586988178,
+        "se": 0.003235896530718278,
+        "ci95": [
+          0.010994068865903591,
+          0.023678550181715458
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.3261160714285713,
+        "sd": 0.7286272275974152,
+        "se": 0.023516342650650585,
+        "ci95": [
+          -0.37220725607194965,
+          -0.28002488678519294
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.2601438492063493,
+        "sd": 0.6277099223880848,
+        "se": 0.02025925063048502,
+        "ci95": [
+          -0.2998512507958703,
+          -0.2204364476168283
+        ]
+      }
+    },
+    {
+      "treatment": "combined:reload",
+      "doctrine": "v3-flare-cluster",
+      "score": {
+        "n": 960,
+        "mean": 0.05250496031746026,
+        "sd": 0.21457734038491524,
+        "se": 0.006925453881535474,
+        "ci95": [
+          0.03893132013305761,
+          0.06607860050186291
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.6718253968253957,
+        "sd": 0.7459224092024551,
+        "se": 0.024074542236700188,
+        "ci95": [
+          -0.7190106325536164,
+          -0.6246401610971749
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.43516865079365136,
+        "sd": 0.4582732652412929,
+        "se": 0.014790706035763514,
+        "ci95": [
+          -0.46415790192966705,
+          -0.40617939965763566
+        ]
+      }
+    },
+    {
+      "treatment": "combined:reload",
+      "doctrine": "v3-flare-density",
+      "score": {
+        "n": 960,
+        "mean": 0.03390376984126984,
+        "sd": 0.16398762052321175,
+        "se": 0.005292677693921506,
+        "ci95": [
+          0.02353031217940518,
+          0.044277227503134495
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.5243055555555544,
+        "sd": 0.6671061376167653,
+        "se": 0.021530758009520708,
+        "ci95": [
+          -0.5665050658140622,
+          -0.4821060452970465
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.3293402777777778,
+        "sd": 0.38562541693107166,
+        "se": 0.012446006813736102,
+        "ci95": [
+          -0.35373400288404067,
+          -0.30494655267151494
+        ]
+      }
+    },
+    {
+      "treatment": "combined:reload",
+      "doctrine": "v3-flare-far-objective",
+      "score": {
+        "n": 960,
+        "mean": 0.05591517857142851,
+        "sd": 0.19153724290067897,
+        "se": 0.006181837932773454,
+        "ci95": [
+          0.043798998864929,
+          0.06803135827792803
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.5868799603174587,
+        "sd": 0.6580080364830134,
+        "se": 0.021237118058077945,
+        "ci95": [
+          -0.6285039468467167,
+          -0.5452559737882007
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.4065228174603179,
+        "sd": 0.43942412835699346,
+        "se": 0.014182352758736217,
+        "ci95": [
+          -0.43431971808348313,
+          -0.3787259168371526
+        ]
+      }
+    }
+  ],
+  "reloadContrasts": [
+    {
+      "supply": "solo",
+      "doctrine": "v3-adaptive-artillery",
+      "score": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "supply": "solo",
+      "doctrine": "v3-chaff-screen",
+      "score": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": 0,
+        "sd": 0,
+        "se": 0,
+        "ci95": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "supply": "combined",
+      "doctrine": "v3-adaptive-artillery",
+      "score": {
+        "n": 960,
+        "mean": -0.000012400793650792912,
+        "sd": 0.013244530850494814,
+        "se": 0.00042746539510247306,
+        "ci95": [
+          -0.0008502175726888245,
+          0.0008254159853872386
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.012822420634920619,
+        "sd": 0.11192658669204399,
+        "se": 0.003612415052134392,
+        "ci95": [
+          -0.01990262403431441,
+          -0.005742217235526828
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.006398809523809511,
+        "sd": 0.05404232190096031,
+        "se": 0.0017442084392733303,
+        "ci95": [
+          -0.009817395246316056,
+          -0.002980223801302965
+        ]
+      }
+    },
+    {
+      "supply": "combined",
+      "doctrine": "v3-chaff-screen",
+      "score": {
+        "n": 960,
+        "mean": 0.0034102182539682553,
+        "sd": 0.028515470526026057,
+        "se": 0.000920332853804728,
+        "ci95": [
+          0.0016063990067220215,
+          0.0052140375012144895
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.09188988095238088,
+        "sd": 0.2530882177913674,
+        "se": 0.008168387105227347,
+        "ci95": [
+          -0.10789962549040787,
+          -0.07588013641435389
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.03814484126984125,
+        "sd": 0.12393988483166493,
+        "se": 0.004000142582365863,
+        "ci95": [
+          -0.04598497666430339,
+          -0.030304705875379114
+        ]
+      }
+    },
+    {
+      "supply": "combined",
+      "doctrine": "v3-flare-cluster",
+      "score": {
+        "n": 960,
+        "mean": 0.011135912698412687,
+        "sd": 0.05632052545894373,
+        "se": 0.0018177371429344991,
+        "ci95": [
+          0.007573213364900332,
+          0.014698612031925042
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.10813492063492057,
+        "sd": 0.23456382724361774,
+        "se": 0.007570514971143375,
+        "ci95": [
+          -0.12297285732278287,
+          -0.09329698394705827
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.06319444444444451,
+        "sd": 0.1194743415574193,
+        "se": 0.003856017792924847,
+        "ci95": [
+          -0.07075210044232284,
+          -0.05563678844656618
+        ]
+      }
+    },
+    {
+      "supply": "combined",
+      "doctrine": "v3-flare-density",
+      "score": {
+        "n": 960,
+        "mean": 0.009561011904761892,
+        "sd": 0.052165456313059355,
+        "se": 0.0016836328628982453,
+        "ci95": [
+          0.006261152130293268,
+          0.012860871679230515
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.08707837301587305,
+        "sd": 0.19039587064412578,
+        "se": 0.006145000301594672,
+        "ci95": [
+          -0.09912235229198638,
+          -0.07503439373975973
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.06205357142857156,
+        "sd": 0.1144815863018118,
+        "se": 0.0036948773099527016,
+        "ci95": [
+          -0.06929539788337309,
+          -0.05481174497377003
+        ]
+      }
+    },
+    {
+      "supply": "combined",
+      "doctrine": "v3-flare-far-objective",
+      "score": {
+        "n": 960,
+        "mean": 0.008159722222222216,
+        "sd": 0.05102433299064849,
+        "se": 0.0016468032660343606,
+        "ci95": [
+          0.004932047131171936,
+          0.011387397313272495
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.09055059523809525,
+        "sd": 0.21701969361666773,
+        "se": 0.007004280493136584,
+        "ci95": [
+          -0.1042787327422594,
+          -0.0768224577339311
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.05553075396825403,
+        "sd": 0.11242831800725894,
+        "se": 0.0036286083607018774,
+        "ci95": [
+          -0.06264269566923063,
+          -0.04841881226727742
+        ]
+      }
+    },
+    {
+      "supply": "solo",
+      "doctrine": "v3-flare-cluster",
+      "score": {
+        "n": 960,
+        "mean": 0.01201636904761903,
+        "sd": 0.06001081328244544,
+        "se": 0.0019368406702939501,
+        "ci95": [
+          0.00822023109005047,
+          0.01581250700518759
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.11904761904761903,
+        "sd": 0.24307567213495587,
+        "se": 0.00784523358372382,
+        "ci95": [
+          -0.13442399432202182,
+          -0.10367124377321624
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.06875000000000006,
+        "sd": 0.12222012906761615,
+        "se": 0.003944637703751653,
+        "ci95": [
+          -0.07648134783141208,
+          -0.06101865216858804
+        ]
+      }
+    },
+    {
+      "supply": "solo",
+      "doctrine": "v3-flare-density",
+      "score": {
+        "n": 960,
+        "mean": 0.011135912698412681,
+        "sd": 0.05515390325622468,
+        "se": 0.0017800845732474434,
+        "ci95": [
+          0.007647011045412341,
+          0.014624814351413022
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.09342757936507946,
+        "sd": 0.19312279591123183,
+        "se": 0.006233011436143456,
+        "ci95": [
+          -0.10564405729514692,
+          -0.081211101435012
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.06703869047619064,
+        "sd": 0.11685595067063961,
+        "se": 0.003771509590438522,
+        "ci95": [
+          -0.07443071344079755,
+          -0.05964666751158373
+        ]
+      }
+    },
+    {
+      "supply": "solo",
+      "doctrine": "v3-flare-far-objective",
+      "score": {
+        "n": 960,
+        "mean": 0.009102182539682528,
+        "sd": 0.053318482225014986,
+        "se": 0.0017208466141878267,
+        "ci95": [
+          0.005729385152956694,
+          0.012474979926408362
+        ]
+      },
+      "progress": {
+        "n": 960,
+        "mean": -0.09637896825396823,
+        "sd": 0.22371251175658752,
+        "se": 0.0072202902697624536,
+        "ci95": [
+          -0.11053047714062764,
+          -0.08222745936730882
+        ]
+      },
+      "drift": {
+        "n": 960,
+        "mean": -0.05788690476190484,
+        "sd": 0.11338241455291644,
+        "se": 0.0036594016943019233,
+        "ci95": [
+          -0.06505920028770146,
+          -0.05071460923610822
+        ]
+      }
+    }
+  ],
+  "reloadSoloEffects": {
+    "byDoctrine": [
+      {
+        "level": "v3-flare-far-objective",
+        "n": 960,
+        "mean": 0.06646825396825395,
+        "sd": 0.20054427119353302,
+        "se": 0.0064725385209154765,
+        "ci95": [
+          0.05378231157871147,
+          0.07915419635779644
+        ]
+      },
+      {
+        "level": "v3-flare-cluster",
+        "n": 960,
+        "mean": 0.059598214285714254,
+        "sd": 0.22763726263520337,
+        "se": 0.007346961059686554,
+        "ci95": [
+          0.04519843521291038,
+          0.07399799335851813
+        ]
+      },
+      {
+        "level": "v3-flare-density",
+        "n": 960,
+        "mean": 0.039496527777777755,
+        "sd": 0.17420090577493128,
+        "se": 0.005622310058004635,
+        "ci95": [
+          0.02847700255417137,
+          0.05051605300138414
+        ]
+      }
+    ],
+    "byScenario": [
+      {
+        "level": "static-front",
+        "n": 720,
+        "mean": 0.16302910052910063,
+        "sd": 0.14868298996668258,
+        "se": 0.005541087877723691,
+        "ci95": [
+          0.1521687678535907,
+          0.17388943320461056
+        ]
+      },
+      {
+        "level": "flare-pocket",
+        "n": 720,
+        "mean": 0.08158068783068795,
+        "sd": 0.10344506280865494,
+        "se": 0.003855169872948129,
+        "ci95": [
+          0.07402469372542576,
+          0.08913668193595013
+        ]
+      },
+      {
+        "level": "shifting-front",
+        "n": 720,
+        "mean": 0.032457010582010566,
+        "sd": 0.2417173891881514,
+        "se": 0.009008275226141319,
+        "ci95": [
+          0.01480111557594917,
+          0.050112905588071965
+        ]
+      },
+      {
+        "level": "escort-corridor",
+        "n": 720,
+        "mean": -0.05631613756613752,
+        "sd": 0.21728358264390946,
+        "se": 0.008097681019774584,
+        "ci95": [
+          -0.07218730072318928,
+          -0.04044497440908576
+        ]
+      }
+    ],
+    "bySoundness": [
+      {
+        "level": "0.5",
+        "n": 960,
+        "mean": 0.17857142857142858,
+        "sd": 0.12519506839108854,
+        "se": 0.004040653457549871,
+        "ci95": [
+          0.17065189332062358,
+          0.18649096382223357
+        ]
+      },
+      {
+        "level": "0.75",
+        "n": 960,
+        "mean": 0.11478174603174601,
+        "sd": 0.15307481921335211,
+        "se": 0.004940468546141865,
+        "ci95": [
+          0.105098605614555,
+          0.12446488644893702
+        ]
+      },
+      {
+        "level": "0.95",
+        "n": 960,
+        "mean": -0.12779017857142863,
+        "sd": 0.17708731037481684,
+        "se": 0.00571546836588608,
+        "ci95": [
+          -0.13899229072334335,
+          -0.11658806641951391
+        ]
+      }
+    ],
+    "bySpatialPressure": [
+      {
+        "level": "adjacent",
+        "n": 1440,
+        "mean": 0.05785383597883606,
+        "sd": 0.18975758749596147,
+        "se": 0.005000551498216046,
+        "ci95": [
+          0.0480529351394948,
+          0.06765473681817732
+        ]
+      },
+      {
+        "level": "standoff",
+        "n": 1440,
+        "mean": 0.0525214947089947,
+        "sd": 0.2140094956402052,
+        "se": 0.005639645392724359,
+        "ci95": [
+          0.04146799285367771,
+          0.06357499656431169
+        ]
+      }
+    ]
+  },
+  "uapQualityGate": {
+    "status": "pass",
+    "rejectedPlans": 44878,
+    "byReason": {
+      "destination_conflict": 44878
+    }
+  },
+  "desperationAudit": {
+    "schemaVersion": 1,
+    "hypothesis": "Desperation Artillery / Hail Mary",
+    "verdict": "not-identifiable-from-these-runs",
+    "campaigns": [
+      {
+        "matrixId": "attention-v3-artillery-causal-20260810-9mm",
+        "runs": 9216000,
+        "manifestHash": "sha256:ce51977c9efdd8491bc855fbcaca6a63727cac3a87c2b140d09eac343505b1d0",
+        "traceMode": "summary-with-sampled-artillery-decisions"
+      },
+      {
+        "matrixId": "attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift",
+        "runs": 1411200,
+        "manifestHash": "sha256:8b5427b07e236bcfe9654301f921da078dc64bb5cd0ff5a9884e4a32132d042c",
+        "traceMode": "summary"
+      }
+    ],
+    "requestedElements": [
+      {
+        "element": "Progress gap at action time (self <= 6, opponent >= 10)",
+        "status": "missing",
+        "reason": "Only terminal progress is retained; artillery decision traces do not snapshot either player's progress."
+      },
+      {
+        "element": "Estimated win probability below 15%",
+        "status": "missing",
+        "reason": "No turn-level win-probability estimate is recorded."
+      },
+      {
+        "element": "At least three own unverified artifacts",
+        "status": "partial-proxy-only",
+        "reason": "Sampled traces retain ownLowConfidenceCount, not own unverified-artifact count, and only for seeds divisible by 64."
+      },
+      {
+        "element": "Passive verification/do-nothing cohort",
+        "status": "partially-present",
+        "reason": "Pass and verification totals exist, but cannot be joined to the requested desperation state at a specific turn."
+      },
+      {
+        "element": "HE / Artifact Exploder on own coordinates",
+        "status": "absent-mechanic",
+        "reason": "Both campaigns implement only Flare and Chaff shells; Flare targets enemy areas and does not instantly resolve own artifacts."
+      },
+      {
+        "element": "EMP / Smoke against leader units",
+        "status": "absent-mechanic",
+        "reason": "Neither EMP nor Smoke exists in the campaign contracts or action telemetry."
+      },
+      {
+        "element": "Immediate same-round drift explosion",
+        "status": "missing",
+        "reason": "Final drift and aggregate flare-induced drift defeats exist, but action-linked same-round drift is not retained."
+      },
+      {
+        "element": "Next-turn progress-gain variance",
+        "status": "missing",
+        "reason": "Per-turn progress deltas are not retained."
+      },
+      {
+        "element": "Terminal win and final drift",
+        "status": "present",
+        "reason": "Available per run, but not conditionable on the missing action-time state and requested actions."
+      }
+    ],
+    "requestedCohorts": {
+      "passiveControl": {
+        "evaluable": false,
+        "n": null,
+        "winRate": null,
+        "winRate95": [
+          null,
+          null
+        ],
+        "averageFinalDrift": null,
+        "drift95": [
+          null,
+          null
+        ]
+      },
+      "hailMaryHE": {
+        "evaluable": false,
+        "n": 0,
+        "winRate": null,
+        "winRate95": [
+          null,
+          null
+        ],
+        "averageFinalDrift": null,
+        "drift95": [
+          null,
+          null
+        ]
+      },
+      "disruptiveSalvo": {
+        "evaluable": false,
+        "n": 0,
+        "winRate": null,
+        "winRate95": [
+          null,
+          null
+        ],
+        "averageFinalDrift": null,
+        "drift95": [
+          null,
+          null
+        ]
+      }
+    },
+    "closestSupportedQuestion": {
+      "question": "Does access to the doctrine's relevant Flare/Chaff shell improve that doctrine's score relative to its movement-identical pass control?",
+      "estimand": "Difference-in-differences of aggregate player score under matched scenario, seat, opponent doctrine, soundness, spatial pressure, and common seed block.",
+      "results": {
+        "flareSoloOneShot": {
+          "n": 2880,
+          "mean": 0.04443617724867731,
+          "sd": 0.1729157140504232,
+          "se": 0.003222094091622181,
+          "ci95": [
+            0.03812098887429853,
+            0.050751365623056086
+          ]
+        },
+        "flareSoloReload": {
+          "n": 2880,
+          "mean": 0.0551876653439154,
+          "sd": 0.20222983543747067,
+          "se": 0.003768330492639836,
+          "ci95": [
+            0.047801873296497245,
+            0.06257345739133356
+          ]
+        },
+        "chaffSoloOneShot": {
+          "n": 1920,
+          "mean": 0,
+          "sd": 0,
+          "se": 0,
+          "ci95": [
+            0,
+            0
+          ]
+        },
+        "chaffSoloReload": {
+          "n": 1920,
+          "mean": 0,
+          "sd": 0,
+          "se": 0,
+          "ci95": [
+            0,
+            0
+          ]
+        },
+        "combinedOneShot": {
+          "n": 4800,
+          "mean": 0.026661706349206383,
+          "sd": 0.13409946822146884,
+          "se": 0.0019355591018962674,
+          "ci95": [
+            0.022868080219541006,
+            0.03045533247887176
+          ]
+        },
+        "combinedReload": {
+          "n": 4800,
+          "mean": 0.033112599206349264,
+          "sd": 0.15659841959508455,
+          "se": 0.0022603034926973005,
+          "ci95": [
+            0.028682485766532463,
+            0.037542712646166064
+          ]
+        },
+        "combinedChaffReload": {
+          "n": 1920,
+          "mean": 0.01161954365079365,
+          "sd": 0.07505797064396218,
+          "se": 0.0017129559850941102,
+          "ci95": [
+            0.008262211612906864,
+            0.014976875688680434
+          ]
+        },
+        "reloadIncrementFlareSolo": {
+          "n": 2880,
+          "mean": 0.010751488095238121,
+          "sd": 0.05622570854264961,
+          "se": 0.0010477042198704597,
+          "ci95": [
+            0.008698025557841386,
+            0.012804950632634857
+          ]
+        },
+        "reloadIncrementCombined": {
+          "n": 4800,
+          "mean": 0.006450892857142875,
+          "sd": 0.043733151365639655,
+          "se": 0.0006312336678365675,
+          "ci95": [
+            0.005213697602354083,
+            0.007688088111931666
+          ]
+        }
+      },
+      "limitation": "This is an artillery mechanism test, not a severe-deficit Hail Mary test. It must not be relabeled as evidence for HE/EMP/Smoke or desperation-state optimality."
+    },
+    "requiredNextExperiment": [
+      "Implement the requested HE/Artifact Exploder and EMP/Smoke actions with stable action identifiers.",
+      "At every eligible decision, record pre-action self/opponent progress, drift, unverified artifact count, unit locks/uplinks, legal actions, and calibrated win-probability estimate.",
+      "Randomize eligible desperation opportunities between passive, HE, and disruptive salvo policies within the same latent world stream; deterministic self-selection would confound the cohorts.",
+      "Record immediate resolution, same-round drift defeat, next-turn progress delta, and terminal outcome keyed to the action opportunity.",
+      "Pre-register a primary win-rate contrast, Wilson or paired bootstrap interval, multiplicity handling, and minimum detectable effect before launch."
+    ]
+  },
+  "evidenceBoundary": [
+    "The mechanism contrasts use exact no-ammo and movement-identical policy controls under common campaign factors.",
+    "Because artillery supply is symmetric, unconditional loadout win rates are not used as an efficacy estimand.",
+    "The Hail Mary hypothesis is not identified: its state variables, actions, and immediate outcomes were not recorded or implemented."
+  ],
+  "analysisHash": "sha256:6fe1e6be8f50db30a8be58b91b441a1934533fd97f0d8d168caebbcd0991340c"
+}
