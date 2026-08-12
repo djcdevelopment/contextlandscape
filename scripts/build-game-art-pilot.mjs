@@ -75,10 +75,14 @@ for (const type of ["mech", "ability", "artillery", "battlefield", "commander"])
 const manifest = jobs.map((job) => JSON.stringify(job)).join("\n") + "\n";
 const q8Manifest = jobs.filter((job) => job.qualityLane === "q8").map((job) => JSON.stringify(job)).join("\n") + "\n";
 const bf16Manifest = jobs.filter((job) => job.qualityLane === "bf16").map((job) => JSON.stringify(job)).join("\n") + "\n";
+const smokeQ8Manifest = jobs.filter((job) => job.qualityLane === "q8").slice(0, 2).map((job) => JSON.stringify(job)).join("\n") + "\n";
+const smokeBf16Manifest = jobs.filter((job) => job.qualityLane === "bf16").slice(0, 1).map((job) => JSON.stringify(job)).join("\n") + "\n";
 const manifestHash = `sha256:${digest(manifest)}`;
 writeFileSync(join(outputDirectory, "manifest.jsonl"), manifest);
 writeFileSync(join(outputDirectory, "manifest-q8.jsonl"), q8Manifest);
 writeFileSync(join(outputDirectory, "manifest-bf16.jsonl"), bf16Manifest);
+writeFileSync(join(outputDirectory, "manifest-smoke-q8.jsonl"), smokeQ8Manifest);
+writeFileSync(join(outputDirectory, "manifest-smoke-bf16.jsonl"), smokeBf16Manifest);
 writeFileSync(join(outputDirectory, "manifest.json"), JSON.stringify({
   schemaVersion: "context-landscape-game-art-manifest/v1",
   registryVersion: registry.registryVersion,
