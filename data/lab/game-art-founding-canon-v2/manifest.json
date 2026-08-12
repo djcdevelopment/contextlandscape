@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "context-landscape-game-art-manifest/v2",
+  "registryVersion": "game-art-founding-canon-v2",
+  "project": "context-landscape",
+  "sourceCampaign": "context-landscape-lookdev-20260813-v1",
+  "campaign": "context-landscape-founding-canon-20260812-v2",
+  "calibrationCampaign": "context-landscape-founding-canon-20260812-v2-calibration",
+  "generatedAt": "2026-08-12T00:00:00.000Z",
+  "sourceCount": 100,
+  "calibrationJobs": 15,
+  "fullJobs": 100,
+  "fullReferenceStrength": 0.35,
+  "foundingCanonHash": "sha256:963ce3a472c6994461247cfefd7dbd00af07489c3c8dd121297f5e17b217ce1f",
+  "calibrationManifestHash": "sha256:26681f0d9a9c77789ea149f17d692d556243f934f5daeedab14650e79d37581c",
+  "fullManifestHash": "sha256:68babaa7216c0c99ba437ee31088347d5ce2b0cc217d14f4a6e70dfc0497a727"
+}

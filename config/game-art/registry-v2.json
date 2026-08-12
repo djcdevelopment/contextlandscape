@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "context-landscape-game-art-registry/v2",
+  "registryVersion": "game-art-founding-canon-v2",
+  "project": "context-landscape",
+  "sourceCampaign": "context-landscape-lookdev-20260813-v1",
+  "campaign": "context-landscape-founding-canon-20260812-v2",
+  "calibrationCampaign": "context-landscape-founding-canon-20260812-v2-calibration",
+  "selection": {
+    "sort": "aesthetic-descending",
+    "limit": 100,
+    "description": "The exact first 100 images in the aesthetic-ranked v1 gallery view accepted by the human reviewer as the founding-canon iteration pool."
+  },
+  "model": "flux",
+  "steps": 24,
+  "guidance": 3.5,
+  "referenceMethod": "flux-redux",
+  "referenceStrengths": [0.35, 0.65, 1.0],
+  "fullReferenceStrength": 0.35,
+  "referenceModels": {
+    "clipVision": {
+      "filename": "sigclip_vision_patch14_384.safetensors",
+      "sha256": "1fee501deabac72f0ed17610307d7131e3e9d1e838d0363aa3c2b97a6e03fb33"
+    },
+    "styleModel": {
+      "filename": "flux1-redux-dev.safetensors",
+      "sha256": "a1b3bdcb4bdc58ce04874b9ca776d61fc3e914bb6beab41efb63e4e2694dca45"
+    }
+  },
+  "promptInvariants": "Preserve the reference image's strongest composition, palette, atmosphere, scale, and original visual identity while producing a clearly new frame. Context Landscape original universe. No readable text, pseudo-text, letters, numbers, logos, watermarks, branded insignia, existing franchise designs, decorative user-interface frames, or unexplained humanoid anatomy.",
+  "subjectCorrections": {
+    "mech-scout": "Make the chassis mechanically unambiguous: exactly three load-bearing articulated legs in a radial tripod arrangement, all three legs visible and connected to one compact sensor body; no humanoid arms, hands, or hidden fourth limb. It must read instantly as a fast reconnaissance machine.",
+    "mech-line": "Keep a balanced bipedal line chassis with exactly two legs and two restrained utility arms, medium armor, relay equipment, and a stable front-holding silhouette; avoid both scout fragility and siege bulk.",
+    "mech-siege": "Increase the low, broad, weight-bearing silhouette, planted stabilizers, layered armor, and command uplink while keeping weaponry subordinate to its role as an objective anchor.",
+    "ability-overclock": "Show one mech converting a dangerous but controlled power surge into faster actuator motion and newly affordable action capacity; make routed energy, cost, and precision legible without generic explosion imagery.",
+    "ability-macro-flare": "Show one bounded rectangular battlefield volume revealing several distinct artifact contacts across exactly two signal emissions; retain clear top-down spatial geometry and avoid a generic radial blast.",
+    "artillery-desperation-he": "Keep a top-down 10-by-10 tactical field and show the losing commander's own dense unverified artifact cluster being force-resolved by HE: some fragments visibly resolve as accepted signals and others as rejected drift, with self-inflicted terminal risk legible in the scene.",
+    "battlefield-context-furnace": "Make exactly three navigable lanes physically distinct: loaded context, an overheated active session, and a cool clean replacement route. Show a nearly complete objective beside imminent thermal collapse so the command tradeoff reads from the terrain alone.",
+    "battlefield-documentation-fortress": "Make exactly three functional lanes physically distinct: orientation, decision record, and verification. Center durable artifact sockets; contrast one compact useful structure that compounds command efficiency against a sprawling stale archive that freezes movement.",
+    "commander-adaptive-siege-anchor": "Keep the commander active rather than conventionally posed: show a two-scout plus one-siege formation around the command table, with the siege visibly anchored and triage allocation changing under pressure.",
+    "commander-scout-mobile-focus": "Keep the commander active rather than conventionally posed: show exactly three line mechs moving as a coordinated mobile formation, one precise Perfect Focus target lock, sparse controls, and decisive forward command posture."
+  }
+}
