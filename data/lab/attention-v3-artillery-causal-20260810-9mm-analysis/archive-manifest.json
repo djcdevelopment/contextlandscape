@@ -1,0 +1,251 @@
+{
+    "schemaVersion":  1,
+    "archiveKind":  "attention-v3-artillery-causal-five-drift",
+    "matrixId":  "attention-v3-artillery-causal-20260810-9mm",
+    "manifestHash":  "sha256:ce51977c9efdd8491bc855fbcaca6a63727cac3a87c2b140d09eac343505b1d0",
+    "reportHash":  "sha256:c54b9fed1e59f24ae090ab8487977d673e339c831717c499771170af21ad8059",
+    "analysisHash":  "sha256:f8e8992a16d7d5bc5d039a4f599edd1939bd3514799b7403b3d7d20b5eea003c",
+    "runs":  9216000,
+    "files":  [
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/manifest.json",
+                      "bytes":  196670,
+                      "sha256":  "sha256:49e0b20d76cf2cac3a7bff798ddbfc7aa313391c02c2d98aea92a3277555b010"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/report.json",
+                      "bytes":  115517392,
+                      "sha256":  "sha256:3c51c0245978e1565f00908f4a9534518e7687c328e20c69d70b09bc3493a019"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0000.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:92c4b2d2244a9bb35fc2e2978e947bc50b9512094e44eb6f992a2975bac613eb"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0000.jsonl.gz",
+                      "bytes":  98997978,
+                      "sha256":  "sha256:249fa81bac6bf1f0f041b7c545945ae10a3137edc86d1f963c421b93be821192"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0001.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:d6afd545ece8743f9039ae6a445cf062f63e1625dc4c934ca3ff9e282d7802d4"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0001.jsonl.gz",
+                      "bytes":  98266773,
+                      "sha256":  "sha256:da266b7e90a917274efe10aa43c88ddb54743cb4ca9f0af0e1fae89d1de97b66"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0002.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:d411908d76857e8a82319092202538c907a39a52196037e9ccbc745583d9cef3"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0002.jsonl.gz",
+                      "bytes":  98353468,
+                      "sha256":  "sha256:564fa63fed075af59dce54b62bfe7e0d27a182fea847d894721143bf042c583c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0003.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:ff0b53e2b1f9ecede88bc3c95d48570859afc9696c3df871f8096410c2d74f97"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0003.jsonl.gz",
+                      "bytes":  98498686,
+                      "sha256":  "sha256:61898ff2c7ace171253e50b8ef26e60736f77577f793415c6155d3fcf9f369b8"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0004.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:b8fe61c6d124b9acf6c0e6f03f0c1167679ce65241196297cb547437eaedcae8"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0004.jsonl.gz",
+                      "bytes":  99021383,
+                      "sha256":  "sha256:d026371baecaa3e291fb2fb3ed6ff80ad7d8f700d6cc1dc0498cd39a4d032a42"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0005.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:0832a6d34b171e8f0c936a033f849939ba8c39da6c1fa54bdc2fe1152d65fadd"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0005.jsonl.gz",
+                      "bytes":  98361005,
+                      "sha256":  "sha256:6b237f5f0fdc492c7f3c114eb0d47116b7cbe40e5c2c42c83ba6608cc5ff3161"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0006.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:109c203026829f5e65dba0b0aaed181bb590b74bcd0684a8e3f826d3569a5a1b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0006.jsonl.gz",
+                      "bytes":  98376849,
+                      "sha256":  "sha256:fd6072178fcd78c86811fafc3d56d77774d8f3da4abbb6033000a5730d735545"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0007.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:6bc9d9c91c3420aeccf2fd30a0df775d218407142db7f55ca0fe2449378fc38f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0007.jsonl.gz",
+                      "bytes":  98412388,
+                      "sha256":  "sha256:3d0cf2e7d067806c31689e7aee011f1116f270d0f242497755b4906492b6ef81"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0008.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:fa530f2417ccf04548df4ee75b5331086992618ce36843e44161879857e86f8b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0008.jsonl.gz",
+                      "bytes":  98948734,
+                      "sha256":  "sha256:6adbba5694fca05409b38a4f90bc2ca57e04bb026f57cb436a5a5a74e7c4143d"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0009.complete",
+                      "bytes":  442,
+                      "sha256":  "sha256:14ac9cb679cc51371fd4c21db614fb0f19ad2e93b24c4cdc77fb150ba0302b4b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0009.jsonl.gz",
+                      "bytes":  98193071,
+                      "sha256":  "sha256:40ff565a41ad6271ca01ca6c88c4d0f96c234b471dbc9ae5bf873a01599fb6e1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0010.complete",
+                      "bytes":  443,
+                      "sha256":  "sha256:c711dd88ffcfe51ab04338ccc7f867b1424ec4336f11b571cf994322c91d1c01"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0010.jsonl.gz",
+                      "bytes":  98293853,
+                      "sha256":  "sha256:d9490123e99d862cba886a9fb7538cd32bfa6f99d93e46efb9fed867241806e9"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0011.complete",
+                      "bytes":  443,
+                      "sha256":  "sha256:f80b30ec2d030a418ef6a573a1d61cc7ead89f45a52cba62244d64f6feea922a"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm/shard-0011.jsonl.gz",
+                      "bytes":  98427986,
+                      "sha256":  "sha256:de549b255f06ebd076f6679575e7f928711ea64566e6e60d458ac45074f170d9"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/01-artillery-funnel.png",
+                      "bytes":  18253,
+                      "sha256":  "sha256:92043cb5721ea4e6dc4fdf802cf5ab47a146babfc40327df91cefe022a775e59"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/01-artillery-funnel.svg",
+                      "bytes":  1937,
+                      "sha256":  "sha256:6f2ae9974c410d04512fe2ca199ce75f194a9f441172f7d48701299bf068c6d5"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/02-artillery-reasons.png",
+                      "bytes":  28197,
+                      "sha256":  "sha256:32ee593c7b7a820fe59f1ead1a334a5cd6010e566f5f36625b0e1ec9f91f404b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/02-artillery-reasons.svg",
+                      "bytes":  3086,
+                      "sha256":  "sha256:f193c312808dbfdd653a55f37e1f70ef914fb1ba652ac18a200ee16d4d4bea1b"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/03-artillery-targets.png",
+                      "bytes":  19691,
+                      "sha256":  "sha256:45f1e43ee6f2bc9c9f7666e94072d62ca96baa17d671e72021491244ff927421"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/03-artillery-targets.svg",
+                      "bytes":  2235,
+                      "sha256":  "sha256:fe384b26360a8d3fd648731d0bfabc574cb769aec655b8b7bea9d7a241961e71"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/04-capability-causal-ladder.png",
+                      "bytes":  9864,
+                      "sha256":  "sha256:ca1d0a82acae0e24be4b37cea5cead82318144ffa77cd97c4af1667b2f14ae3a"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/04-capability-causal-ladder.svg",
+                      "bytes":  1348,
+                      "sha256":  "sha256:cef9af5d17cf1779cee63bfc5e2fba1d46653d7cfaecf20c01787c65dfe9e39e"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/05-five-drift-boundary.png",
+                      "bytes":  11039,
+                      "sha256":  "sha256:f8973408eaf82d949ef006405b1dbe17843b3cdbd686e7bca40944047b079651"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/05-five-drift-boundary.svg",
+                      "bytes":  1334,
+                      "sha256":  "sha256:d1d9769d1b7fcbb3402c5b192b52bd3b8da084a02a3cfc31107f3d1f38f54fdc"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/06-uap-rejection-localization.png",
+                      "bytes":  19087,
+                      "sha256":  "sha256:5dc3be7c849573af8704114ec5dfb283a6e79c5d45fb43a78df6bc4b5cd90c15"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/06-uap-rejection-localization.svg",
+                      "bytes":  2204,
+                      "sha256":  "sha256:404ef62c0b53042cbd3cc55be7a73b3fb65bca563328425fafdb629ad0b87998"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/07-stage-c-policy-ranking.png",
+                      "bytes":  27386,
+                      "sha256":  "sha256:7f7b1ec56aeb4e24e7e44cb0255ad30052510cbf95b6d64adf1e08437cdb1df2"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/07-stage-c-policy-ranking.svg",
+                      "bytes":  3374,
+                      "sha256":  "sha256:4559710754d18f525ce0acfc9a1da9a2ae2462f82d9a18cc5974b4072a147da0"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/08-artillery-effect-by-scenario.png",
+                      "bytes":  14350,
+                      "sha256":  "sha256:e0d14a5f9ca738cb8eb527c432370f54249744abcfda31ef36fec5c62df7ef2f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/08-artillery-effect-by-scenario.svg",
+                      "bytes":  1984,
+                      "sha256":  "sha256:0cbe5b0c0e421a0f2216b30d1e27d70d181a1ff61edfbc948639e71a650284d1"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/09-artillery-effect-by-doctrine.png",
+                      "bytes":  31159,
+                      "sha256":  "sha256:d5d70c2452ee4daba8751d58979257ec88bfe301cbadc0cfddcb2bd9b4472a5f"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/09-artillery-effect-by-doctrine.svg",
+                      "bytes":  4345,
+                      "sha256":  "sha256:e60d61597efacbab0584da06f4b090fca20f5e53aab9f263c93f13719feda961"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/assessment.json",
+                      "bytes":  30543,
+                      "sha256":  "sha256:6328f7431c20b5e081029283869deae7ffe2ef0f00309de063a65721f46bca5e"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/ASSESSMENT.md",
+                      "bytes":  3110,
+                      "sha256":  "sha256:408fff0a2525f61368f09c123898649c15d7a6e71d8ad478dbc3e602603bc03c"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/checksums.json",
+                      "bytes":  1243,
+                      "sha256":  "sha256:4c3d91d91b0686412f59aa3c1a48a0b1aeac900833b7c21f0e2c4ece040a6b03"
+                  },
+                  {
+                      "path":  "data/lab/attention-v3-artillery-causal-20260810-9mm-analysis/png-checksums.json",
+                      "bytes":  1215,
+                      "sha256":  "sha256:e7c8039b170075b237dc8760aa05f5ab8b24e4089fcb782032f1c21744e5d756"
+                  }
+              ]
+}

@@ -1,0 +1,14 @@
+{
+    "schemaVersion":  1,
+    "files":  {
+                  "01-artillery-funnel.png":  "sha256:92043cb5721ea4e6dc4fdf802cf5ab47a146babfc40327df91cefe022a775e59",
+                  "02-artillery-reasons.png":  "sha256:32ee593c7b7a820fe59f1ead1a334a5cd6010e566f5f36625b0e1ec9f91f404b",
+                  "03-artillery-targets.png":  "sha256:45f1e43ee6f2bc9c9f7666e94072d62ca96baa17d671e72021491244ff927421",
+                  "04-capability-causal-ladder.png":  "sha256:ca1d0a82acae0e24be4b37cea5cead82318144ffa77cd97c4af1667b2f14ae3a",
+                  "05-five-drift-boundary.png":  "sha256:f8973408eaf82d949ef006405b1dbe17843b3cdbd686e7bca40944047b079651",
+                  "06-uap-rejection-localization.png":  "sha256:5dc3be7c849573af8704114ec5dfb283a6e79c5d45fb43a78df6bc4b5cd90c15",
+                  "07-stage-c-policy-ranking.png":  "sha256:7f7b1ec56aeb4e24e7e44cb0255ad30052510cbf95b6d64adf1e08437cdb1df2",
+                  "08-artillery-effect-by-scenario.png":  "sha256:e0d14a5f9ca738cb8eb527c432370f54249744abcfda31ef36fec5c62df7ef2f",
+                  "09-artillery-effect-by-doctrine.png":  "sha256:d5d70c2452ee4daba8751d58979257ec88bfe301cbadc0cfddcb2bd9b4472a5f"
+              }
+}

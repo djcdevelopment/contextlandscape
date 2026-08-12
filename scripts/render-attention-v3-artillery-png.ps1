@@ -46,6 +46,48 @@ function New-BarChart {
   }
 }
 
+function New-DivergingBarChart {
+  param([string] $Name, [string] $Title, [object[]] $Rows)
+  $width = 1800
+  $height = [Math]::Max(420, 190 + 76 * $Rows.Count)
+  $bitmap = [Drawing.Bitmap]::new($width, $height)
+  $graphics = [Drawing.Graphics]::FromImage($bitmap)
+  $graphics.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
+  $background = [Drawing.ColorTranslator]::FromHtml('#07131f')
+  $panel = [Drawing.ColorTranslator]::FromHtml('#102536')
+  $teal = [Drawing.ColorTranslator]::FromHtml('#4ff0c5')
+  $coral = [Drawing.ColorTranslator]::FromHtml('#ff7188')
+  $text = [Drawing.ColorTranslator]::FromHtml('#ecf7ff')
+  $muted = [Drawing.ColorTranslator]::FromHtml('#9fb3c5')
+  $graphics.Clear($background)
+  $titleFont = [Drawing.Font]::new('Segoe UI', 26, [Drawing.FontStyle]::Bold)
+  $rowFont = [Drawing.Font]::new('Consolas', 13)
+  $graphics.DrawString($Title, $titleFont, [Drawing.SolidBrush]::new($text), 60, 45)
+  $maximum = ($Rows | ForEach-Object { [Math]::Abs([double]$_.Value) } | Measure-Object -Maximum).Maximum
+  if ($maximum -le 0) { $maximum = 1 }
+  $barX = 530
+  $barWidth = 1080
+  $center = $barX + $barWidth / 2
+  for ($index = 0; $index -lt $Rows.Count; $index += 1) {
+    $row = $Rows[$index]
+    $value = [double]$row.Value
+    $y = 135 + $index * 76
+    $graphics.DrawString([string]$row.Label, $rowFont, [Drawing.SolidBrush]::new($text), 60, $y + 8)
+    $graphics.FillRectangle([Drawing.SolidBrush]::new($panel), $barX, $y, $barWidth, 36)
+    $magnitude = [Math]::Max(1, [Math]::Round(([Math]::Abs($value) / $maximum) * ($barWidth / 2)))
+    $x = if ($value -lt 0) { $center - $magnitude } else { $center }
+    $color = if ($value -lt 0) { $coral } else { $teal }
+    $graphics.FillRectangle([Drawing.SolidBrush]::new($color), $x, $y, $magnitude, 36)
+    $graphics.DrawLine([Drawing.Pen]::new($text, 2), $center, $y - 4, $center, $y + 40)
+    $graphics.DrawString(('{0:N3} pp' -f ($value * 100)), $rowFont, [Drawing.SolidBrush]::new($muted), 1630, $y + 8)
+  }
+  $target = Join-Path $analysisPath $Name
+  try { $bitmap.Save($target, [Drawing.Imaging.ImageFormat]::Png) }
+  finally {
+    $titleFont.Dispose(); $rowFont.Dispose(); $graphics.Dispose(); $bitmap.Dispose()
+  }
+}
+
 function Get-PropertyValue($Object, [string] $Name) {
   $property = $Object.PSObject.Properties[$Name]
   if ($null -eq $property) { return 0 }
@@ -76,6 +118,18 @@ New-BarChart '05-five-drift-boundary.png' 'Five-drift boundary' @(
   @{ Label = 'final drift 3'; Value = (Get-PropertyValue $histogram '3') },
   @{ Label = 'final drift 4'; Value = (Get-PropertyValue $histogram '4') },
   @{ Label = 'final drift 5'; Value = (Get-PropertyValue $histogram '5') }
+)
+New-BarChart '06-uap-rejection-localization.png' 'UAP rejection localization' @(
+  $assessment.uapQualityGate.localization.byVariant.PSObject.Properties | Sort-Object Value -Descending | ForEach-Object { @{ Label = $_.Name; Value = $_.Value } }
+)
+New-BarChart '07-stage-c-policy-ranking.png' 'Stage C policy ranking' @(
+  $assessment.counterplay.policyRanking | ForEach-Object { @{ Label = $_.policyId; Value = $_.score } }
+) 1
+New-DivergingBarChart '08-artillery-effect-by-scenario.png' 'Where artillery helps or hurts' @(
+  $assessment.causalContrast.byScenario | ForEach-Object { @{ Label = $_.level; Value = $_.mean } }
+)
+New-DivergingBarChart '09-artillery-effect-by-doctrine.png' 'Artillery effect by Player-1 doctrine' @(
+  $assessment.causalContrast.byPlayerOnePolicy | ForEach-Object { @{ Label = $_.level; Value = $_.mean } }
 )
 
 $pngFiles = Get-ChildItem -LiteralPath $analysisPath -Filter '*.png' | Sort-Object Name

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "assessment.json": "sha256:6328f7431c20b5e081029283869deae7ffe2ef0f00309de063a65721f46bca5e",
+    "ASSESSMENT.md": "sha256:408fff0a2525f61368f09c123898649c15d7a6e71d8ad478dbc3e602603bc03c",
+    "01-artillery-funnel.svg": "sha256:6f2ae9974c410d04512fe2ca199ce75f194a9f441172f7d48701299bf068c6d5",
+    "02-artillery-reasons.svg": "sha256:f193c312808dbfdd653a55f37e1f70ef914fb1ba652ac18a200ee16d4d4bea1b",
+    "03-artillery-targets.svg": "sha256:fe384b26360a8d3fd648731d0bfabc574cb769aec655b8b7bea9d7a241961e71",
+    "04-capability-causal-ladder.svg": "sha256:cef9af5d17cf1779cee63bfc5e2fba1d46653d7cfaecf20c01787c65dfe9e39e",
+    "06-uap-rejection-localization.svg": "sha256:404ef62c0b53042cbd3cc55be7a73b3fb65bca563328425fafdb629ad0b87998",
+    "07-stage-c-policy-ranking.svg": "sha256:4559710754d18f525ce0acfc9a1da9a2ae2462f82d9a18cc5974b4072a147da0",
+    "08-artillery-effect-by-scenario.svg": "sha256:0cbe5b0c0e421a0f2216b30d1e27d70d181a1ff61edfbc948639e71a650284d1",
+    "09-artillery-effect-by-doctrine.svg": "sha256:e60d61597efacbab0584da06f4b090fca20f5e53aab9f263c93f13719feda961",
+    "05-five-drift-boundary.svg": "sha256:d1d9769d1b7fcbb3402c5b192b52bd3b8da084a02a3cfc31107f3d1f38f54fdc"
+  }
+}

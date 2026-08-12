@@ -1,0 +1,1138 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "matrixId": "attention-v3-artillery-causal-20260810-9mm",
+    "manifestHash": "sha256:ce51977c9efdd8491bc855fbcaca6a63727cac3a87c2b140d09eac343505b1d0",
+    "reportHash": "sha256:c54b9fed1e59f24ae090ab8487977d673e339c831717c499771170af21ad8059",
+    "runs": 9216000
+  },
+  "rules": {
+    "driftLimit": 5,
+    "driftFourIsNonterminal": true
+  },
+  "artilleryFunnel": {
+    "considered": 15122096,
+    "declared": 2734611,
+    "flareDeclarations": 1843200,
+    "chaffDeclarations": 891411,
+    "fired": 2734611,
+    "flareEstablished": 1640709,
+    "hostileBlocked": 202491,
+    "passes": 12387485,
+    "declarationRate": 0.1808354476786816
+  },
+  "artilleryReasons": {
+    "high-own-exposure": 277011,
+    "exposure-below-trigger": 1315051,
+    "doctrine-pass": 7652968,
+    "hostile-flare-available": 614400,
+    "hostile-flare-unavailable": 1012835,
+    "enemy-cluster": 614400,
+    "shell-unavailable": 2406631,
+    "enemy-artifact-density": 614400,
+    "far-objective": 614400
+  },
+  "artilleryTargets": {
+    "own-low-confidence-density": 277011,
+    "none": 12387485,
+    "own-formation-screen": 614400,
+    "enemy-formation-cluster": 614400,
+    "enemy-artifact-density": 614400,
+    "far-enemy-objective": 614400
+  },
+  "capabilityReachability": {
+    "uap": {
+      "available": 274203216,
+      "spent": 49640034,
+      "plansAccepted": 135697664,
+      "plansRejected": 39934,
+      "moveSteps": 35796748,
+      "turboCharges": 3363090,
+      "stepUps": 5727108,
+      "passiveSettles": 46357680,
+      "uplinks": 2204015
+    },
+    "spatial": {
+      "artifactsSpawned": 198678231,
+      "artifactDistanceTotal": 369666854,
+      "rangeShifts": 921460,
+      "supportScans": 1627613,
+      "localVerifications": 70333895,
+      "supportScanVerifications": 405362,
+      "outOfRangeVerificationRejections": 0,
+      "autoAcceptedBeyondReach": 0
+    },
+    "artillery": {
+      "shellsFired": 2734611,
+      "flareShellsFired": 1843200,
+      "chaffShellsFired": 891411,
+      "flareShellsEstablished": 1640709,
+      "hostileShellsBlocked": 202491,
+      "ownShellsBlocked": 202491
+    }
+  },
+  "causalContrast": {
+    "estimand": "Stage C minus Stage B Player-1 score under matched public factors and common seed streams",
+    "cells": 9600,
+    "mean": -0.0018479817708333287,
+    "p10": -0.12812500000000004,
+    "median": 0,
+    "p90": 0.1203125,
+    "positiveShare": 0.20083333333333334,
+    "negativeShare": 0.2009375,
+    "zeroShare": 0.5982291666666667,
+    "byScenario": [
+      {
+        "level": "escort-corridor",
+        "cells": 2400,
+        "mean": 0.0008528645833333354,
+        "positiveShare": 0.23708333333333334,
+        "negativeShare": 0.24458333333333335
+      },
+      {
+        "level": "shifting-front",
+        "cells": 2400,
+        "mean": -0.0014733072916666445,
+        "positiveShare": 0.21916666666666668,
+        "negativeShare": 0.19541666666666666
+      },
+      {
+        "level": "flare-pocket",
+        "cells": 2400,
+        "mean": -0.0031555989583333254,
+        "positiveShare": 0.15625,
+        "negativeShare": 0.17166666666666666
+      },
+      {
+        "level": "static-front",
+        "cells": 2400,
+        "mean": -0.0036158854166666718,
+        "positiveShare": 0.19083333333333333,
+        "negativeShare": 0.19208333333333333
+      }
+    ],
+    "bySoundness": [
+      {
+        "level": "0.95",
+        "cells": 2400,
+        "mean": -0.00007096354166665889,
+        "positiveShare": 0.13416666666666666,
+        "negativeShare": 0.13625
+      },
+      {
+        "level": "0.25",
+        "cells": 2400,
+        "mean": -0.000370442708333332,
+        "positiveShare": 0.21166666666666667,
+        "negativeShare": 0.19958333333333333
+      },
+      {
+        "level": "0.5",
+        "cells": 2400,
+        "mean": -0.0006380208333333263,
+        "positiveShare": 0.23791666666666667,
+        "negativeShare": 0.23333333333333334
+      },
+      {
+        "level": "0.75",
+        "cells": 2400,
+        "mean": -0.006312499999999991,
+        "positiveShare": 0.21958333333333332,
+        "negativeShare": 0.23458333333333334
+      }
+    ],
+    "byObjectiveCoupling": [
+      {
+        "level": "distance-weighted-front",
+        "cells": 3200,
+        "mean": -0.0013051757812500028,
+        "positiveShare": 0.1940625,
+        "negativeShare": 0.186875
+      },
+      {
+        "level": "global",
+        "cells": 3200,
+        "mean": -0.0020229492187500138,
+        "positiveShare": 0.1990625,
+        "negativeShare": 0.194375
+      },
+      {
+        "level": "binary-front",
+        "cells": 3200,
+        "mean": -0.002215820312499996,
+        "positiveShare": 0.209375,
+        "negativeShare": 0.2215625
+      }
+    ],
+    "byPlayerOnePolicy": [
+      {
+        "level": "v3-flare-far-objective",
+        "cells": 960,
+        "mean": 0.03299479166666669,
+        "positiveShare": 0.46979166666666666,
+        "negativeShare": 0.3072916666666667
+      },
+      {
+        "level": "v3-flare-cluster",
+        "cells": 960,
+        "mean": 0.02586588541666667,
+        "positiveShare": 0.475,
+        "negativeShare": 0.2875
+      },
+      {
+        "level": "v3-flare-density",
+        "cells": 960,
+        "mean": 0.013478190104166678,
+        "positiveShare": 0.5114583333333333,
+        "negativeShare": 0.31354166666666666
+      },
+      {
+        "level": "v3-control-accept-pass",
+        "cells": 960,
+        "mean": -0.0011263020833333368,
+        "positiveShare": 0.10520833333333333,
+        "negativeShare": 0.14270833333333333
+      },
+      {
+        "level": "v3-chaff-screen",
+        "cells": 960,
+        "mean": -0.002351888020833333,
+        "positiveShare": 0.029166666666666667,
+        "negativeShare": 0.06666666666666667
+      },
+      {
+        "level": "v3-adaptive-artillery",
+        "cells": 960,
+        "mean": -0.012228190104166668,
+        "positiveShare": 0.078125,
+        "negativeShare": 0.18333333333333332
+      },
+      {
+        "level": "v3-scout-recon-pass",
+        "cells": 960,
+        "mean": -0.013146158854166668,
+        "positiveShare": 0.08854166666666667,
+        "negativeShare": 0.17291666666666666
+      },
+      {
+        "level": "v3-siege-uplink-range-pass",
+        "cells": 960,
+        "mean": -0.019641927083333326,
+        "positiveShare": 0.08541666666666667,
+        "negativeShare": 0.178125
+      },
+      {
+        "level": "v3-line-support-pass",
+        "cells": 960,
+        "mean": -0.020597330729166648,
+        "positiveShare": 0.08229166666666667,
+        "negativeShare": 0.17916666666666667
+      },
+      {
+        "level": "v3-baseline-move-verify-pass",
+        "cells": 960,
+        "mean": -0.021726888020833328,
+        "positiveShare": 0.08333333333333333,
+        "negativeShare": 0.178125
+      }
+    ],
+    "byPlayerTwoPolicy": [
+      {
+        "level": "v3-baseline-move-verify-pass",
+        "cells": 960,
+        "mean": 0.01865234375,
+        "positiveShare": 0.16979166666666667,
+        "negativeShare": 0.075
+      },
+      {
+        "level": "v3-siege-uplink-range-pass",
+        "cells": 960,
+        "mean": 0.0186279296875,
+        "positiveShare": 0.16875,
+        "negativeShare": 0.07916666666666666
+      },
+      {
+        "level": "v3-line-support-pass",
+        "cells": 960,
+        "mean": 0.01858072916666668,
+        "positiveShare": 0.16979166666666667,
+        "negativeShare": 0.071875
+      },
+      {
+        "level": "v3-scout-recon-pass",
+        "cells": 960,
+        "mean": 0.011583658854166668,
+        "positiveShare": 0.17708333333333334,
+        "negativeShare": 0.07291666666666667
+      },
+      {
+        "level": "v3-adaptive-artillery",
+        "cells": 960,
+        "mean": 0.008572591145833332,
+        "positiveShare": 0.171875,
+        "negativeShare": 0.06979166666666667
+      },
+      {
+        "level": "v3-chaff-screen",
+        "cells": 960,
+        "mean": 0.001842447916666667,
+        "positiveShare": 0.06770833333333333,
+        "negativeShare": 0.029166666666666667
+      },
+      {
+        "level": "v3-control-accept-pass",
+        "cells": 960,
+        "mean": 0.0006689453125000023,
+        "positiveShare": 0.14166666666666666,
+        "negativeShare": 0.115625
+      },
+      {
+        "level": "v3-flare-density",
+        "cells": 960,
+        "mean": -0.020870768229166625,
+        "positiveShare": 0.321875,
+        "negativeShare": 0.521875
+      },
+      {
+        "level": "v3-flare-cluster",
+        "cells": 960,
+        "mean": -0.03541992187499999,
+        "positiveShare": 0.3020833333333333,
+        "negativeShare": 0.4822916666666667
+      },
+      {
+        "level": "v3-flare-far-objective",
+        "cells": 960,
+        "mean": -0.04071777343750003,
+        "positiveShare": 0.3177083333333333,
+        "negativeShare": 0.49166666666666664
+      }
+    ]
+  },
+  "stages": {
+    "A": {
+      "score": 0.4980322265625,
+      "runs": 3072000
+    },
+    "B": {
+      "score": 0.49697151692708336,
+      "runs": 3072000
+    },
+    "C": {
+      "score": 0.49512353515625,
+      "runs": 3072000
+    }
+  },
+  "fiveDriftBoundary": {
+    "finalDriftHistogram": {
+      "0": 5283372,
+      "1": 2714915,
+      "2": 2091153,
+      "3": 1661731,
+      "4": 1250901,
+      "5": 2440058,
+      "6": 1385571,
+      "7": 718338,
+      "8": 443255,
+      "9": 238100,
+      "10": 87345,
+      "11": 34179,
+      "12": 24625,
+      "13": 17787,
+      "14": 16551,
+      "15": 12048,
+      "16": 6497,
+      "17": 4245,
+      "18": 1083,
+      "19": 168,
+      "20": 60,
+      "21": 18
+    },
+    "survivedRoundsAtFour": 2242952,
+    "fivePlusDriftDefeats": 4759418
+  },
+  "counterplay": {
+    "threshold": 0.55,
+    "arcs": [
+      {
+        "from": "v3-baseline-move-verify-pass",
+        "to": "v3-control-accept-pass",
+        "score": 0.7046712239583334
+      },
+      {
+        "from": "v3-scout-recon-pass",
+        "to": "v3-control-accept-pass",
+        "score": 0.7090657552083334
+      },
+      {
+        "from": "v3-line-support-pass",
+        "to": "v3-control-accept-pass",
+        "score": 0.7125
+      },
+      {
+        "from": "v3-siege-uplink-range-pass",
+        "to": "v3-control-accept-pass",
+        "score": 0.710009765625
+      },
+      {
+        "from": "v3-flare-cluster",
+        "to": "v3-control-accept-pass",
+        "score": 0.7007486979166667
+      },
+      {
+        "from": "v3-flare-cluster",
+        "to": "v3-baseline-move-verify-pass",
+        "score": 0.5628255208333334
+      },
+      {
+        "from": "v3-flare-density",
+        "to": "v3-control-accept-pass",
+        "score": 0.6958333333333333
+      },
+      {
+        "from": "v3-flare-far-objective",
+        "to": "v3-control-accept-pass",
+        "score": 0.72412109375
+      },
+      {
+        "from": "v3-flare-far-objective",
+        "to": "v3-baseline-move-verify-pass",
+        "score": 0.571923828125
+      },
+      {
+        "from": "v3-flare-far-objective",
+        "to": "v3-line-support-pass",
+        "score": 0.5514322916666666
+      },
+      {
+        "from": "v3-flare-far-objective",
+        "to": "v3-siege-uplink-range-pass",
+        "score": 0.5671223958333333
+      },
+      {
+        "from": "v3-chaff-screen",
+        "to": "v3-control-accept-pass",
+        "score": 0.7046712239583334
+      },
+      {
+        "from": "v3-adaptive-artillery",
+        "to": "v3-control-accept-pass",
+        "score": 0.7046712239583334
+      }
+    ],
+    "policyRanking": [
+      {
+        "policyId": "v3-flare-far-objective",
+        "score": 0.5473079427083334,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-flare-cluster",
+        "score": 0.5401790364583333,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-flare-density",
+        "score": 0.5277913411458334,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-chaff-screen",
+        "score": 0.5119612630208333,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-line-support-pass",
+        "score": 0.5117594401041666,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-scout-recon-pass",
+        "score": 0.5035107421875,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-siege-uplink-range-pass",
+        "score": 0.5029264322916667,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-adaptive-artillery",
+        "score": 0.5020849609375,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-baseline-move-verify-pass",
+        "score": 0.49258626302083336,
+        "runs": 307200
+      },
+      {
+        "policyId": "v3-control-accept-pass",
+        "score": 0.3111279296875,
+        "runs": 307200
+      }
+    ],
+    "interaction": [
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-control-accept-pass",
+        "score": 0.4965006510416667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.2942708333333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-scout-recon-pass",
+        "score": 0.28671875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-line-support-pass",
+        "score": 0.28440755208333335,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.28929036458333335,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-flare-cluster",
+        "score": 0.2981770833333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-flare-density",
+        "score": 0.29684244791666664,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-flare-far-objective",
+        "score": 0.2765299479166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-chaff-screen",
+        "score": 0.2942708333333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-control-accept-pass",
+        "right": "v3-adaptive-artillery",
+        "score": 0.2942708333333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-control-accept-pass",
+        "score": 0.7046712239583334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-scout-recon-pass",
+        "score": 0.48487955729166665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-line-support-pass",
+        "score": 0.47548828125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.4874674479166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-flare-cluster",
+        "score": 0.42275390625,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-flare-density",
+        "score": 0.4407877604166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-flare-far-objective",
+        "score": 0.414501953125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-chaff-screen",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-baseline-move-verify-pass",
+        "right": "v3-adaptive-artillery",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-control-accept-pass",
+        "score": 0.7090657552083334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.500732421875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-scout-recon-pass",
+        "score": 0.48733723958333336,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-line-support-pass",
+        "score": 0.4759114583333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.4898600260416667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-flare-cluster",
+        "score": 0.453173828125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-flare-density",
+        "score": 0.46363932291666665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-flare-far-objective",
+        "score": 0.45392252604166666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-chaff-screen",
+        "score": 0.500732421875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-scout-recon-pass",
+        "right": "v3-adaptive-artillery",
+        "score": 0.500732421875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-control-accept-pass",
+        "score": 0.7125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.5174153645833334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-scout-recon-pass",
+        "score": 0.5048990885416667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-line-support-pass",
+        "score": 0.49396158854166666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.50771484375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-flare-cluster",
+        "score": 0.45037434895833334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-flare-density",
+        "score": 0.4639973958333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-flare-far-objective",
+        "score": 0.43190104166666665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-chaff-screen",
+        "score": 0.5174153645833334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-line-support-pass",
+        "right": "v3-adaptive-artillery",
+        "score": 0.5174153645833334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-control-accept-pass",
+        "score": 0.710009765625,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.5069986979166666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-scout-recon-pass",
+        "score": 0.493017578125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-line-support-pass",
+        "score": 0.4833170572916667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.49734700520833336,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-flare-cluster",
+        "score": 0.4434733072916667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-flare-density",
+        "score": 0.45725911458333335,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-flare-far-objective",
+        "score": 0.42384440104166665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-chaff-screen",
+        "score": 0.5069986979166666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-siege-uplink-range-pass",
+        "right": "v3-adaptive-artillery",
+        "score": 0.5069986979166666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-control-accept-pass",
+        "score": 0.7007486979166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.5628255208333334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-scout-recon-pass",
+        "score": 0.5243977864583333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-line-support-pass",
+        "score": 0.535302734375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.5476888020833334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-flare-cluster",
+        "score": 0.48821614583333334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-flare-density",
+        "score": 0.5150390625,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-flare-far-objective",
+        "score": 0.49558919270833335,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-chaff-screen",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-cluster",
+        "right": "v3-adaptive-artillery",
+        "score": 0.533544921875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-control-accept-pass",
+        "score": 0.6958333333333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.5470865885416667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-scout-recon-pass",
+        "score": 0.5192057291666666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-line-support-pass",
+        "score": 0.525537109375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.5338704427083333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-flare-cluster",
+        "score": 0.4676920572916667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-flare-density",
+        "score": 0.49461263020833335,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-flare-far-objective",
+        "score": 0.47340494791666665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-chaff-screen",
+        "score": 0.5123046875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-density",
+        "right": "v3-adaptive-artillery",
+        "score": 0.5083658854166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-control-accept-pass",
+        "score": 0.72412109375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.571923828125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-scout-recon-pass",
+        "score": 0.5268717447916667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-line-support-pass",
+        "score": 0.5514322916666666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.5671223958333333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-flare-cluster",
+        "score": 0.48468424479166666,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-flare-density",
+        "score": 0.5131998697916667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-flare-far-objective",
+        "score": 0.4916015625,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-chaff-screen",
+        "score": 0.5029947916666667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-flare-far-objective",
+        "right": "v3-adaptive-artillery",
+        "score": 0.5391276041666667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-control-accept-pass",
+        "score": 0.7046712239583334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-scout-recon-pass",
+        "score": 0.48487955729166665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-line-support-pass",
+        "score": 0.47548828125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.4874674479166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-flare-cluster",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-flare-density",
+        "score": 0.479052734375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-flare-far-objective",
+        "score": 0.4943033854166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-chaff-screen",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-chaff-screen",
+        "right": "v3-adaptive-artillery",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-control-accept-pass",
+        "score": 0.7046712239583334,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-baseline-move-verify-pass",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-scout-recon-pass",
+        "score": 0.48487955729166665,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-line-support-pass",
+        "score": 0.47548828125,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-siege-uplink-range-pass",
+        "score": 0.4874674479166667,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-flare-cluster",
+        "score": 0.4488606770833333,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-flare-density",
+        "score": 0.476904296875,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-flare-far-objective",
+        "score": 0.447265625,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-chaff-screen",
+        "score": 0.4984375,
+        "runs": 30720
+      },
+      {
+        "left": "v3-adaptive-artillery",
+        "right": "v3-adaptive-artillery",
+        "score": 0.4984375,
+        "runs": 30720
+      }
+    ]
+  },
+  "uapQualityGate": {
+    "status": "qualified",
+    "acceptedPlans": 135697664,
+    "rejectedPlans": 39934,
+    "rejectionRate": 0.00029419999018989566,
+    "affectedPlayerCells": 1248,
+    "totalPlayerCells": 57600,
+    "localization": {
+      "byScenario": {
+        "flare-pocket": 39934
+      },
+      "byVariant": {
+        "v3-b-s95-binary-front": 13248,
+        "v3-b-s75-binary-front": 10272,
+        "v3-c-s95-binary-front": 9230,
+        "v3-c-s75-binary-front": 6954,
+        "v3-b-s50-binary-front": 144,
+        "v3-c-s50-binary-front": 86
+      },
+      "byPolicy": {
+        "v3-scout-recon-pass": 5752,
+        "v3-chaff-screen": 5481,
+        "v3-adaptive-artillery": 5294,
+        "v3-baseline-move-verify-pass": 4999,
+        "v3-line-support-pass": 4999,
+        "v3-flare-density": 3805,
+        "v3-flare-cluster": 3776,
+        "v3-flare-far-objective": 3770,
+        "v3-siege-uplink-range-pass": 2058
+      },
+      "byComposition": {
+        "scout-homogeneous": 19967,
+        "siege-homogeneous": 19967
+      },
+      "bySeat": {
+        "1": 19967,
+        "2": 19967
+      },
+      "byStage": {
+        "B": 23664,
+        "C": 16270
+      },
+      "bySoundness": {
+        "0.95": 22478,
+        "0.75": 17226,
+        "0.5": 230
+      }
+    },
+    "interpretation": [
+      "The aggregate report counts rejected plans but does not retain rejection reason codes, so collision causality cannot be proven from this artifact alone.",
+      "All observed rejections are localized to the flare-pocket spatial matchup and are symmetric across seats and homogeneous compositions.",
+      "The dataset remains integrity-valid; UAP-sensitive conclusions must carry this qualification until reason-coded telemetry separates malformed plans from simultaneous occupancy conflicts."
+    ]
+  },
+  "evidenceBoundary": [
+    "Stage C versus Stage B contrasts are supported by matched factors and common world streams.",
+    "Policy rankings remain conditional on the preregistered scenarios, compositions, doctrines, and five-drift ruleset.",
+    "Four-drift historical campaigns are descriptive comparators, not members of this causal contrast."
+  ],
+  "analysisHash": "sha256:f8e8992a16d7d5bc5d039a4f599edd1939bd3514799b7403b3d7d20b5eea003c"
+}
