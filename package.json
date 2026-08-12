@@ -25,6 +25,7 @@
     "probe:attention-v3-stage-c6": "npm run build --workspace=@landscape/contracts && npm run build --workspace=@landscape/engine && node scripts/run-attention-v3-stage-c6-full-envelope-replication.mjs",
     "campaign:attention-v3-artillery:dry-run": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/lab-attention.ps1 -AttentionCampaign v3-artillery-causal -MatrixId attention-v3-artillery-causal-9mm -DryRun",
     "analyze:attention-v3-artillery": "node scripts/analyze-attention-v3-artillery-causal.mjs",
+    "build:lab-topography": "node scripts/build-lab-topography.mjs",
     "lab": "npm run lab --workspace=@landscape/lab --",
     "gameplay-lab:preflight": "npm run preflight --workspace=@landscape/server"
   },

@@ -38,6 +38,11 @@ data/lab/**
 !data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/*.csv
 !data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/*.svg
 !data/lab/attention-v3-artillery-mechanism-screen-20260811-1m4-five-drift-analysis/*.png
+!data/lab/lab-topography-atlas-v1/
+!data/lab/lab-topography-atlas-v1/*.json
+!data/lab/lab-topography-atlas-v1/*.md
+!data/lab/lab-topography-atlas-v1/*.svg
+!data/lab/lab-topography-atlas-v1/*.png
 # Raw attempt shards stay local; the compact reports and manifests are the evidence a
 # retrospective cites, so they are tracked the same way the sleep-01 summary is.
 data/bank/**

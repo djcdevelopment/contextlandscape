@@ -9,6 +9,7 @@ import type {
   UnitState
 } from "@landscape/contracts";
 import { CommanderView } from "./commander/CommanderView.js";
+import { LabAtlasView } from "./atlas/LabAtlasView.js";
 import "./style.css";
 
 const actions = ["scout", "build_contract", "implement", "review", "defend", "full_send", "consolidate"] as const;
@@ -364,6 +365,7 @@ function App() {
         <p className="lede">{selectedScenario?.missionObjective ?? "Move the integration objective with the least commander energy."}</p>
       </div>
       <div className="match-controls">
+        <button onClick={() => { window.location.search = "?view=atlas"; }} disabled={busy}>Research atlas</button>
         <button className="lab-entry" onClick={() => setLabCatalogOpen((open) => !open)} disabled={busy}>
           {labCatalogOpen ? "Close labs" : "Gameplay labs"}
         </button>
@@ -803,4 +805,6 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 const requestedView = new URLSearchParams(window.location.search).get("view");
-createRoot(document.getElementById("root")!).render(requestedView === "commander" ? <CommanderView /> : <App />);
+createRoot(document.getElementById("root")!).render(
+  requestedView === "commander" ? <CommanderView /> : requestedView === "atlas" ? <LabAtlasView /> : <App />
+);

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "lab-topography-render-job/v1",
+  "atlasId": "all-labs-topography-v1",
+  "atlasHash": "sha256:fe618ba2d61e12a8c6e3cc703e8124265526b00c4dd9202f03ad27618fda37e6",
+  "sourceAssets": {
+    "atlas": "atlas.json",
+    "deterministicPreview": "heightmap.svg",
+    "heightConditioning": "heightmap.png",
+    "semanticConditioning": "semantic-mask.png"
+  },
+  "invariants": [
+    "Do not move, resize, merge, or invent lab markers.",
+    "Do not add labels inside the generative pass.",
+    "Preserve coastline and elevation ordering from deterministic conditioning assets.",
+    "Apply labels and numeric annotations after generation from atlas.json."
+  ],
+  "prompt": "Oblique scientific atlas relief, dark ocean, luminous survey contours, restrained cartographic texture, five research archipelagos, high legibility, no text, no icons, no invented landmarks.",
+  "negativePrompt": "text, letters, numbers, logos, fantasy cities, unlabeled decorative symbols, changed geography, extra islands, missing peaks",
+  "presets": {
+    "omen-preview": {
+      "width": 1280,
+      "height": 768,
+      "steps": 16,
+      "batch": 1,
+      "purpose": "rapid composition and palette trials on RTX 5070"
+    },
+    "am4-production": {
+      "width": 2048,
+      "height": 1228,
+      "steps": 28,
+      "batch": 1,
+      "purpose": "high-resolution ComfyUI render after render-device ownership check"
+    }
+  },
+  "dispatch": {
+    "target": "am4.tail8e749c.ts.net",
+    "comfyRoot": "/home/derek/ComfyUI",
+    "outputRoot": "/home/derek/contextlandscape-topography/renders",
+    "precondition": "Confirm /dev/dri/renderD128 and renderD129 ownership before starting or changing ComfyUI."
+  }
+}

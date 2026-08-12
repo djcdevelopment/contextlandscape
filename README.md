@@ -208,6 +208,18 @@ Selected `sleep-01` views:
 
 See [R_AND_D_LAB.md](R_AND_D_LAB.md) for the evidence model and [GAMEPLAY_LAB_RETROSPECTIVE.md](GAMEPLAY_LAB_RETROSPECTIVE.md) for what the first cycle taught us.
 
+### All-labs topography
+
+The research atlas turns the substantive all-labs catalog into a deterministic terrain model. Open `?view=atlas` in the web app to switch among recorded run volume, evidence depth, and artifact completeness, inspect exact provenance, and pan or zoom the field. Geography is an explicit family-and-campaign layout rather than an inferred similarity claim.
+
+```powershell
+npm run build:lab-topography
+npm run dev:web
+./scripts/stage-lab-topography-am4.ps1
+```
+
+The canonical package is [data/lab/lab-topography-atlas-v1](data/lab/lab-topography-atlas-v1/ASSESSMENT.md). Its render job stages a future ComfyUI style pass without letting generated imagery alter data geometry or labels.
+
 ## Common commands
 
 ### Build and verify

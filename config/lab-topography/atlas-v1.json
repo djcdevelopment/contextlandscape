@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "lab-topography-config/v1",
+  "atlasId": "all-labs-topography-v1",
+  "sourceCatalog": "data/lab/all-labs-evolution-analysis/catalog.json",
+  "coordinateSemantics": {
+    "x": "research family, ordered from context foundations through attention-v3",
+    "y": "stable campaign order within family (natural-sort by lab id)",
+    "warning": "Distance is categorical organization, not a learned similarity or causal-distance estimate."
+  },
+  "familyOrder": [
+    "sleep/context",
+    "supporting-research",
+    "attention-v1",
+    "attention-v2",
+    "attention-v3"
+  ],
+  "metrics": {
+    "runVolume": {
+      "label": "Recorded run volume",
+      "transform": "ln(1 + runs) / ln(1 + maxRuns)",
+      "nullPolicy": "display marker at survey floor; exclude from volume surface and totals"
+    },
+    "evidenceDepth": {
+      "label": "Evidence depth",
+      "values": {
+        "fresh-aggregate": 1,
+        "narrative-synthesis": 0.62,
+        "supporting-provenance": 0.32
+      }
+    },
+    "artifactCompleteness": {
+      "label": "Artifact completeness",
+      "formula": "(hasManifest + hasReport + hasAssessment) / 3"
+    }
+  },
+  "field": {
+    "columns": 72,
+    "rows": 46,
+    "influenceRadius": 0.105,
+    "contourBands": 12,
+    "surveyFloor": 0.055
+  },
+  "renderPresets": {
+    "omen-preview": {
+      "width": 1280,
+      "height": 768,
+      "steps": 16,
+      "batch": 1,
+      "purpose": "rapid composition and palette trials on RTX 5070"
+    },
+    "am4-production": {
+      "width": 2048,
+      "height": 1228,
+      "steps": 28,
+      "batch": 1,
+      "purpose": "high-resolution ComfyUI render after render-device ownership check"
+    }
+  },
+  "style": {
+    "palette": ["#071522", "#12354a", "#17626d", "#3b8c75", "#8eaa69", "#d2bf78", "#f0ddb0"],
+    "contour": "#d9f4df",
+    "unknown": "#9aa9b8"
+  }
+}
