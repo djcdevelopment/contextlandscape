@@ -8,7 +8,8 @@ import {
   createAttentionCampaignDraft,
   stationaryAttentionVariants,
   v3ArtilleryCausalPolicies,
-  v3ArtilleryCausalVariants
+  v3ArtilleryCausalVariants,
+  v3ArtilleryMechanismVariants
 } from "./attention-campaigns.js";
 
 describe("attention campaign manifests", () => {
@@ -52,6 +53,26 @@ describe("attention campaign manifests", () => {
       expect(orientations[0].playerOneCompositionId).toBe(orientations[1].playerTwoCompositionId);
       expect(orientations[0].playerTwoCompositionId).toBe(orientations[1].playerOneCompositionId);
     }
+  });
+
+  it("freezes the focused artillery mechanism screen at exactly 1.4112M runs", () => {
+    const draft = createAttentionCampaignDraft("v3-artillery-mechanism-screen", {
+      createdAt: "2026-08-11T00:00:00.000Z"
+    });
+    expect(AttentionMatrixDraftSchema.parse(draft)).toEqual(draft);
+    expect(draft.schemaVersion).toBe(2);
+    expect(draft.seedStart).toBe(40_000_000);
+    expect(draft.seedsPerCell).toBe(42);
+    expect(draft.matchups).toHaveLength(8);
+    expect(v3ArtilleryMechanismVariants).toHaveLength(42);
+    expect(draft.policies).toHaveLength(10);
+    expect(attentionCampaignRunCount(draft)).toBe(1_411_200);
+    expect(new Set(draft.variants.map((variant) => variant.factorLevels.artilleryLoadout)))
+      .toEqual(new Set(["none", "flare-only", "chaff-only", "combined"]));
+    expect(new Set(draft.variants.map((variant) => variant.factorLevels.ammunition)))
+      .toEqual(new Set(["none", "one-shot", "reload"]));
+    expect(new Set(draft.variants.map((variant) => variant.model.spatial?.spawnMinimumDistance)))
+      .toEqual(new Set([1, 2]));
   });
 
   it("stores resolved models for every declared factor level", () => {

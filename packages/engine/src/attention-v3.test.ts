@@ -256,6 +256,25 @@ describe("duel-capacity-v3 Stage A UAP resolver", () => {
     expect(first.summary.uap?.alpha.passiveSettles).toBeGreaterThan(0);
     expect(first.summary.uap?.alpha.uplinks).toBeGreaterThan(0);
   });
+
+  it("reason-codes UAP plan rejections in run telemetry", () => {
+    const alpha: AttentionController = {
+      movement: (projection) => projection.round === 1 ? [
+        plan("alpha", "alpha:scout", [{ kind: "move", destination: { x: 2, y: 2 } }]),
+        plan("alpha", "alpha:line", [{ kind: "move", destination: { x: 2, y: 2 } }])
+      ] : [],
+      claim: () => ({ kind: "pass-capacity", playerId: "alpha" }),
+      command: () => ({ kind: "end-command", playerId: "alpha" })
+    };
+    const bravo: AttentionController = {
+      movement: () => [],
+      claim: () => ({ kind: "pass-capacity", playerId: "bravo" }),
+      command: () => ({ kind: "end-command", playerId: "bravo" })
+    };
+    const result = runAttentionMatch(create("reason-coded-rejections", 102), { alpha, bravo });
+    expect(result.summary.uap?.alpha.plansRejected).toBe(2);
+    expect(result.summary.uap?.alpha.rejectionsByReason).toEqual({ destination_conflict: 2 });
+  });
 });
 
 describe("duel-capacity-v3 Stage B spatial resolver", () => {
@@ -421,6 +440,39 @@ describe("duel-capacity-v3 Stage C Flare/Chaff artillery", () => {
     ]);
     expect(match.state.phase).toBe("emission");
     expect(resolveAttentionEmission(match).match.state.phase).toBe("artillery");
+  });
+
+  it("restores spent shells at the next artillery phase when reload is enabled", () => {
+    const reloadContext = spatialContext(true);
+    reloadContext.model = AttentionModelDefinitionSchema.parse({
+      ...reloadContext.model,
+      artillery: { ...reloadContext.model.artillery!, reload: true }
+    });
+    let match = createAttentionMatch({
+      matchId: "artillery-reload",
+      seed: 17,
+      context: reloadContext,
+      players: [
+        { playerId: "alpha", composition: attentionCompositions.balanced },
+        { playerId: "bravo", composition: attentionCompositions.balanced }
+      ]
+    });
+    match = resolveAttentionEmission(match).match;
+    match = resolveAttentionArtillery(match, [
+      shot("alpha", "flare", { x: 8, y: 8 }),
+      { kind: "pass-artillery", playerId: "bravo" }
+    ]).match;
+    expect(match.state.players[0].artillery?.hand.flare).toBe(0);
+    match = finishRound(resolveAttentionMovement(match, []).match);
+    const reloadTransition = resolveAttentionEmission(match);
+    match = reloadTransition.match;
+    const passed = resolveAttentionArtillery(match, [
+      { kind: "pass-artillery", playerId: "alpha" },
+      { kind: "pass-artillery", playerId: "bravo" }
+    ]);
+    expect(passed.match.state.players[0].artillery?.hand.flare).toBe(1);
+    expect(reloadTransition.events.find((item) => item.eventType === "attention.artillery.hand.reloaded")?.data)
+      .toMatchObject({ playerId: "alpha", flare: 1, chaff: 0 });
   });
 
   it("resolves same-phase Chaff first, blocks hostile Flare, and ignores declaration order", () => {

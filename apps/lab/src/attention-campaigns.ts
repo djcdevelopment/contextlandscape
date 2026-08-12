@@ -215,6 +215,65 @@ export const v3ArtilleryCausalVariants: AttentionModelVariant[] = causalStages.f
   }))
 );
 
+const mechanismLoadouts = [
+  { id: "none", flare: 0, chaff: 0, reload: false, ammunition: "none" },
+  { id: "flare-one", flare: 1, chaff: 0, reload: false, ammunition: "one-shot" },
+  { id: "flare-reload", flare: 1, chaff: 0, reload: true, ammunition: "reload" },
+  { id: "chaff-one", flare: 0, chaff: 1, reload: false, ammunition: "one-shot" },
+  { id: "chaff-reload", flare: 0, chaff: 1, reload: true, ammunition: "reload" },
+  { id: "combined-one", flare: 1, chaff: 1, reload: false, ammunition: "one-shot" },
+  { id: "combined-reload", flare: 1, chaff: 1, reload: true, ammunition: "reload" }
+] as const;
+const mechanismSoundness = [0.5, 0.75, 0.95] as const;
+const mechanismSpatialPressure = [
+  { id: "adjacent", spawnMinimumDistance: 1 },
+  { id: "standoff", spawnMinimumDistance: 2 }
+] as const;
+
+/**
+ * A nonredundant mechanism screen: the empty-hand control appears once, while
+ * every usable loadout is crossed with one-shot and per-round reload supply.
+ */
+export const v3ArtilleryMechanismVariants: AttentionModelVariant[] = mechanismLoadouts.flatMap((loadout) =>
+  mechanismSoundness.flatMap((soundnessRate) => mechanismSpatialPressure.map((pressure) => {
+    const model = createAttentionV3ArtilleryModel();
+    model.rules.driftLimit = 5;
+    model.rules.soundnessRate = soundnessRate;
+    model.spatial!.spawnMinimumDistance = pressure.spawnMinimumDistance;
+    model.artillery!.startingHand.flare = loadout.flare;
+    model.artillery!.startingHand.chaff = loadout.chaff;
+    model.artillery!.reload = loadout.reload;
+    model.extensions = {
+      objectiveCoupling: "binary-front",
+      stationaryQualification: "resolved-zero",
+      capacityTopology: "shared-exclusive",
+      abilityUnlockBasis: "personal-claim-count",
+      abilityPackage: "complete",
+      unresolvedDisposition: "auto-accept"
+    };
+    return AttentionModelVariantSchema.parse({
+      variantId: `v3-mechanism-${loadout.id}-s${Math.round(soundnessRate * 100)}-${pressure.id}`,
+      factorLevels: {
+        capabilityStage: "C",
+        mechanics: "uap-spatial-artillery",
+        artilleryLoadout: loadout.id.startsWith("combined") ? "combined"
+          : loadout.id.startsWith("flare") ? "flare-only"
+            : loadout.id.startsWith("chaff") ? "chaff-only" : "none",
+        ammunition: loadout.ammunition,
+        flareShells: loadout.flare,
+        chaffShells: loadout.chaff,
+        reload: loadout.reload,
+        soundnessRate,
+        spatialPressure: pressure.id,
+        spawnMinimumDistance: pressure.spawnMinimumDistance,
+        objectiveCoupling: "binary-front",
+        driftLimit: 5
+      },
+      model
+    });
+  }))
+);
+
 const alwaysPass = (ruleId = "doctrine-pass", reasonCode = "doctrine-pass") => ({
   ruleId,
   when: [{ kind: "always" as const }],
@@ -398,6 +457,29 @@ function v3ArtilleryCausalMatchups(): AttentionMatrixMatchup[] {
   ]);
 }
 
+function v3ArtilleryMechanismMatchups(): AttentionMatrixMatchup[] {
+  const pairs = [
+    ["static-front", "balanced", "siege-homogeneous"],
+    ["shifting-front", "balanced", "scout-homogeneous"],
+    ["escort-corridor", "escort", "balanced"],
+    ["flare-pocket", "scout-homogeneous", "siege-homogeneous"]
+  ] as const;
+  const policyIds = v3ArtilleryCausalPolicies.map((policy) => policy.policyId);
+  const variantIds = v3ArtilleryMechanismVariants.map((variant) => variant.variantId);
+  return pairs.flatMap(([scenarioId, compositionA, compositionB]) => [
+    matchup({
+      matchupId: `v3-mechanism-${scenarioId}-ab`, scenarioId,
+      playerOneCompositionId: compositionA, playerTwoCompositionId: compositionB,
+      variantIds, playerOnePolicyIds: policyIds, playerTwoPolicyIds: policyIds
+    }),
+    matchup({
+      matchupId: `v3-mechanism-${scenarioId}-ba`, scenarioId,
+      playerOneCompositionId: compositionB, playerTwoCompositionId: compositionA,
+      variantIds, playerOnePolicyIds: policyIds, playerTwoPolicyIds: policyIds
+    })
+  ]);
+}
+
 export type AttentionCampaignOptions = {
   matrixId?: string;
   seedStart?: number;
@@ -414,30 +496,33 @@ export function createAttentionCampaignDraft(
   const defaultSeeds = campaignKind === "holdout" ? 5000
     : campaignKind === "v3-shape" ? 16000
       : campaignKind === "v3-artillery-causal" ? 320
+        : campaignKind === "v3-artillery-mechanism-screen" ? 42
         : 250;
   const variants = campaignKind === "stationary-train" ? stationaryAttentionVariants
     : campaignKind === "capacity-train" ? capacityAttentionVariants
       : campaignKind === "holdout" ? holdoutAttentionVariants
         : campaignKind === "v3-shape" ? v3AttentionVariants
-          : v3ArtilleryCausalVariants;
+          : campaignKind === "v3-artillery-causal" ? v3ArtilleryCausalVariants
+            : v3ArtilleryMechanismVariants;
   const matchups = campaignKind === "stationary-train" ? stationaryMatchups()
     : campaignKind === "capacity-train" ? capacityMatchups()
       : campaignKind === "holdout" ? holdoutMatchups()
         : campaignKind === "v3-shape" ? v3ShapeMatchups()
-          : v3ArtilleryCausalMatchups();
+          : campaignKind === "v3-artillery-causal" ? v3ArtilleryCausalMatchups()
+            : v3ArtilleryMechanismMatchups();
   const referencedScenarioIds = new Set(matchups.map((entry) => entry.scenarioId));
   const referencedCompositionIds = new Set(matchups.flatMap((entry) => [entry.playerOneCompositionId, entry.playerTwoCompositionId]));
   const policies = allAttentionPolicies.filter((policy) =>
     matchups.some((entry) => entry.playerOnePolicyIds.includes(policy.policyId) || entry.playerTwoPolicyIds.includes(policy.policyId))
   );
   return AttentionMatrixDraftSchema.parse({
-    schemaVersion: campaignKind === "v3-artillery-causal" ? 2 : 1,
+    schemaVersion: campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen" ? 2 : 1,
     matrixId: options.matrixId ?? `attention-${campaignKind}-v1`,
     matrixKind: "attention-command",
-    modelVersion: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal"
+    modelVersion: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen"
       ? defaultAttentionV3ArtilleryModel.modelVersion : MODEL_VERSION,
     campaignKind,
-    model: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal"
+    model: campaignKind === "v3-shape" || campaignKind === "v3-artillery-causal" || campaignKind === "v3-artillery-mechanism-screen"
       ? defaultAttentionV3ArtilleryModel : defaultAttentionModel,
     scenarios: attentionCampaignScenarios.filter((entry) => referencedScenarioIds.has(entry.scenarioId)),
     compositions: Object.values(attentionCompositions).filter((entry) => referencedCompositionIds.has(entry.compositionId)),
@@ -447,6 +532,7 @@ export function createAttentionCampaignDraft(
     seedStart: options.seedStart ?? (campaignKind === "holdout" ? 9_000_000
       : campaignKind === "v3-shape" ? 20_000_000
         : campaignKind === "v3-artillery-causal" ? 30_000_000
+          : campaignKind === "v3-artillery-mechanism-screen" ? 40_000_000
           : 100_000),
     seedsPerCell: options.seedsPerCell ?? defaultSeeds,
     shardCount: options.shardCount ?? 12,

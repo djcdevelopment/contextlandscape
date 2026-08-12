@@ -761,6 +761,7 @@ export function resolveAttentionEmission(match: AttentionMatch): AttentionTransi
   const state = cloneState(match);
   const events: EventEnvelope[] = [];
   emitArtifacts(match, state, events);
+  if (model.artillery) reloadArtilleryHands(state, model.artillery, events);
   state.phase = model.artillery ? "artillery" : "movement";
   events.push(event(state, model.artillery ? "attention.phase.artillery" : "attention.phase.movement", null, {
     round: state.round
@@ -776,6 +777,28 @@ function insideZone(
 ): boolean {
   return Math.abs(coordinate.x - center.x) <= Math.floor(width / 2) &&
     Math.abs(coordinate.y - center.y) <= Math.floor(height / 2);
+}
+
+function reloadArtilleryHands(
+  state: AttentionMatchState,
+  artillery: AttentionArtilleryModel,
+  events: EventEnvelope[]
+): void {
+  if (!artillery.reload || state.round <= 1) return;
+  for (const player of state.players) {
+    const hand = player.artillery!.hand;
+    const flare = Math.max(0, artillery.startingHand.flare - hand.flare);
+    const chaff = Math.max(0, artillery.startingHand.chaff - hand.chaff);
+    if (flare === 0 && chaff === 0) continue;
+    hand.flare += flare;
+    hand.chaff += chaff;
+    events.push(event(state, "attention.artillery.hand.reloaded", player.playerId, {
+      playerId: player.playerId,
+      flare,
+      chaff,
+      hand: { ...hand }
+    }));
+  }
 }
 
 /** Resolve both public artillery declarations as one priority-free batch. */
@@ -1940,7 +1963,8 @@ function emptyUapCounters(): AttentionUapSimulationCounters {
     turboCharges: 0,
     stepUps: 0,
     passiveSettles: 0,
-    uplinks: 0
+    uplinks: 0,
+    rejectionsByReason: {}
   };
 }
 
@@ -1964,7 +1988,13 @@ function emptyArtilleryCounters(): AttentionArtillerySimulationCounters {
     chaffShellsFired: 0,
     flareShellsEstablished: 0,
     hostileShellsBlocked: 0,
-    ownShellsBlocked: 0
+    ownShellsBlocked: 0,
+    reloads: 0,
+    flareShellsReloaded: 0,
+    chaffShellsReloaded: 0,
+    flareArtifactsGenerated: 0,
+    flareUnsoundAccepts: 0,
+    flareDriftDefeatsInduced: 0
   };
 }
 
@@ -2020,6 +2050,9 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
       if (owner) {
         owner.available += typeof data.budget === "number" ? data.budget : 0;
         owner.plansRejected += 1;
+        const reason = typeof data.reason === "string" ? data.reason : "unknown";
+        owner.rejectionsByReason ??= {};
+        owner.rejectionsByReason[reason] = (owner.rejectionsByReason[reason] ?? 0) + 1;
       }
       break;
     }
@@ -2065,9 +2098,12 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
         ? data.causalFlareOwnerIds.filter((value): value is string => typeof value === "string")
         : [];
       if (Array.isArray(data.flareAddedArtifactIds) && causalOwners.length > 0) {
-        for (const artifactId of data.flareAddedArtifactIds) {
-          if (typeof artifactId === "string") context.flareOwnersByArtifact.set(artifactId, causalOwners);
+        const addedArtifacts = data.flareAddedArtifactIds.filter((value): value is string => typeof value === "string");
+        for (const causalOwner of causalOwners) {
+          const artillery = playerArtilleryCounters(context, causalOwner);
+          if (artillery) artillery.flareArtifactsGenerated = (artillery.flareArtifactsGenerated ?? 0) + addedArtifacts.length;
         }
+        for (const artifactId of addedArtifacts) context.flareOwnersByArtifact.set(artifactId, causalOwners);
       }
       break;
     }
@@ -2131,6 +2167,17 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
       }
       break;
     }
+    case "attention.artillery.hand.reloaded": {
+      const artilleryCounters = playerArtilleryCounters(context, data.playerId);
+      if (artilleryCounters) {
+        artilleryCounters.reloads = (artilleryCounters.reloads ?? 0) + 1;
+        artilleryCounters.flareShellsReloaded = (artilleryCounters.flareShellsReloaded ?? 0) +
+          (typeof data.flare === "number" ? data.flare : 0);
+        artilleryCounters.chaffShellsReloaded = (artilleryCounters.chaffShellsReloaded ?? 0) +
+          (typeof data.chaff === "number" ? data.chaff : 0);
+      }
+      break;
+    }
     case "attention.artillery.flare.established": {
       const artilleryCounters = playerArtilleryCounters(context, data.playerId);
       if (artilleryCounters) artilleryCounters.flareShellsEstablished += 1;
@@ -2173,6 +2220,8 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
         const owners = context.flareOwnersByArtifact.get(artifactId) ?? [];
         for (const owner of owners) {
           if (owner === item.actorId) continue;
+          const artillery = playerArtilleryCounters(context, owner);
+          if (artillery) artillery.flareUnsoundAccepts = (artillery.flareUnsoundAccepts ?? 0) + 1;
           roundDrift.flareAddedUnsoundByOwner.set(
             owner,
             (roundDrift.flareAddedUnsoundByOwner.get(owner) ?? 0) + 1
@@ -2246,6 +2295,8 @@ function countEvent(context: CounterContext, item: EventEnvelope): void {
           if (finalDrift - flareAddedUnsound >= context.driftLimit || ownerId === victimId) continue;
           const inducing = playerCounters(context, ownerId);
           if (inducing) inducing.driftDefeatsInduced += 1;
+          const artillery = playerArtilleryCounters(context, ownerId);
+          if (artillery) artillery.flareDriftDefeatsInduced = (artillery.flareDriftDefeatsInduced ?? 0) + 1;
         }
       }
       context.roundDriftByVictim.clear();

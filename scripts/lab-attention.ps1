@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-  [ValidateSet('all', 'stationary-train', 'capacity-train', 'holdout', 'v3-shape', 'v3-artillery-causal')]
+  [ValidateSet('all', 'stationary-train', 'capacity-train', 'holdout', 'v3-shape', 'v3-artillery-causal', 'v3-artillery-mechanism-screen')]
   [string] $AttentionCampaign = 'all',
   [string] $MatrixId = "attention-$([DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss'))",
   [int] $Runs = 0,
@@ -138,7 +138,8 @@ function New-DefaultExperiments {
     @{ Kind = 'capacity-train'; RunsPerSeed = 576; DefaultSeeds = 250; DefaultSeedStart = 100000 },
     @{ Kind = 'holdout'; RunsPerSeed = 10; DefaultSeeds = 5000; DefaultSeedStart = 9000000 },
     @{ Kind = 'v3-shape'; RunsPerSeed = 576; DefaultSeeds = 16000; DefaultSeedStart = 20000000 },
-    @{ Kind = 'v3-artillery-causal'; RunsPerSeed = 28800; DefaultSeeds = 320; DefaultSeedStart = 30000000 }
+    @{ Kind = 'v3-artillery-causal'; RunsPerSeed = 28800; DefaultSeeds = 320; DefaultSeedStart = 30000000 },
+    @{ Kind = 'v3-artillery-mechanism-screen'; RunsPerSeed = 33600; DefaultSeeds = 42; DefaultSeedStart = 40000000 }
   )
   $selected = if ($AttentionCampaign -eq 'all') { $definitions } else { @($definitions | Where-Object Kind -eq $AttentionCampaign) }
   foreach ($definition in $selected) {
@@ -295,14 +296,14 @@ try {
 
   # The artillery campaign earns permission to launch by completing the exact production
   # catalog at one common seed (36 variants × 8 orientations × 10×10 policies = 28,800 runs).
-  foreach ($experiment in @($experiments | Where-Object Kind -eq 'v3-artillery-causal')) {
+  foreach ($experiment in @($experiments | Where-Object Kind -in @('v3-artillery-causal', 'v3-artillery-mechanism-screen'))) {
     $preflightId = "$($experiment.MatrixId)-preflight-$($sourceTree.Substring(0, 8).ToLowerInvariant())"
     Assert-SafeMatrixId $preflightId
     $preflightDir = Join-Path $repo "data/lab/$preflightId"
     $preflightManifest = "data/lab/$preflightId/manifest.json"
     $preparePreflight = @('-p', $project, '-f', 'infra/compose.lab.yml', 'run', '--rm') + $provenanceEnv + @(
-      'worker', 'node', 'apps/lab/dist/main.js', '--attention-campaign=v3-artillery-causal',
-      "--matrix=$preflightId", '--runs=1', '--shards=1', '--seed-start=30000000',
+      'worker', 'node', 'apps/lab/dist/main.js', "--attention-campaign=$($experiment.Kind)",
+      "--matrix=$preflightId", '--runs=1', '--shards=1', "--seed-start=$($experiment.SeedStart)",
       "--canonical=$canonicalValue", '--prepare=true'
     )
     Invoke-DockerChecked $preparePreflight "Unable to freeze artillery preflight $preflightId"
@@ -316,8 +317,8 @@ try {
     )
     Invoke-DockerChecked $validatePreflight "Artillery production-shape preflight gates failed"
     $preflightShard = Join-Path $preflightDir 'shard-0000.jsonl.gz'
-    [double]$bytesPerRun = (Get-Item -LiteralPath $preflightShard).Length / 28800.0
-    [int64]$projectedWithMargin = [math]::Ceiling($bytesPerRun * 9216000.0 * 1.25)
+    [double]$bytesPerRun = (Get-Item -LiteralPath $preflightShard).Length / [double]$experiment.RunsPerSeed
+    [int64]$projectedWithMargin = [math]::Ceiling($bytesPerRun * [double](Get-PlannedRuns $experiment) * 1.25)
     $drive = [System.IO.DriveInfo]::new([System.IO.Path]::GetPathRoot($repo))
     if ($drive.AvailableFreeSpace -lt $projectedWithMargin) {
       throw "Artillery campaign projection plus 25% margin requires $projectedWithMargin bytes; only $($drive.AvailableFreeSpace) are free"
@@ -388,7 +389,7 @@ try {
     )
     if ($experiment.ManifestDocument.provenance.canonical) { $auditArgs += '--strict=true' }
     Invoke-DockerChecked $auditArgs "Attention provenance audit failed for $($experiment.MatrixId)"
-    if ($experiment.Kind -eq 'v3-artillery-causal') {
+    if ($experiment.Kind -in @('v3-artillery-causal', 'v3-artillery-mechanism-screen')) {
       $fullGateArgs = @('-p', $project, '-f', 'infra/compose.lab.yml', 'run', '--rm') + $provenanceEnv + @(
         'worker', 'node', 'apps/lab/dist/main.js', "--attention-artillery-preflight=data/lab/$($experiment.MatrixId)"
       )

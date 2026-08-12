@@ -810,7 +810,12 @@ export type AttentionArtilleryPreflightResult = {
     shellsFired: number;
     flareEstablished: number;
     hostileShellsBlocked: number;
+    reloads: number;
+    flareArtifactsGenerated: number;
+    flareUnsoundAccepts: number;
+    flareDriftDefeatsInduced: number;
   };
+  uapRejectionReasons: Record<string, number>;
   reasons: string[];
   targetBases: string[];
 };
@@ -819,11 +824,14 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   const artifacts = await verifyAttentionArtifacts(matrixDirInput);
   const matrix = artifacts.matrix;
   const issues: string[] = [];
-  if (matrix.campaignKind !== "v3-artillery-causal" || matrix.schemaVersion !== 2 || matrix.provenance.contractVersion !== 2) {
-    issues.push("preflight requires a v2 v3-artillery-causal manifest");
+  const supportedKind = matrix.campaignKind === "v3-artillery-causal" ||
+    matrix.campaignKind === "v3-artillery-mechanism-screen";
+  if (!supportedKind || matrix.schemaVersion !== 2 || matrix.provenance.contractVersion !== 2) {
+    issues.push("preflight requires a v2 artillery campaign manifest");
   }
-  if (matrix.variants.length !== 36 || matrix.matchups.length !== 8 || matrix.policies.length !== 10) {
-    issues.push("preflight manifest does not retain the production 36×8×10 catalog shape");
+  const expectedVariants = matrix.campaignKind === "v3-artillery-mechanism-screen" ? 42 : 36;
+  if (matrix.variants.length !== expectedVariants || matrix.matchups.length !== 8 || matrix.policies.length !== 10) {
+    issues.push(`preflight manifest does not retain the production ${expectedVariants}x8x10 catalog shape`);
   }
   if (matrix.variants.some((variant) => variant.model.rules.driftLimit !== 5)) issues.push("not every variant uses the five-drift rule");
   const orientationKeys = new Set(matrix.matchups.map((matchup) =>
@@ -837,8 +845,10 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   const totals = {
     plansRejected: 0, turboCharges: 0, stepUps: 0, uplinks: 0,
     rangeShifts: 0, supportScans: 0, flareDeclarations: 0, chaffDeclarations: 0,
-    shellsFired: 0, flareEstablished: 0, hostileShellsBlocked: 0
+    shellsFired: 0, flareEstablished: 0, hostileShellsBlocked: 0,
+    reloads: 0, flareArtifactsGenerated: 0, flareUnsoundAccepts: 0, flareDriftDefeatsInduced: 0
   };
+  const uapRejectionReasons: Record<string, number> = {};
   const reasons = new Set<string>();
   const targetBases = new Set<string>();
   let runs = 0;
@@ -855,6 +865,9 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
         continue;
       }
       totals.plansRejected += player.uap.plansRejected;
+      for (const [reason, count] of Object.entries(player.uap.rejectionsByReason ?? {})) {
+        uapRejectionReasons[reason] = (uapRejectionReasons[reason] ?? 0) + count;
+      }
       totals.turboCharges += player.uap.turboCharges;
       totals.stepUps += player.uap.stepUps;
       totals.uplinks += player.uap.uplinks;
@@ -868,6 +881,10 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
         totals.shellsFired += player.artillery.shellsFired;
         totals.flareEstablished += player.artillery.flareShellsEstablished;
         totals.hostileShellsBlocked += player.artillery.hostileShellsBlocked;
+        totals.reloads += player.artillery.reloads ?? 0;
+        totals.flareArtifactsGenerated += player.artillery.flareArtifactsGenerated ?? 0;
+        totals.flareUnsoundAccepts += player.artillery.flareUnsoundAccepts ?? 0;
+        totals.flareDriftDefeatsInduced += player.artillery.flareDriftDefeatsInduced ?? 0;
         if (player.artilleryDecisionSummary.flareDeclarations + player.artilleryDecisionSummary.chaffDeclarations !== player.artillery.shellsFired) {
           issues.push(`artillery declarations did not resolve exactly in ${record.runId}`);
         }
@@ -880,9 +897,21 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
     if (issues.length > 50) break;
   }
   if (runs !== expectedAttentionRunCount(matrix)) issues.push(`observed ${runs} runs instead of the exact manifest count`);
-  if (totals.plansRejected !== 0) issues.push(`UAP plans rejected: ${totals.plansRejected}`);
+  const rejectionReasonTotal = Object.values(uapRejectionReasons).reduce((sum, count) => sum + count, 0);
+  if (rejectionReasonTotal !== totals.plansRejected) {
+    issues.push(`reason-coded ${rejectionReasonTotal} of ${totals.plansRejected} UAP plan rejections`);
+  }
+  const allowedUapRejections = new Set(["destination_conflict", "occupied"]);
+  for (const reason of Object.keys(uapRejectionReasons)) {
+    if (!allowedUapRejections.has(reason)) issues.push(`unexpected UAP rejection reason: ${reason}`);
+  }
   for (const [name, value] of Object.entries(totals)) {
-    if (name !== "plansRejected" && value === 0) issues.push(`required counter was not reached: ${name}`);
+    if (name === "plansRejected") continue;
+    const mechanismOnly = new Set([
+      "reloads", "flareArtifactsGenerated", "flareUnsoundAccepts", "flareDriftDefeatsInduced"
+    ]);
+    if (mechanismOnly.has(name) && matrix.campaignKind !== "v3-artillery-mechanism-screen") continue;
+    if (value === 0) issues.push(`required counter was not reached: ${name}`);
   }
   const requiredReasons = [
     "doctrine-pass", "shell-unavailable", "enemy-cluster", "enemy-artifact-density", "far-objective",
@@ -897,7 +926,8 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
   const compressedBytes = (await Promise.all(artifacts.shardNames.map((name) => stat(resolve(artifacts.matrixDir, name)))))
     .reduce((sum, entry) => sum + entry.size, 0);
   const compressedBytesPerRun = compressedBytes / Math.max(1, runs);
-  const projectedCampaignBytes = Math.ceil(compressedBytesPerRun * 9_216_000);
+  const productionRuns = matrix.campaignKind === "v3-artillery-mechanism-screen" ? 1_411_200 : 9_216_000;
+  const projectedCampaignBytes = Math.ceil(compressedBytesPerRun * productionRuns);
   const result: AttentionArtilleryPreflightResult = {
     matrixId: matrix.matrixId,
     runs,
@@ -906,6 +936,7 @@ export async function preflightAttentionArtilleryCampaign(matrixDirInput: string
     projectedCampaignBytes,
     projectedCampaignBytesWithMargin: Math.ceil(projectedCampaignBytes * 1.25),
     counters: totals,
+    uapRejectionReasons,
     reasons: [...reasons].sort(),
     targetBases: [...targetBases].sort()
   };
@@ -959,11 +990,17 @@ function addNumericCounters<T extends object>(
   addition: T | undefined
 ): T | undefined {
   if (!addition) return current;
-  const result = current ? structuredClone(current) : structuredClone(addition);
-  if (!current) return result;
-  const numericResult = result as Record<string, number>;
-  for (const [key, value] of Object.entries(addition as Record<string, number>)) {
-    numericResult[key] = (numericResult[key] ?? 0) + value;
+  const result = current ? structuredClone(current) : {} as T;
+  const numericResult = result as Record<string, unknown>;
+  for (const [key, value] of Object.entries(addition as Record<string, unknown>)) {
+    if (typeof value === "number") {
+      numericResult[key] = (typeof numericResult[key] === "number" ? numericResult[key] : 0) + value;
+    } else if (value && typeof value === "object" && !Array.isArray(value)) {
+      numericResult[key] = addNumericCounters(
+        numericResult[key] && typeof numericResult[key] === "object" ? numericResult[key] as Record<string, number> : undefined,
+        value as Record<string, number>
+      );
+    }
   }
   return result;
 }
