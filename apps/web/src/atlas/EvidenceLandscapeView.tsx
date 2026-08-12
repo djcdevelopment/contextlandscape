@@ -239,7 +239,7 @@ function DesperationTheatre({ data }: { data: Landscapes["desperation"] }) {
     <section className="evidence-layout">
       <div className="terrain-panel desperation-board">
         <div className="board-heading"><span>10×10 true target coordinates · 1-in-64 trace sample</span><strong>{view === "aggregate" ? `${format(roundStats.traceActions, 0)} traced spatial actions · ${format(roundStats.traceObserved, 0)} traced decision phases` : `${exampleKind} deterministic exemplar`}</strong></div>
-        <div className={`desperation-grid desperation-round-${roundNumber}`} style={{ "--round-pressure": roundNumber / 5 } as React.CSSProperties}>{board.map((cell) => {
+        <div className="desperation-grid">{board.map((cell) => {
           const activeExample = view === "exemplar" && traceEntry?.center?.x === cell.x && traceEntry.center.y === cell.y;
           const elevation = view === "aggregate" ? cell.actions / maximum : activeExample ? 1 : 0;
           const rate = rawColor(cell) / colorMaximum;
