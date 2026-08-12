@@ -10,6 +10,10 @@ $files = @(
   (Join-Path $sourceRoot "atlas.json"),
   (Join-Path $sourceRoot "heightmap.png"),
   (Join-Path $sourceRoot "semantic-mask.png"),
+  (Join-Path $sourceRoot "commander-field-height.png"),
+  (Join-Path $sourceRoot "commander-field-semantic-mask.png"),
+  (Join-Path $sourceRoot "commander-field-relief-v1.png"),
+  (Join-Path $sourceRoot "commander-field-relief-v2.png"),
   (Join-Path $sourceRoot "render-job.json"),
   (Join-Path $repositoryRoot "config/lab-topography/atlas-v1.json")
 )

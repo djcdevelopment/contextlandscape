@@ -27,6 +27,7 @@
     "analyze:attention-v3-artillery": "node scripts/analyze-attention-v3-artillery-causal.mjs",
     "build:lab-topography": "node scripts/build-lab-topography.mjs",
     "build:lab-landscapes": "node scripts/build-lab-landscapes.mjs",
+    "build:commander-field-assets": "node scripts/build-commander-field-assets.mjs",
     "lab": "npm run lab --workspace=@landscape/lab --",
     "gameplay-lab:preflight": "npm run preflight --workspace=@landscape/server"
   },

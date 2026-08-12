@@ -1,0 +1,11 @@
+{
+  "1": {"class_type":"CheckpointLoaderSimple","inputs":{"ckpt_name":"sd3.5_large.safetensors"}},
+  "9": {"class_type":"TripleCLIPLoader","inputs":{"clip_name1":"clip_l.safetensors","clip_name2":"clip_g.safetensors","clip_name3":"t5xxl_fp16.safetensors"}},
+  "2": {"class_type":"LoadImage","inputs":{"image":"commander-field-height.png","upload":"image"}},
+  "3": {"class_type":"VAEEncode","inputs":{"pixels":["2",0],"vae":["1",2]}},
+  "4": {"class_type":"CLIPTextEncode","inputs":{"text":"top-down scientific commander field as a rich cartographic relief, layered tactical terrain with contour lines, ridges, valleys, subtle elevation shading, coherent grid bands, operational map aesthetic, restrained cyan amber violet palette, high contrast, no text, no symbols","clip":["9",0]}},
+  "5": {"class_type":"CLIPTextEncode","inputs":{"text":"photorealism, perspective horizon, buildings, characters, letters, words, labels, UI, watermark, illegible markings","clip":["9",0]}},
+  "6": {"class_type":"KSampler","inputs":{"seed":2026081202,"steps":22,"cfg":5.8,"sampler_name":"euler","scheduler":"normal","denoise":0.68,"model":["1",0],"positive":["4",0],"negative":["5",0],"latent_image":["3",0]}},
+  "7": {"class_type":"VAEDecode","inputs":{"samples":["6",0],"vae":["1",2]}},
+  "8": {"class_type":"SaveImage","inputs":{"filename_prefix":"commander-field-relief-v2","images":["7",0]}}
+}

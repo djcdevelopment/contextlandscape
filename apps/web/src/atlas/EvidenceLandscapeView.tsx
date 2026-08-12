@@ -89,6 +89,7 @@ function CommanderField({ data }: { data: Landscapes["commander"] }) {
   const query = new URLSearchParams(window.location.search);
   const [metric, setMetric] = useState(query.get("metric") && data.metricIds.includes(query.get("metric")!) ? query.get("metric")! : data.defaults.elevation);
   const [color, setColor] = useState(query.get("color") && outcomeLabels[query.get("color")!] ? query.get("color")! : data.defaults.color);
+  const [rendered, setRendered] = useState(query.get("render") !== "data");
   const [selectedId, setSelectedId] = useState(query.get("cell") && data.cells.some((cell) => cell.id === query.get("cell")) ? query.get("cell")! : data.cells[0].id);
   const selected = data.cells.find((cell) => cell.id === selectedId)!;
   const maximum = data.metricMaxima[metric] || 1;
@@ -98,6 +99,7 @@ function CommanderField({ data }: { data: Landscapes["commander"] }) {
     <section className="evidence-controls">
       <label>Elevation<select value={metric} onChange={(event) => { setMetric(event.target.value); updateQuery({ metric: event.target.value }); }}>{data.metricIds.map((id) => <option key={id} value={id}>{commanderLabels[id] ?? id}</option>)}</select></label>
       <label>Color overlay<select value={color} onChange={(event) => { setColor(event.target.value); updateQuery({ color: event.target.value }); }}>{Object.entries(outcomeLabels).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
+      <label className="atlas-toggle"><input type="checkbox" checked={rendered} onChange={(event) => { setRendered(event.target.checked); updateQuery({ render: event.target.checked ? "relief" : "data" }); }} /> Rendered relief</label>
       <span className="evidence-definition">Height = uses per commander appearance · color = {outcomeLabels[color].toLowerCase()}</span>
     </section>
     <section className="evidence-layout">
@@ -105,6 +107,7 @@ function CommanderField({ data }: { data: Landscapes["commander"] }) {
         <svg viewBox="0 0 900 900" role="img" aria-label={`Commander ability terrain by ${commanderLabels[metric] ?? metric}`}>
           <rect width="900" height="900" fill="#06101a" />
           <g transform="translate(58 58)">
+            {rendered && <image href="/atlas/commander-field-relief-v1.png" x="0" y="0" width="780" height="780" preserveAspectRatio="none" opacity="0.52" />}
             {data.cells.map((cell) => {
               const elevation = (cell.abilities[metric] ?? 0) / maximum;
               const outcome = (Number(cell.outcomes[color] ?? 0) - outcomeMin) / Math.max(1e-9, outcomeMax - outcomeMin);
