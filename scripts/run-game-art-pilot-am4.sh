@@ -16,7 +16,7 @@ case "$lane" in
   bf16)
     manifest="$pilot_dir/manifest-bf16.jsonl"
     endpoints="http://127.0.0.1:8188"
-    runner_args=(--timeout 900)
+    runner_args=(--timeout 900 --cooldown 10)
     ;;
   *)
     echo "unknown lane: $lane" >&2
