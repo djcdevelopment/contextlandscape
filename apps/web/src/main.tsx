@@ -11,6 +11,7 @@ import type {
 import { CommanderView } from "./commander/CommanderView.js";
 import { LabAtlasView } from "./atlas/LabAtlasView.js";
 import { EvidenceLandscapeView } from "./atlas/EvidenceLandscapeView.js";
+import { BattleCommandApp } from "./battle/BattleCommandApp.js";
 import "./style.css";
 
 const actions = ["scout", "build_contract", "implement", "review", "defend", "full_send", "consolidate"] as const;
@@ -805,12 +806,17 @@ function Metric({ label, value }: { label: string; value: string }) {
   return <div className="metric"><span>{label}</span><strong>{value}</strong></div>;
 }
 
-const requestedView = new URLSearchParams(window.location.search).get("view");
-const requestedLandscape = new URLSearchParams(window.location.search).get("landscape");
+const requestedSearch = new URLSearchParams(window.location.search);
+const requestedView = requestedSearch.get("view");
+const requestedLandscape = requestedSearch.get("landscape");
+const requestedLegacy = requestedView === "legacy"
+  || requestedSearch.has("challenge")
+  || requestedSearch.has("labSession")
+  || requestedSearch.has("labs");
 createRoot(document.getElementById("root")!).render(
   requestedView === "commander" ? <CommanderView /> : requestedView === "atlas"
     ? requestedLandscape === "commander" || requestedLandscape === "artillery" || requestedLandscape === "desperation"
       ? <EvidenceLandscapeView mode={requestedLandscape} />
       : <LabAtlasView />
-    : <App />
+    : requestedLegacy ? <App /> : <BattleCommandApp />
 );

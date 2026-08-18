@@ -1184,6 +1184,13 @@ export const AttentionActiveFrontSchema = z.object({
 }).strict();
 export type AttentionActiveFront = z.infer<typeof AttentionActiveFrontSchema>;
 
+export const AttentionFrontForecastSchema = z.object({
+  round: z.number().int().nonnegative(),
+  center: AttentionCoordinateSchema,
+  radius: z.number().int().nonnegative()
+}).strict();
+export type AttentionFrontForecast = z.infer<typeof AttentionFrontForecastSchema>;
+
 const {
   seed: _hiddenAttentionSeed,
   randomStreamId: _hiddenAttentionRandomStreamId,
@@ -1201,6 +1208,113 @@ export type AttentionMatchProjection = z.infer<typeof AttentionMatchProjectionSc
 
 export const AttentionProjectionSchema = AttentionMatchProjectionSchema;
 export type AttentionProjection = AttentionMatchProjection;
+
+// Player-facing v3 battle command API. These contracts intentionally expose the
+// frozen public rules beside the viewer-scoped projection, never the random
+// stream or an artifact's latent soundness.
+export const BattleCommandRulesSchema = z.object({
+  scenarioLabel: z.string().min(1),
+  opponentLabel: z.string().min(1),
+  board: z.object({
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+    distanceMetric: z.literal("chebyshev"),
+    exclusiveOccupancy: z.boolean()
+  }).strict(),
+  roundLimit: z.number().int().positive(),
+  objectiveTarget: z.number().int().positive(),
+  driftLimit: z.number().int().positive(),
+  baseSoundness: z.number().min(0).max(1),
+  verifyCost: z.number().int().nonnegative(),
+  chassis: z.object({
+    scout: AttentionChassisProfileSchema,
+    line: AttentionChassisProfileSchema,
+    siege: AttentionChassisProfileSchema
+  }).strict(),
+  uap: AttentionUapModelSchema,
+  spatial: AttentionSpatialModelSchema,
+  artillery: AttentionArtilleryModelSchema,
+  capacitySlots: z.array(AttentionCapacitySlotSchema).min(1),
+  abilities: z.object({
+    perfectFocus: z.object({
+      unlockRank: z.number().int().positive(),
+      cooldownRounds: z.number().int().positive(),
+      maxUses: z.number().int().nonnegative()
+    }).strict(),
+    overclock: z.object({
+      unlockRank: z.number().int().positive(),
+      seizeDiscount: z.number().int().nonnegative(),
+      maxUses: z.number().int().nonnegative()
+    }).strict(),
+    macroFlare: z.object({
+      unlockRank: z.number().int().positive(),
+      range: z.number().int().nonnegative(),
+      width: z.literal(3),
+      height: z.literal(3),
+      durationEmissions: z.number().int().positive(),
+      outputMultiplier: z.number().int().positive(),
+      maxUses: z.number().int().nonnegative()
+    }).strict()
+  }).strict()
+}).strict();
+export type BattleCommandRules = z.infer<typeof BattleCommandRulesSchema>;
+
+export const BattleCommandLegalSchema = z.object({
+  phase: AttentionPhaseSchema,
+  artilleryShells: z.array(AttentionArtilleryShellSchema),
+  movableUnitIds: z.array(z.string().min(1)),
+  capacity: z.object({
+    available: z.boolean(),
+    cost: z.number().int().nonnegative().nullable(),
+    award: z.number().int().nonnegative().nullable(),
+    affordable: z.boolean()
+  }).strict(),
+  fronts: z.object({
+    current: AttentionFrontForecastSchema,
+    next: AttentionFrontForecastSchema.nullable()
+  }).strict(),
+  abilities: z.object({
+    perfectFocus: z.object({ ready: z.boolean(), reason: z.string().nullable(), usesRemaining: z.number().int().nonnegative(), nextReadyRound: z.number().int().nonnegative() }).strict(),
+    overclock: z.object({ ready: z.boolean(), reason: z.string().nullable(), usesRemaining: z.number().int().nonnegative() }).strict(),
+    macroFlare: z.object({ ready: z.boolean(), reason: z.string().nullable(), usesRemaining: z.number().int().nonnegative() }).strict()
+  }).strict(),
+  commandArtifactIds: z.array(z.string().min(1))
+}).strict();
+export type BattleCommandLegal = z.infer<typeof BattleCommandLegalSchema>;
+
+export const BattleCommandViewSchema = z.object({
+  schemaVersion: z.literal(1),
+  revision: z.number().int().nonnegative(),
+  projection: AttentionProjectionSchema,
+  events: z.array(EventEnvelopeSchema),
+  rules: BattleCommandRulesSchema,
+  legal: BattleCommandLegalSchema
+}).strict();
+export type BattleCommandView = z.infer<typeof BattleCommandViewSchema>;
+
+export const BattleCommandSubmissionSchema = z.discriminatedUnion("phase", [
+  z.object({
+    phase: z.literal("artillery"),
+    shell: AttentionArtilleryShellSchema.nullable(),
+    center: AttentionCoordinateSchema.optional()
+  }).strict(),
+  z.object({
+    phase: z.literal("movement"),
+    plans: z.array(z.object({
+      unitId: z.string().min(1),
+      actions: z.array(AttentionUapActionSchema).max(8)
+    }).strict()).max(3)
+  }).strict(),
+  z.object({ phase: z.literal("capacity"), claim: z.boolean() }).strict(),
+  z.object({ phase: z.literal("command"), intent: AttentionCommandIntentSchema }).strict()
+]);
+export type BattleCommandSubmission = z.infer<typeof BattleCommandSubmissionSchema>;
+
+export const BattleCommandActionRequestSchema = z.object({
+  revision: z.number().int().nonnegative(),
+  submission: BattleCommandSubmissionSchema
+}).strict();
+export type BattleCommandActionRequest = z.infer<typeof BattleCommandActionRequestSchema>;
 
 export const AttentionTraceModeSchema = z.enum(["summary", "hash", "full"]);
 export type AttentionTraceMode = z.infer<typeof AttentionTraceModeSchema>;
