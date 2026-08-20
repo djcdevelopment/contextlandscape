@@ -1577,8 +1577,8 @@
    roughly 900px-tall CSS viewport. Keep every permanent Command Deck region
    in view there while preserving its 48px plan controls. */
 @media (min-width:1181px) and (max-height:980px) {
-  .battle-shell { padding-bottom:8px; }
-  .battle-layout { margin-top:6px; }
+  .battle-shell { padding-bottom:0; }
+  .battle-layout { margin-top:2px; }
   .board-column.command-deck-board {
     --command-deck-board-size:clamp(240px,calc(100dvh - 660px),320px);
     gap:6px;
