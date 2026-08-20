@@ -20,6 +20,28 @@ describe("Battle Command v4 accessibility and interaction", () => {
     vi.restoreAllMocks();
   });
 
+  it("persists an accessible three-step interface scale", () => {
+    render(<BattleCommandApp />);
+    const shell = document.querySelector("main.briefing-shell")!;
+    const scale = screen.getByRole("group", { name: "Interface scale" });
+    expect(shell).toHaveAttribute("data-ui-scale", "standard");
+    expect(within(scale).getByRole("status", { name: "Interface scale 100 percent" })).toHaveTextContent("100%");
+
+    fireEvent.click(within(scale).getByRole("button", { name: "Increase interface scale" }));
+    expect(shell).toHaveAttribute("data-ui-scale", "large");
+    expect(localStorage.getItem("context-landscape.uiScale")).toBe("large");
+    expect(within(scale).getByRole("button", { name: "Increase interface scale" })).toBeEnabled();
+
+    fireEvent.click(within(scale).getByRole("button", { name: "Increase interface scale" }));
+    expect(shell).toHaveAttribute("data-ui-scale", "xlarge");
+    expect(localStorage.getItem("context-landscape.uiScale")).toBe("xlarge");
+    expect(within(scale).getByRole("button", { name: "Increase interface scale" })).toBeDisabled();
+
+    fireEvent.click(within(scale).getByRole("button", { name: "Decrease interface scale" }));
+    expect(shell).toHaveAttribute("data-ui-scale", "large");
+    expect(localStorage.getItem("context-landscape.uiScale")).toBe("large");
+  });
+
   it("renders the five-stage workflow, ordered armories, and a roving 10×10 grid without axe violations", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response(battleViewFixture("kinetic"), 201)));
     render(<BattleCommandApp />);

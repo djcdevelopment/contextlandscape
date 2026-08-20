@@ -35,6 +35,26 @@ type PlanMode = "move";
 type Allocation = { volume: number; densityPct: number };
 type Chassis = AttentionV4UnitState["chassis"];
 type CompositionModule = AttentionV4CommanderProfile["compositionModule"];
+type UiScale = "compact" | "standard" | "large" | "xlarge";
+
+const UI_SCALE_ORDER: UiScale[] = ["compact", "standard", "large", "xlarge"];
+const UI_SCALE_PERCENT: Record<UiScale, number> = { compact: 90, standard: 100, large: 115, xlarge: 130 };
+const UI_SCALE_FACTOR: Record<UiScale, number> = { compact: .9, standard: 1, large: 1.15, xlarge: 1.3 };
+
+function initialUiScale(): UiScale {
+  const saved = localStorage.getItem("context-landscape.uiScale");
+  if (UI_SCALE_ORDER.includes(saved as UiScale)) return saved as UiScale;
+  return typeof window.matchMedia === "function" && window.matchMedia("(min-width: 2000px)").matches ? "large" : "standard";
+}
+
+function InterfaceScale({ value, onChange }: { value: UiScale; onChange: (value: UiScale) => void }) {
+  const index = UI_SCALE_ORDER.indexOf(value);
+  return <div className="battle-ui-scale" role="group" aria-label="Interface scale">
+    <button type="button" aria-label="Decrease interface scale" disabled={index === 0} onClick={() => onChange(UI_SCALE_ORDER[index - 1])}>A-</button>
+    <span role="status" aria-live="polite" aria-label={`Interface scale ${UI_SCALE_PERCENT[value]} percent`}>{UI_SCALE_PERCENT[value]}%</span>
+    <button type="button" aria-label="Increase interface scale" disabled={index === UI_SCALE_ORDER.length - 1} onClick={() => onChange(UI_SCALE_ORDER[index + 1])}>A+</button>
+  </div>;
+}
 
 const fleetCopy: Record<CompositionModule, string> = {
   "line-four-scout": "1 Line + 4 Scouts",
@@ -103,7 +123,7 @@ function ArtFrame({ subject, className = "", children }: { subject: GameArtSubje
   return <div className={`battle-art art-${subject} ${className}`} style={style} role={asset.src ? "img" : undefined} aria-label={asset.src ? asset.alt : undefined}>{children}</div>;
 }
 
-function Briefing({ onStart, busy, retired, playerFleet, opponentFleet, onPlayerFleet, onOpponentFleet }: {
+function Briefing({ onStart, busy, retired, playerFleet, opponentFleet, onPlayerFleet, onOpponentFleet, uiScale, onUiScale }: {
   onStart: () => void;
   busy: boolean;
   retired: boolean;
@@ -111,10 +131,12 @@ function Briefing({ onStart, busy, retired, playerFleet, opponentFleet, onPlayer
   opponentFleet: CompositionModule;
   onPlayerFleet: (fleet: CompositionModule) => void;
   onOpponentFleet: (fleet: CompositionModule) => void;
+  uiScale: UiScale;
+  onUiScale: (value: UiScale) => void;
 }) {
-  return <main className="briefing-shell">
+  return <main className="briefing-shell" data-ui-scale={uiScale}>
     <ArtFrame subject="battlefield-context-furnace" className="briefing-hero">
-      <nav className="battle-nav" aria-label="Context Landscape views"><strong>CONTEXT LANDSCAPE</strong><span /><a href={appHref("view=legacy")}>Research scenarios</a><a href={appHref("view=commander")}>Commander projection</a><a href={appHref("view=atlas")}>Evidence atlas</a></nav>
+      <nav className="battle-nav" aria-label="Context Landscape views"><strong>CONTEXT LANDSCAPE</strong><span /><a href={appHref("view=legacy")}>Research scenarios</a><a href={appHref("view=commander")}>Commander projection</a><a href={appHref("view=atlas")}>Evidence atlas</a><InterfaceScale value={uiScale} onChange={onUiScale} /></nav>
       <div className="briefing-copy">
         <p className="battle-kicker">OPERATION 01 · ATTENTION-ECONOMY V4</p>
         <h1>The Contested Context</h1>
@@ -428,6 +450,12 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
   const [artAssets, setArtAssets] = useState<Record<string, ArtCatalogEntry>>({});
   const [autoArtPools, setAutoArtPools] = useState<Record<Chassis, ArtCatalogEntry[]>>({ scout: [], line: [], heavy: [] });
   const [boardView, setBoardView] = useState<"perspective" | "tactical">(() => (localStorage.getItem("context-landscape.boardView") as "perspective" | "tactical" | null) ?? "perspective");
+  const [uiScale, setUiScale] = useState<UiScale>(initialUiScale);
+
+  function updateUiScale(value: UiScale) {
+    setUiScale(value);
+    localStorage.setItem("context-landscape.uiScale", value);
+  }
 
   function applyFriendPayload(payload: FriendBattleCommandView) {
     const normalized = normalizeFriend(payload);
@@ -567,7 +595,7 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
     setView(null); setBriefing(true); setRetired(false); setSelection(null); setPlans({});
   }
 
-  if (briefing || !view) return friendMatchId ? <main className="briefing-shell friend-loading"><ArtFrame subject="battlefield-context-furnace" className="briefing-hero"><div className="briefing-copy"><p className="battle-kicker">FRIEND CHALLENGE</p><h1>{error === "authentication_required" ? "Sign in to enter this operation" : "Joining the battlefield"}</h1><p>{error || "Loading your private projection and fleet identity…"}</p>{error === "authentication_required" && <a className="briefing-launch" href={`/api/auth/discord/start?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`}>Continue with Discord</a>}<a className="briefing-secondary" href={appHref("view=hangar")}>Return to Hangar</a></div></ArtFrame></main> : <><Briefing onStart={() => void start()} busy={busy} retired={retired} playerFleet={playerFleet} opponentFleet={opponentFleet} onPlayerFleet={setPlayerFleet} onOpponentFleet={setOpponentFleet} />{error && <div className="battle-toast error" role="alert">{error}</div>}</>;
+  if (briefing || !view) return friendMatchId ? <main className="briefing-shell friend-loading" data-ui-scale={uiScale}><ArtFrame subject="battlefield-context-furnace" className="briefing-hero"><div className="briefing-copy"><p className="battle-kicker">FRIEND CHALLENGE</p><h1>{error === "authentication_required" ? "Sign in to enter this operation" : "Joining the battlefield"}</h1><p>{error || "Loading your private projection and fleet identity…"}</p>{error === "authentication_required" && <a className="briefing-launch" href={`/api/auth/discord/start?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`}>Continue with Discord</a>}<a className="briefing-secondary" href={appHref("view=hangar")}>Return to Hangar</a></div></ArtFrame></main> : <><Briefing onStart={() => void start()} busy={busy} retired={retired} playerFleet={playerFleet} opponentFleet={opponentFleet} onPlayerFleet={setPlayerFleet} onOpponentFleet={setOpponentFleet} uiScale={uiScale} onUiScale={updateUiScale} />{error && <div className="battle-toast error" role="alert">{error}</div>}</>;
   const selectedArtifact = selection?.kind === "artifact" ? view.projection.artifacts.find((artifact) => artifact.artifactId === selection.id) : undefined;
   const unitArtFor = (unitId: string): ArtCatalogEntry | undefined => {
     const unit = view.projection.units.find((candidate) => candidate.unitId === unitId); if (!unit) return undefined;
@@ -589,14 +617,14 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
   };
   const waiting = experience?.waitingFor === "opponent";
   const commandBusy = busy || waiting || experience?.status === "conceded";
-  return <main className="battle-shell">
-    <header className="battle-header"><div><p className="battle-kicker">CONTEXT LANDSCAPE · BATTLE COMMAND</p><h1>{view.rules.scenarioLabel}</h1></div><nav className="battle-nav"><a href={appHref("view=hangar")}>Fleet Hangar</a><a href={appHref("view=legacy")}>Research scenarios</a><a href={appHref("view=commander")}>Commander projection</a><a href={appHref("view=atlas")}>Evidence atlas</a><button onClick={() => setBriefing(true)}>Briefing</button><button onClick={newOperation}>New operation</button></nav></header>
+  return <main className="battle-shell" data-ui-scale={uiScale}>
+    <header className="battle-header"><div><p className="battle-kicker">CONTEXT LANDSCAPE · BATTLE COMMAND</p><h1>{view.rules.scenarioLabel}</h1></div><nav className="battle-nav"><a href={appHref("view=hangar")}>Fleet Hangar</a><a href={appHref("view=legacy")}>Research scenarios</a><a href={appHref("view=commander")}>Commander projection</a><a href={appHref("view=atlas")}>Evidence atlas</a><InterfaceScale value={uiScale} onChange={updateUiScale} /><button onClick={() => setBriefing(true)}>Briefing</button><button onClick={newOperation}>New operation</button></nav></header>
     {error && <div className="battle-toast error" role="alert">{error}</div>}
     {experience && <div className={`friend-match-status ${waiting ? "waiting" : "ready"}`} role="status"><div><span>FRIEND OPERATION · {experience.status.toUpperCase()}</span><strong>{waiting ? "Orders locked — waiting for your opponent" : experience.status === "conceded" ? experience.winnerSeat === PLAYER ? "Opponent conceded" : "Operation conceded" : view.projection.phase === "terminal" ? "Operation complete" : "Live and resumable"}</strong></div><div className="friend-fleet-identities">{experience.fleets.alpha && fleetPlate(experience.fleets.alpha, "Your command")}{experience.fleets.bravo && fleetPlate(experience.fleets.bravo, "Opposing command")}</div><a href={appHref("view=hangar")}>Hangar</a>{experience.status === "active" && view.projection.phase !== "terminal" && <button onClick={() => void requestJson(`/api/battle-command/friend-matches/${view.projection.matchId}/concede`, { method: "POST", headers: csrfToken ? { "x-csrf-token": csrfToken } : {} }).then(() => window.location.reload())}>Concede</button>}</div>}
     <StatusStrip view={view} />
     <section className="battle-layout">
       <Workflow view={view} onRules={() => setRulesOpen(true)} />
-      <div className="board-column"><div className="board-toolbar"><div><strong>Operational field</strong><span>Battery fields · action heat · hazard countdowns · artillery zones · paralysis</span></div><div className="board-view-switch" role="group" aria-label="Battlefield view"><button aria-pressed={boardView === "perspective"} onClick={() => { setBoardView("perspective"); localStorage.setItem("context-landscape.boardView", "perspective"); }}>Perspective</button><button aria-pressed={boardView === "tactical"} onClick={() => { setBoardView("tactical"); localStorage.setItem("context-landscape.boardView", "tactical"); }}>Tactical 2D</button></div><div><span className="base-rate">LATENT SOUNDNESS <b>70%</b></span><span>Roving grid focus · arrow keys move</span></div></div><ArtifactTray view={view} selection={selection} onSelect={setSelection} />{boardView === "perspective" ? <PerspectiveBoard view={view} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} unitArt={(unitId) => unitArtFor(unitId)?.cardSrc} battlefieldArt={battlefieldArt} /> : <Board view={view} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} />}<Armories view={view} selectedCardId={selectedCardId} onCard={(cardId) => { setSelectedCardId(cardId); setTarget(null); }} /><EventTicker view={view} /></div>
+      <div className="board-column"><div className="board-toolbar"><div><strong>Operational field</strong><span>Battery fields · action heat · hazard countdowns · artillery zones · paralysis</span></div><div className="board-view-switch" role="group" aria-label="Battlefield view"><button aria-pressed={boardView === "perspective"} onClick={() => { setBoardView("perspective"); localStorage.setItem("context-landscape.boardView", "perspective"); }}>Perspective</button><button aria-pressed={boardView === "tactical"} onClick={() => { setBoardView("tactical"); localStorage.setItem("context-landscape.boardView", "tactical"); }}>Tactical 2D</button></div><div><span className="base-rate">LATENT SOUNDNESS <b>70%</b></span><span>Roving grid focus · arrow keys move</span></div></div><ArtifactTray view={view} selection={selection} onSelect={setSelection} />{boardView === "perspective" ? <PerspectiveBoard view={view} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} unitArt={(unitId) => unitArtFor(unitId)?.cardSrc} battlefieldArt={battlefieldArt} uiScale={UI_SCALE_FACTOR[uiScale]} /> : <Board view={view} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} />}<Armories view={view} selectedCardId={selectedCardId} onCard={(cardId) => { setSelectedCardId(cardId); setTarget(null); }} /><EventTicker view={view} /></div>
       <div className={`right-command-column phase-${view.projection.phase}`}><UnitRoster view={view} selection={selection} plans={plans} planMode={planMode} setPlanMode={setPlanMode} append={append} clear={clear} allocations={allocations} setAllocation={(unitId, allocation) => setAllocations((current) => ({ ...current, [unitId]: allocation }))} submitCommand={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} onSelect={setSelection} unitArt={unitArtFor} /><ArtifactPanel view={view} artifact={selectedArtifact} submit={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} /></div>
     </section>
     <PhaseDock view={view} plans={plans} selectedCardId={selectedCardId} target={target} submit={(submission) => void submit(submission)} busy={commandBusy} openEndRisk={() => setEndRiskOpen(true)} newOperation={newOperation} />

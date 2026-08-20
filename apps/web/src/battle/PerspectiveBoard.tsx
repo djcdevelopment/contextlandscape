@@ -12,6 +12,7 @@ export type PerspectiveBoardProps = {
   onCell: (coordinate: AttentionV4Coordinate) => void;
   unitArt: (unitId: string) => string | undefined;
   battlefieldArt?: string;
+  uiScale?: number;
 };
 
 function displayChassis(chassis: "scout" | "line" | "heavy"): string {
@@ -42,7 +43,7 @@ function polygonContains(point: { x: number; y: number }, polygon: Array<{ x: nu
   return inside;
 }
 
-export function PerspectiveBoard({ view, selection, target, onSelect, onCell, unitArt, battlefieldArt }: PerspectiveBoardProps) {
+export function PerspectiveBoard({ view, selection, target, onSelect, onCell, unitArt, battlefieldArt, uiScale = 1 }: PerspectiveBoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dragRef = useRef<{ x: number; y: number; panX: number; panY: number; moved: boolean } | null>(null);
   const [camera, setCamera] = useState<Camera>({ zoom: 1, yaw: 0, panX: 0, panY: 0 });
@@ -134,22 +135,23 @@ export function PerspectiveBoard({ view, selection, target, onSelect, onCell, un
       context.fillStyle = artifact.battery.active ? "#62e0bd" : artifact.ownerPlayerId === ownPlayer ? "#75cbd0" : "#ef7d72";
       context.strokeStyle = selected ? "#fff3b0" : "#071016"; context.lineWidth = selected ? 4 : 2; context.fillRect(-8, -8, 16, 16); context.strokeRect(-8, -8, 16, 16); context.restore();
       if (!artifact.verified && (artifact.age >= artifact.contextLimit || artifact.overTaxReasons.length)) {
-        context.fillStyle = "#ffd36f"; context.font = "700 11px system-ui"; context.textAlign = "center"; context.fillText(`HAZ ${artifact.age}/${artifact.contextLimit}`, center.x, center.y - 16);
+        context.fillStyle = "#ffd36f"; context.font = `700 ${11 * uiScale}px system-ui`; context.textAlign = "center"; context.fillText(`HAZ ${artifact.age}/${artifact.contextLimit}`, center.x, center.y - 16 * uiScale);
       }
     }
 
     for (const unit of [...view.projection.units].sort((a, b) => a.position.y - b.position.y)) {
       const center = point(unit.position.x + .5, unit.position.y + .75);
       const depth = .72 + unit.position.y * .035;
-      const cardWidth = 48 * depth * camera.zoom; const cardHeight = 66 * depth * camera.zoom;
+      const cardWidth = 48 * depth * camera.zoom * uiScale; const cardHeight = 66 * depth * camera.zoom * uiScale;
+      const labelHeight = 18 * uiScale;
       const art = imageFor(unitArt(unit.unitId), repaint);
       context.save();
       context.shadowColor = unit.ownerPlayerId === ownPlayer ? "rgba(75,229,211,.6)" : "rgba(255,105,91,.55)"; context.shadowBlur = 15;
       context.fillStyle = "#0a1720"; context.fillRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight);
-      if (art) context.drawImage(art, center.x - cardWidth / 2 + 2, center.y - cardHeight + 2, cardWidth - 4, cardHeight - 18);
+      if (art) context.drawImage(art, center.x - cardWidth / 2 + 2, center.y - cardHeight + 2, cardWidth - 4, cardHeight - labelHeight);
       context.shadowBlur = 0; context.strokeStyle = unit.ownerPlayerId === ownPlayer ? "#66e4d4" : "#ff786f"; context.lineWidth = selection?.kind === "unit" && selection.id === unit.unitId ? 4 : 2; context.strokeRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight);
-      context.fillStyle = unit.uap.frozen ? "#adcbef" : "#e8f5f6"; context.font = `800 ${Math.max(10, 12 * depth)}px system-ui`; context.textAlign = "center";
-      context.fillText(unit.chassis === "scout" ? "SCOUT" : unit.chassis === "line" ? "LINE" : "HEAVY", center.x, center.y - 5);
+      context.fillStyle = unit.uap.frozen ? "#adcbef" : "#e8f5f6"; context.font = `800 ${Math.max(10, 12 * depth) * uiScale}px system-ui`; context.textAlign = "center";
+      context.fillText(unit.chassis === "scout" ? "SCOUT" : unit.chassis === "line" ? "LINE" : "HEAVY", center.x, center.y - 5 * uiScale);
       if (unit.uap.frozen) { context.fillStyle = "rgba(132,188,235,.35)"; context.fillRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight); }
       context.restore();
     }
@@ -157,7 +159,7 @@ export function PerspectiveBoard({ view, selection, target, onSelect, onCell, un
     const marker = target ?? focus;
     const markerCorners = [point(marker.x, marker.y), point(marker.x + 1, marker.y), point(marker.x + 1, marker.y + 1), point(marker.x, marker.y + 1)];
     context.beginPath(); markerCorners.forEach((item, index) => index ? context.lineTo(item.x, item.y) : context.moveTo(item.x, item.y)); context.closePath(); context.strokeStyle = target ? "#ffd36f" : "rgba(255,255,255,.7)"; context.lineWidth = target ? 4 : 2; context.stroke();
-  }, [battlefieldArt, camera, focus, geometry, ownPlayer, paintVersion, selection, target, unitArt, view]);
+  }, [battlefieldArt, camera, focus, geometry, ownPlayer, paintVersion, selection, target, uiScale, unitArt, view]);
 
   const coordinateAt = (clientX: number, clientY: number): AttentionV4Coordinate | null => {
     const rect = canvasRef.current?.getBoundingClientRect(); if (!rect) return null;
