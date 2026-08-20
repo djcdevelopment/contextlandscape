@@ -13,7 +13,7 @@ export type PerspectiveBoardProps = {
   unitArt: (unitId: string) => string | undefined;
   battlefieldArt?: string;
   uiScale?: number;
-  plannedSteps?: readonly AttentionV4KineticAction[];
+  plannedPlans?: Readonly<Record<string, readonly AttentionV4KineticAction[]>>;
   readOnly?: boolean;
 };
 
@@ -54,7 +54,7 @@ export function PerspectiveBoard({
   unitArt,
   battlefieldArt,
   uiScale = 1,
-  plannedSteps,
+  plannedPlans = {},
   readOnly = false
 }: PerspectiveBoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -67,16 +67,23 @@ export function PerspectiveBoard({
   const repaint = () => setPaintVersion((current) => current + 1);
 
   const plannedDestinationOrders = useMemo(() => {
-    const destinations = new Map<string, { coordinate: AttentionV4Coordinate; orders: number[] }>();
-    plannedSteps?.forEach((step, index) => {
+    const destinations = new Map<string, { coordinate: AttentionV4Coordinate; orders: Array<{ unitId: string; order: number }> }>();
+    for (const [unitId, steps] of Object.entries(plannedPlans)) steps.forEach((step, index) => {
       if (step.kind !== "move") return;
       const key = `${step.destination.x},${step.destination.y}`;
       const destination = destinations.get(key) ?? { coordinate: step.destination, orders: [] };
-      destination.orders.push(index + 1);
+      destination.orders.push({ unitId, order: index + 1 });
       destinations.set(key, destination);
     });
     return destinations;
-  }, [plannedSteps]);
+  }, [plannedPlans]);
+
+  const plannedUnitIds = useMemo(() => new Set(Object.entries(plannedPlans).filter(([, steps]) => steps.length > 0).map(([unitId]) => unitId)), [plannedPlans]);
+  const planLabel = (unitId: string, order: number) => {
+    const unit = view.projection.units.find((candidate) => candidate.unitId === unitId);
+    const code = unit?.chassis === "scout" ? "SC" : unit?.chassis === "line" ? "LN" : "HV";
+    return `${code}${unitId.split("-").at(-1) ?? ""}:${order}`;
+  };
 
   const geometry = useMemo(() => {
     const { width, height } = viewport;
@@ -184,7 +191,13 @@ export function PerspectiveBoard({
       context.shadowColor = unit.ownerPlayerId === ownPlayer ? "rgba(75,229,211,.6)" : "rgba(255,105,91,.55)"; context.shadowBlur = 15;
       context.fillStyle = "#0a1720"; context.fillRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight);
       if (art) context.drawImage(art, center.x - cardWidth / 2 + 2, center.y - cardHeight + 2, cardWidth - 4, cardHeight - labelHeight);
-      context.shadowBlur = 0; context.strokeStyle = unit.ownerPlayerId === ownPlayer ? "#66e4d4" : "#ff786f"; context.lineWidth = selection?.kind === "unit" && selection.id === unit.unitId ? 4 : 2; context.strokeRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight);
+      const selectedUnit = selection?.kind === "unit" && selection.id === unit.unitId;
+      const stagedUnit = plannedUnitIds.has(unit.unitId);
+      context.shadowBlur = 0;
+      context.strokeStyle = selectedUnit ? "#fff2bf" : stagedUnit ? "#efc96c" : unit.ownerPlayerId === ownPlayer ? "#66e4d4" : "#ff786f";
+      context.lineWidth = selectedUnit ? 4 : stagedUnit ? 3 : 2;
+      context.setLineDash(selectedUnit || !stagedUnit ? [] : [6 * uiScale, 4 * uiScale]);
+      context.strokeRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight);
       context.fillStyle = unit.uap.frozen ? "#adcbef" : "#e8f5f6"; context.font = `800 ${Math.max(10, 12 * depth) * uiScale}px system-ui`; context.textAlign = "center";
       context.fillText(unit.chassis === "scout" ? "SCOUT" : unit.chassis === "line" ? "LINE" : "HEAVY", center.x, center.y - 5 * uiScale);
       if (unit.uap.frozen) { context.fillStyle = "rgba(132,188,235,.35)"; context.fillRect(center.x - cardWidth / 2, center.y - cardHeight, cardWidth, cardHeight); }
@@ -193,25 +206,29 @@ export function PerspectiveBoard({
 
     for (const destination of plannedDestinationOrders.values()) {
       const center = point(destination.coordinate.x + .5, destination.coordinate.y + .5);
-      const radius = 10 * uiScale;
+      const markerHeight = 20 * uiScale;
       const gap = 4 * uiScale;
-      const width = destination.orders.length * radius * 2 + Math.max(0, destination.orders.length - 1) * gap;
-      destination.orders.forEach((order, index) => {
-        const markerX = center.x - width / 2 + radius + index * (radius * 2 + gap);
+      const labels = destination.orders.map(({ unitId, order }) => planLabel(unitId, order));
+      context.font = `800 ${10 * uiScale}px system-ui`;
+      const markerWidths = labels.map((label) => Math.max(28 * uiScale, context.measureText(label).width + 10 * uiScale));
+      const width = markerWidths.reduce((sum, markerWidth) => sum + markerWidth, 0) + Math.max(0, labels.length - 1) * gap;
+      let markerX = center.x - width / 2;
+      labels.forEach((label, index) => {
+        const markerWidth = markerWidths[index];
         context.save();
-        context.beginPath(); context.arc(markerX, center.y, radius, 0, Math.PI * 2);
-        context.fillStyle = "#292316"; context.fill();
-        context.strokeStyle = "#efc96c"; context.lineWidth = Math.max(1.5, 2 * uiScale); context.stroke();
+        context.fillStyle = "#292316"; context.fillRect(markerX, center.y - markerHeight / 2, markerWidth, markerHeight);
+        context.strokeStyle = "#efc96c"; context.lineWidth = Math.max(1.5, 2 * uiScale); context.strokeRect(markerX, center.y - markerHeight / 2, markerWidth, markerHeight);
         context.fillStyle = "#f3e3b4"; context.font = `800 ${10 * uiScale}px system-ui`; context.textAlign = "center"; context.textBaseline = "middle";
-        context.fillText(String(order), markerX, center.y);
+        context.fillText(label, markerX + markerWidth / 2, center.y);
         context.restore();
+        markerX += markerWidth + gap;
       });
     }
 
     const marker = target ?? focus;
     const markerCorners = [point(marker.x, marker.y), point(marker.x + 1, marker.y), point(marker.x + 1, marker.y + 1), point(marker.x, marker.y + 1)];
     context.beginPath(); markerCorners.forEach((item, index) => index ? context.lineTo(item.x, item.y) : context.moveTo(item.x, item.y)); context.closePath(); context.strokeStyle = target ? "#ffd36f" : "rgba(255,255,255,.7)"; context.lineWidth = target ? 4 : 2; context.stroke();
-  }, [battlefieldArt, camera, focus, geometry, ownPlayer, paintVersion, plannedDestinationOrders, selection, target, uiScale, unitArt, view]);
+  }, [battlefieldArt, camera, focus, geometry, ownPlayer, paintVersion, plannedDestinationOrders, plannedUnitIds, selection, target, uiScale, unitArt, view]);
 
   const coordinateAt = (clientX: number, clientY: number): AttentionV4Coordinate | null => {
     const rect = canvasRef.current?.getBoundingClientRect(); if (!rect) return null;
@@ -269,8 +286,8 @@ export function PerspectiveBoard({
         const artifacts = view.projection.artifacts.filter((artifact) => artifact.resolution === "pending" && artifact.position.x === x && artifact.position.y === y);
         const traffic = view.projection.traffic.find((cell) => cell.coordinate.x === x && cell.coordinate.y === y)?.actionCount ?? 0;
         const plannedOrders = plannedDestinationOrders.get(`${x},${y}`)?.orders ?? [];
-        const plannedLabel = plannedOrders.length ? `planned move ${plannedOrders.length === 1 ? "step" : "steps"} ${plannedOrders.join(" and ")}` : "";
-        const label = [`${x},${y}`, ...units.map((unit) => `${unit.ownerPlayerId === ownPlayer ? "friendly" : "hostile"} ${displayChassis(unit.chassis)}`), `${artifacts.length} artifacts`, traffic ? `${traffic} actions` : "", plannedLabel].filter(Boolean).join(", ");
+        const plannedLabel = plannedOrders.length ? plannedOrders.map(({ unitId, order }) => `${planLabel(unitId, order)} staged move`).join(", ") : "";
+        const label = [`${x},${y}`, ...units.map((unit) => `${unit.ownerPlayerId === ownPlayer ? "friendly" : "hostile"} ${displayChassis(unit.chassis)}${plannedUnitIds.has(unit.unitId) ? ", staged for Kinetic" : ""}`), `${artifacts.length} artifacts`, traffic ? `${traffic} actions` : "", plannedLabel].filter(Boolean).join(", ");
         return <button key={x} type="button" role="gridcell" data-perspective-cell={`${x},${y}`} tabIndex={focus.x === x && focus.y === y ? 0 : -1} aria-label={label} onFocus={() => setFocus(coordinate)} onKeyDown={(event) => moveSemanticFocus(event, coordinate)} onClick={() => activate(coordinate)} />;
       })}</div>)}</div>
     </div>

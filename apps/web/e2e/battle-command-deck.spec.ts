@@ -156,6 +156,32 @@ test("the permanent Command Deck remains usable without dock overlap or viewport
   expect(["auto", "scroll"]).toContain(fleetScroll.overflowX);
   expect(fleetScroll.scrollWidth).toBeGreaterThan(fleetScroll.clientWidth);
 
+  if (testInfo.project.name === "desktop") {
+    const linePortrait = fleet.getByRole("button", { name: "Select Line unit line-1" });
+    const lineCard = linePortrait.locator("xpath=ancestor::article");
+    await linePortrait.click();
+    const move = lineCard.getByRole("button", { name: "Move on grid", exact: true });
+    const moveBox = await move.boundingBox();
+    expect(moveBox?.height).toBeGreaterThanOrEqual(48);
+    expect(moveBox?.width).toBeGreaterThanOrEqual(100);
+    await expect(move.locator(".kinetic-action-icon")).toBeVisible();
+    await expect(move.locator(".kinetic-action-beacon")).toBeVisible();
+    await expect(lineCard.getByRole("group", { name: /Range shift/ }).locator(".kinetic-action-icon")).toHaveCount(1);
+    await expect(lineCard.getByRole("button", { name: "Clear plan" }).locator(".kinetic-action-icon")).toHaveCount(0);
+    await move.click();
+    await page.getByRole("gridcell", { name: /^0,2/ }).click();
+    await fleet.getByRole("button", { name: "Select Scout unit scout-1" }).click();
+    await expect(lineCard).not.toHaveAttribute("aria-current", "true");
+    await expect(lineCard).toHaveClass(/has-staged-plan/);
+    await expect(lineCard).toHaveAttribute("data-plan-state", "planning");
+    await expect(lineCard.getByLabel("Planning for Kinetic")).toBeVisible();
+    await expect(lineCard.getByRole("button", { name: "Move on grid, staged 1 time" })).toHaveClass(/is-staged/);
+    await expect(page.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeVisible();
+    await page.getByRole("button", { name: "Perspective" }).click();
+    await expect(page.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeAttached();
+    await page.getByRole("button", { name: "Tactical 2D" }).click();
+  }
+
   const operationRail = page.getByLabel("Operation rail");
   const boardColumn = page.locator(".board-column");
   const phaseActions = page.getByLabel("Phase actions");
