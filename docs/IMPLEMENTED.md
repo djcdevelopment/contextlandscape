@@ -4,7 +4,9 @@ The archived vision documents under `docs/archive/` describe a far larger game t
 contains. This file is the boundary between the two. If a feature is not listed under **Real** below,
 it does not exist in code — do not build on it, and do not describe it as working.
 
-Last verified against engine `0.3.0`.
+Last verified against legacy engine `0.3.0` and Battle Command ruleset
+`attention-economy-v4.2`. This file describes repository behavior, not the health or acceptance state of
+any live deployment.
 
 ## Real
 
@@ -22,10 +24,45 @@ Last verified against engine `0.3.0`.
 - Fog of war reduced to one rule: `knownCells` starts as three cells and `scout` appends three more,
   which is what makes the single enemy unit visible.
 
-### Attention economy (`packages/engine/src/command.ts`)
+### Battle Command v4.2 (`packages/engine/src/attention-v4.ts`)
 
-A second, independent reducer. It does not touch the seven-verb game above and is not yet exposed
-through the server or the browser.
+- A separate deterministic two-player reducer is exposed through the Fastify API and the default
+  browser battlefield. Automatic Register and Resolution surround simultaneous Kinetic, Artillery,
+  and Capacity submissions plus alternating Command intents.
+- Fleets spend exactly six weight (Scout 1, Line 2, Heavy 3), contain three to five units, at most one
+  Heavy, and at most four Scouts. The shared contracts admit five composition modules and reject the
+  retired extreme fleets in the UI, API, compiler, and restored state.
+- Spatial movement, output allocation, persistent artifacts, Context Limits, Batteries, artillery,
+  attention triage, Progress, Drift, and deterministic legal-action projections are implemented.
+  Incompatible pre-v4.2 operations return `410 battle_ruleset_retired` instead of being reinterpreted.
+- Solo operations use a compiled deterministic doctrine. Authenticated friend operations use
+  viewer-relative projections, buffer each simultaneous submission, alternate Command by seat, persist
+  revisions, and notify the other browser through a revision event stream.
+- The v4.2 ruleset is frozen as the human-playtest baseline, not declared balanced. Deterministic
+  controller evidence is still dominated by Drift terminals while the Progress route is effectively
+  absent.
+
+### Human release (`apps/server/src/human-release.ts` and `apps/web/src/human`)
+
+- Discord OAuth2 authorization-code flow with PKCE requests only `identify`, uses the provider token
+  for the identity lookup, and does not retain that token. Opaque application sessions are hashed at
+  rest; production cookies are `Secure`, `HttpOnly`, and `SameSite=Lax`; mutations require a CSRF token.
+- PostgreSQL-backed accounts, sessions, cloud fleets, private challenges, pending simultaneous
+  submissions, and Battle Command matches are durable. The same stores have an in-memory mode for
+  tests and portable runtime checks. Account, fleet, sign-out, and account-deletion flows exist.
+- The Hangar saves drafts and validates ready weight-six fleets. Players can assign unit, commander,
+  and battlefield art from the paged base catalog, plus a palette and emblem. Runtime media is served
+  from a read-only compiled catalog; a small generated fallback exists for local resilience only.
+- A ready fleet can create a 24-hour private friend link. Fleet snapshots and art stay hidden until a
+  distinct account locks a legal fleet and accepts; accepted operations retain immutable snapshots and
+  can be resumed or conceded. There is no turn clock.
+- Automated tests cover the application surface, but implementation does not itself prove that Discord,
+  media, persistence, or two-account play is accepted on a particular deployment.
+
+### Attempt-bank command pilot (`packages/engine/src/command.ts`)
+
+This earlier independent reducer does not touch the seven-verb game or Battle Command v4.2 and remains
+simulator-only.
 
 - Each mech emits artifacts per round according to its `throughput`. The commander's attention
   budget is deliberately smaller than full supervision, and anything left unreviewed at the end of a
@@ -102,21 +139,20 @@ implemented**:
 
 | Thing | Status |
 | --- | --- |
-| Movement | None. `unit.x` / `unit.y` are set once and never change. |
+| Movement in the legacy scenarios | `unit.x` / `unit.y` are set once and never change. Battle Command v4.2 has its own spatial Kinetic movement. |
 | Damage, HP, armor, destruction | None. `unit.active` is never set to `false`. |
-| Enemy AI | None. `siege-01` is a static prop; `enemyDoctrine` is prose no code reads. |
-| Weapons, mounts, loadouts, tools | No schema, no data, no code. |
+| Enemy AI in the legacy scenarios | `siege-01` is a static prop and `enemyDoctrine` is prose. Battle Command solo play has a deterministic compiled doctrine. |
+| Customizable weapons, mounts, loadouts, tools | There is no player equipment system. Battle Command's artillery shell cards and fleet chassis are fixed rules content, not loadouts. |
 | Per-unit `heat` / `dispersion` | Fields exist on `UnitState`; never written after creation. |
-| Initiative | Sorting code exists but every caller passes one order per slot, so it never applies. |
-| Composition (`scout-heavy` etc.) | Relabels chassis only. **No mechanical effect** — this is why the `sleep-01` campaign returned a null result on chassis balance. |
-| `seed` | Stored, hashed, and pinned, but the engine never branches on it. Only `apps/lab` uses it, to vary starting tuning. |
+| Initiative in the legacy scenarios | Sorting code exists but every caller passes one order per slot, so it never applies. |
+| Legacy composition (`scout-heavy` etc.) | Relabels chassis only. **No mechanical effect** — this is why the `sleep-01` campaign returned a null result on chassis balance. Battle Command uses a different, mechanically active fleet contract. |
+| Legacy scenario `seed` | Stored, hashed, and pinned, but the legacy engine never branches on it. The lab and Battle Command reducers use deterministic seeds. |
 | `dispersion`, `confidenceDrift`, `commanderLoad` | Tracked and mutated, but gate no outcome. |
-| Scenario metadata | `lanes`, `knownTerrain`, `hiddenTruths`, `mapWidth`/`mapHeight`, `artifactSlots`, `victoryConditions`, `failureConditions`, `falseLeads`, `availableMechs` are inert strings. The board is hard-coded 10×10 in the UI. |
-| `fireControl.recommendation` | Computed and sent to the client; never rendered. |
-| `single` fire mode | Legal in the schema and used by lab policies; unreachable from the UI. |
-| Discord | `packages/discord-adapter` is two pure functions building embed objects. No bot, no transport, no caller. |
-| Challenges / PvP | Endpoints exist, but there is no second-player turn structure or per-player projection split. |
-| Progression, profiles, accounts, matchmaking, ranked, economy beyond energy | None. |
+| Legacy scenario metadata | `lanes`, `knownTerrain`, `hiddenTruths`, `mapWidth`/`mapHeight`, `artifactSlots`, `victoryConditions`, `failureConditions`, `falseLeads`, and `availableMechs` are inert strings. The legacy board is hard-coded 10×10 in the UI. |
+| Legacy `fireControl.recommendation` | Computed and sent to the client; never rendered. |
+| Legacy `single` fire mode | Legal in the schema and used by lab policies; unreachable from the UI. |
+| Discord bot or embedded transport | The adapter formats challenge messages, but there is no bot login, gateway transport, slash command, or privileged intent. Discord is identity-only. |
+| Public matchmaking, ranked play, progression, and broader economy | Persistent accounts and private cloud hangars exist; these larger product systems do not. |
 | Downstream v2 refinement and holdout evidence | The corrected causal shape screen is complete, but its six provisional rows have not yet passed the planned multi-sample refinement, fresh-seed holdout, or v1 regression panel. No v2 rule model is promoted. |
 
 ## Known limits of the evidence
@@ -129,3 +165,8 @@ implemented**:
 - Engine `0.3.0` changed emitted event data, so its hashes differ from the `0.2.0` reports under
   `data/lab/`. Those reports record their engine version and remain valid for the engine that
   produced them.
+- The frozen v4.2 controller studies overwhelmingly terminate through Drift; they do not establish
+  human fleet balance or a viable Progress victory route.
+- Live human-release acceptance is recorded only through
+  [the deployment workbook](../HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md). A green test suite is not a claim
+  that OAuth, ingress, the full art catalog, or two-account play has passed in production.

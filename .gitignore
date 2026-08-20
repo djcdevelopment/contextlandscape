@@ -4,12 +4,16 @@ dist/
 .env.omen
 *.log
 coverage/
+test-results/
+playwright-report/
+output/
 __pycache__/
 *.pyc
 infra/data/
 apps/lab/data/
 data/gameplay-labs/preflight.json
 data/playtests/
+data/art/release/
 data/visual-checks/
 data/archive-verify/
 data/archives/*.zip

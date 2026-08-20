@@ -1,0 +1,579 @@
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+  type ReactNode
+} from "react";
+import {
+  ATTENTION_V4_COMPOSITION_MODULES,
+  type AttentionV4CommanderProfile,
+  type AttentionV4CommandIntent,
+  type AttentionV4Coordinate,
+  type AttentionV4KineticAction,
+  type AttentionV4ProjectedArtifact,
+  type AttentionV4Shell,
+  type AttentionV4UnitState,
+  type ArtCatalogEntry,
+  type AuthSessionView,
+  type BattleExperience,
+  type BattleCommandV3Submission,
+  type BattleCommandV3View,
+  type FriendBattleCommandView
+} from "@landscape/contracts";
+import { gameArt, type GameArtSubjectId } from "./art.js";
+import { PerspectiveBoard } from "./PerspectiveBoard.js";
+import { appHref } from "../navigation.js";
+import "./battle-command.css";
+
+const PLAYER = "alpha";
+type Selection = { kind: "unit"; id: string } | { kind: "artifact"; id: string } | { kind: "cell"; at: AttentionV4Coordinate };
+type PlanMode = "move";
+type Allocation = { volume: number; densityPct: number };
+type CompositionModule = AttentionV4CommanderProfile["compositionModule"];
+
+const fleetCopy: Record<CompositionModule, string> = {
+  "line-four-scout": "1 Line + 4 Scouts",
+  "two-line-two-scout": "2 Line + 2 Scouts",
+  "three-line": "3 Line",
+  "heavy-three-scout": "1 Heavy + 3 Scouts",
+  "heavy-line-scout": "1 Heavy + 1 Line + 1 Scout"
+};
+
+const shellCopy: Record<AttentionV4Shell, { label: string; detail: string }> = {
+  flare: { label: "Flare", detail: "Doubles output in this 3×3 field for this and the next Command window." },
+  smoke: { label: "Smoke", detail: "Suppresses Batteries and resets caught calibration, scans, and Uplinks for two windows." },
+  emp: { label: "EMP", detail: "Caught units receive zero UAP in their next Kinetic phase; generation remains available." },
+  he: { label: "HE", detail: "Immediately resolves every unverified pending artifact in the field using its existing result." },
+  chaff: { label: "Chaff", detail: "Unblockable screen covering this and the next Artillery phase." }
+};
+
+class ApiError extends Error {
+  constructor(readonly status: number, readonly code: string) {
+    super(code);
+  }
+}
+
+async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, { credentials: "same-origin", ...init });
+  const body = await response.json().catch(() => ({})) as { error?: string };
+  if (!response.ok) throw new ApiError(response.status, body.error ?? `${response.status} ${response.statusText}`);
+  return body as T;
+}
+
+function swapSeats(value: unknown): unknown {
+  if (value === "alpha") return "bravo";
+  if (value === "bravo") return "alpha";
+  if (Array.isArray(value)) return value.map(swapSeats);
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, nested]) => [key, swapSeats(nested)]));
+  return value;
+}
+
+function normalizeFriend(payload: FriendBattleCommandView): FriendBattleCommandView {
+  return payload.experience.viewerSeat === "alpha" ? payload : swapSeats(payload) as FriendBattleCommandView;
+}
+
+function distance(left: AttentionV4Coordinate, right: AttentionV4Coordinate): number {
+  return Math.max(Math.abs(left.x - right.x), Math.abs(left.y - right.y));
+}
+
+function percent(value: number): string {
+  return `${Math.round(value * 100)}%`;
+}
+
+function unitCode(chassis: AttentionV4UnitState["chassis"]): string {
+  return chassis === "scout" ? "SC" : chassis === "line" ? "LN" : "HV";
+}
+
+function displayChassis(chassis: AttentionV4UnitState["chassis"]): string {
+  return chassis === "heavy" ? "Heavy" : `${chassis[0].toUpperCase()}${chassis.slice(1)}`;
+}
+
+function ArtFrame({ subject, className = "", children }: { subject: GameArtSubjectId; className?: string; children?: ReactNode }) {
+  const asset = gameArt[subject];
+  const style = asset.src ? {
+    backgroundImage: `linear-gradient(90deg, rgba(5, 11, 17, .92), rgba(5, 11, 17, .2)), url(${asset.src})`,
+    backgroundPosition: asset.focalPoint,
+    backgroundSize: asset.crop
+  } as CSSProperties : undefined;
+  return <div className={`battle-art art-${subject} ${className}`} style={style} role={asset.src ? "img" : undefined} aria-label={asset.src ? asset.alt : undefined}>{children}</div>;
+}
+
+function Briefing({ onStart, busy, retired, playerFleet, opponentFleet, onPlayerFleet, onOpponentFleet }: {
+  onStart: () => void;
+  busy: boolean;
+  retired: boolean;
+  playerFleet: CompositionModule;
+  opponentFleet: CompositionModule;
+  onPlayerFleet: (fleet: CompositionModule) => void;
+  onOpponentFleet: (fleet: CompositionModule) => void;
+}) {
+  return <main className="briefing-shell">
+    <ArtFrame subject="battlefield-context-furnace" className="briefing-hero">
+      <nav className="battle-nav" aria-label="Context Landscape views"><strong>CONTEXT LANDSCAPE</strong><span /><a href={appHref("view=legacy")}>Research scenarios</a><a href={appHref("view=commander")}>Commander projection</a><a href={appHref("view=atlas")}>Evidence atlas</a></nav>
+      <div className="briefing-copy">
+        <p className="battle-kicker">OPERATION 01 · ATTENTION-ECONOMY V4</p>
+        <h1>The Contested Context</h1>
+        <p>Build an exact weight-6 fleet. Allocate output deliberately, stabilize dangerous context, and use Batteries before four Drift ends the operation.</p>
+        {retired && <div className="retired-operation" role="status"><strong>Previous operation retired</strong><span>Its snapshot used the former Battle Command rules and cannot be replayed under v4. Start a new operation below.</span></div>}
+        <div className="fleet-selectors">
+          <label>Your fleet<select value={playerFleet} onChange={(event) => onPlayerFleet(event.target.value as CompositionModule)}>{ATTENTION_V4_COMPOSITION_MODULES.map((fleet) => <option key={fleet} value={fleet}>{fleetCopy[fleet]}</option>)}</select></label>
+          <label>Doctrine fleet<select value={opponentFleet} onChange={(event) => onOpponentFleet(event.target.value as CompositionModule)}>{ATTENTION_V4_COMPOSITION_MODULES.map((fleet) => <option key={fleet} value={fleet}>{fleetCopy[fleet]}</option>)}</select></label>
+        </div>
+        <button className="battle-primary briefing-start" disabled={busy} onClick={onStart}>{busy ? "Opening command link…" : retired ? "Start v4 operation" : "Enter battle command"}</button>
+      </div>
+    </ArtFrame>
+    <section className="briefing-grid">
+      <article><span>WIN</span><strong>12 objective Progress</strong><p>Accept sound work or Seize it directly. Terminal effects resolve bilaterally before the winner is chosen.</p></article>
+      <article><span>LOSE</span><strong>4 Drift</strong><p>Unsound commitments add one. An expired or over-taxed artifact detonates for an unavoidable two.</p></article>
+      <article><span>GENERATE</span><strong>Reactor × density</strong><p>Volume × density cannot exceed the reactor rating. Calibration multiplies density before confidence is formed.</p></article>
+      <article><span>DISRUPT</span><strong>Five-card public armory</strong><p>Flare, Smoke, EMP, HE, and Chaff use cooldowns, seeded reloads, and one-salvo counterfire.</p></article>
+    </section>
+    <section className="briefing-roster">
+      {(["scout", "line", "heavy"] as const).map((chassis) => <ArtFrame key={chassis} subject={`mech-${chassis === "heavy" ? "siege" : chassis}` as GameArtSubjectId}>
+        <span>{chassis === "scout" ? "3" : chassis === "line" ? "2" : "1"} BASE UAP</span>
+        <strong>{displayChassis(chassis)}</strong>
+        <small>{chassis === "scout" ? "Spend up to 2 UAP to Condense: fewer artifacts, much higher quality" : chassis === "line" ? "Step-Up and reserve Support Scans" : "Queue one next-Register Attention Uplink"}</small>
+      </ArtFrame>)}
+      <div className="briefing-doctrine"><span>OPPOSITION</span><strong>Threshold Doctrine</strong><p>A deterministic commander compiled against the same resolver. It receives no hidden projection advantage.</p></div>
+    </section>
+  </main>;
+}
+
+const stages = ["register", "kinetic", "artillery", "command", "resolution"] as const;
+type Stage = typeof stages[number];
+const stageCopy: Record<Stage, { label: string; detail: string }> = {
+  register: { label: "Register", detail: "Attention, Battery assistance, paralysis, age, cooldown, and reload state snapshot automatically." },
+  kinetic: { label: "Kinetic", detail: "Both fleets submit complete ordered UAP plans; final occupancy and local traffic resolve simultaneously." },
+  artillery: { label: "Artillery", detail: "Choose one ordered shell card or Pass. Chaff resolves before every other shell." },
+  command: { label: "Command", detail: "Capacity opens the stage, then commanders alternate one Emit, Hold, triage, or ability intent." },
+  resolution: { label: "Resolution", detail: "Committed work and Drift Detonations apply atomically before terminal evaluation." }
+};
+
+function currentStage(view: BattleCommandV3View): Stage {
+  if (view.projection.phase === "kinetic") return "kinetic";
+  if (view.projection.phase === "artillery") return "artillery";
+  if (view.projection.phase === "capacity" || view.projection.phase === "command") return "command";
+  return "resolution";
+}
+
+function Workflow({ view, onRules }: { view: BattleCommandV3View; onRules: () => void }) {
+  const active = currentStage(view);
+  const index = stages.indexOf(active);
+  return <aside className="turn-workflow" aria-label="Five-stage workflow">
+    <div className="workflow-heading"><div><span>TURN WORKFLOW</span><strong>Round {view.projection.round} of {view.rules.roundLimit}</strong></div><button onClick={onRules}>Full rules</button></div>
+    <ol className="workflow-stages">{stages.map((stage, stageIndex) => {
+      const automaticComplete = stage === "register" && active !== "register";
+      const complete = stageIndex < index || automaticComplete;
+      return <li key={stage} className={stage === active ? "current" : complete ? "complete" : "upcoming"}><i>{complete ? "✓" : stageIndex + 1}</i><div><strong>{stageCopy[stage].label}</strong><small>{stage === active ? "Current step" : complete ? "Complete" : "Upcoming"}</small></div></li>;
+    })}</ol>
+    <section className="workflow-help"><span>NOW</span><h2>{stageCopy[active].label}</h2><p>{stageCopy[active].detail}</p>
+      {active === "kinetic" && <div><strong>REGISTER RECAP</strong><p>{view.recaps.register.uap.filter((item) => item.batteryBonus).length} assisted · {view.recaps.register.uap.filter((item) => item.frozen).length} frozen · {view.recaps.register.reloads.reduce((sum, item) => sum + item.cardIds.length, 0)} cards reloaded</p></div>}
+      {view.recaps.resolution && <div className={view.recaps.resolution.detonations.length ? "risk" : ""}><strong>LAST RESOLUTION</strong><p>{view.recaps.resolution.resolutions.length} committed · {view.recaps.resolution.detonations.length} detonated</p></div>}
+    </section>
+    <div className="workflow-legend"><span><i className="friendly" />friendly</span><span><i className="hostile" />hostile</span><span><i className="artifact" />artifact</span><span><i className="range" />range</span></div>
+  </aside>;
+}
+
+function StatusStrip({ view }: { view: BattleCommandV3View }) {
+  const self = view.projection.players.find((player) => player.playerId === PLAYER)!;
+  const batteries = view.projection.artifacts.filter((artifact) => artifact.ownerPlayerId === PLAYER && artifact.battery.active).length;
+  return <section className="battle-status" aria-label="Battle status">
+    <Status label="Round" value={`${view.projection.round}/${view.rules.roundLimit}`} />
+    <Status label="Phase" value={view.projection.phase} accent />
+    <Status label="Progress" value={`${self.progress}/${view.rules.objectiveTarget}`} meter={self.progress / view.rules.objectiveTarget} />
+    <Status label="Drift" value={`${self.drift}/${view.rules.driftLimit}`} meter={self.drift / view.rules.driftLimit} danger />
+    <Status label="Attention" value={String(self.attention)} />
+    <Status label="Batteries" value={String(batteries)} />
+  </section>;
+}
+
+function Status({ label, value, meter, danger, accent }: { label: string; value: string; meter?: number; danger?: boolean; accent?: boolean }) {
+  return <div className={`${danger ? "danger" : ""} ${accent ? "accent" : ""}`}><span>{label}</span><strong>{value}</strong>{meter !== undefined && <i><b style={{ width: `${Math.min(100, meter * 100)}%` }} /></i>}</div>;
+}
+
+function Board({ view, selection, onSelect, selectedCardId, target, onCell }: {
+  view: BattleCommandV3View;
+  selection: Selection | null;
+  onSelect: (selection: Selection) => void;
+  selectedCardId: string | null;
+  target: AttentionV4Coordinate | null;
+  onCell: (coordinate: AttentionV4Coordinate) => void;
+}) {
+  const [focus, setFocus] = useState<AttentionV4Coordinate>({ x: 0, y: 0 });
+  const selectedUnit = selection?.kind === "unit" ? view.projection.units.find((unit) => unit.unitId === selection.id) : undefined;
+  const friendlyFront = view.projection.activeFronts.find((front) => front.playerId === PLAYER)!;
+  const hostileFront = view.projection.activeFronts.find((front) => front.playerId !== PLAYER)!;
+  const selectedPreview = target && selectedCardId
+    ? view.legal.artilleryPreviews.find((preview) => preview.cardId === selectedCardId && preview.center.x === target.x && preview.center.y === target.y)
+    : undefined;
+
+  function moveFocus(event: KeyboardEvent<HTMLButtonElement>, coordinate: AttentionV4Coordinate) {
+    const delta = event.key === "ArrowLeft" ? [-1, 0] : event.key === "ArrowRight" ? [1, 0] : event.key === "ArrowUp" ? [0, -1] : event.key === "ArrowDown" ? [0, 1] : null;
+    if (!delta) return;
+    event.preventDefault();
+    const next = { x: Math.max(0, Math.min(9, coordinate.x + delta[0])), y: Math.max(0, Math.min(9, coordinate.y + delta[1])) };
+    setFocus(next);
+    document.querySelector<HTMLButtonElement>(`[data-battle-cell="${next.x},${next.y}"]`)?.focus();
+  }
+
+  return <div className="v4-board" role="grid" aria-label="10 by 10 operational field">
+    {Array.from({ length: 10 }, (_, y) => <div role="row" key={y}>
+    {Array.from({ length: 10 }, (_, x) => {
+      const index = y * 10 + x;
+      const coordinate = { x, y };
+      const units = view.projection.units.filter((unit) => unit.position.x === coordinate.x && unit.position.y === coordinate.y);
+      const artifacts = view.projection.artifacts.filter((artifact) => artifact.position.x === coordinate.x && artifact.position.y === coordinate.y && artifact.resolution === "pending");
+      const traffic = view.projection.traffic.find((cell) => cell.coordinate.x === coordinate.x && cell.coordinate.y === coordinate.y)?.actionCount ?? 0;
+      const battery = view.projection.artifacts.some((artifact) => artifact.battery.active && !artifact.battery.suppressed && distance(artifact.position, coordinate) <= 1);
+      const hazard = view.legal.projectedHazards.some((item) => {
+        const artifact = view.projection.artifacts.find((candidate) => candidate.artifactId === item.artifactId);
+        return artifact && distance(artifact.position, coordinate) <= 1;
+      });
+      const flare = view.projection.zones.some((zone) => zone.kind === "flare" && distance(zone.center, coordinate) <= 1);
+      const smoke = view.projection.zones.some((zone) => zone.kind === "smoke" && distance(zone.center, coordinate) <= 1);
+      const chaff = view.projection.zones.some((zone) => zone.kind === "chaff" && distance(zone.center, coordinate) <= 1);
+      const inRange = selectedUnit ? distance(selectedUnit.position, coordinate) <= selectedUnit.activeRange : false;
+      const inTarget = target ? distance(target, coordinate) <= 1 : false;
+      const inFriendlyFront = distance(friendlyFront.center, coordinate) <= friendlyFront.radius;
+      const inHostileFront = distance(hostileFront.center, coordinate) <= hostileFront.radius;
+      const frozen = units.some((unit) => unit.uap.frozen || unit.uap.nextFreezeSources.length > 0);
+      const selected = selection?.kind === "cell" && selection.at.x === coordinate.x && selection.at.y === coordinate.y;
+      const classes = ["v4-cell", battery && "battery-field", hazard && "hazard-field", flare && "flare-field", smoke && "smoke-field", chaff && "chaff-field", inRange && "unit-range", inTarget && "target-field", inFriendlyFront && "friendly-front", inHostileFront && "hostile-front", frozen && "frozen-cell", selected && "selected"].filter(Boolean).join(" ");
+      const label = [`${coordinate.x},${coordinate.y}`, ...units.map((unit) => `${unit.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${displayChassis(unit.chassis)}`), `${artifacts.length} artifacts`, traffic ? `${traffic} actions` : ""].filter(Boolean).join(", ");
+      return <button key={index} type="button" role="gridcell" data-battle-cell={`${coordinate.x},${coordinate.y}`} tabIndex={focus.x === coordinate.x && focus.y === coordinate.y ? 0 : -1}
+        className={classes} aria-label={label} onFocus={() => setFocus(coordinate)} onKeyDown={(event) => moveFocus(event, coordinate)} onClick={() => {
+          if (units[0]) onSelect({ kind: "unit", id: units[0].unitId });
+          else if (artifacts[0]) onSelect({ kind: "artifact", id: artifacts[0].artifactId });
+          else onSelect({ kind: "cell", at: coordinate });
+          onCell(coordinate);
+        }}>
+        <small>{coordinate.x},{coordinate.y}</small>
+        {traffic > 0 && <b className={`traffic heat-${Math.min(4, traffic)}`} aria-label={`${traffic} successful actions`}>{traffic}</b>}
+        <span className="cell-tokens">{units.map((unit) => <i key={unit.unitId} className={`unit-token-v4 ${unit.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${unit.uap.frozen ? "paralyzed" : ""}`} title={unit.unitId}>{unitCode(unit.chassis)}</i>)}{artifacts.slice(0, 3).map((artifact) => <i key={artifact.artifactId} className={`artifact-token-v4 ${artifact.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${artifact.verified ? "verified" : ""} ${artifact.battery.active ? "battery" : ""}`} title={artifact.artifactId}>{artifact.battery.active ? "B" : "◆"}</i>)}</span>
+        {selectedPreview && inTarget && <span className="preview-count">{selectedPreview.affectedUnitIds.length + selectedPreview.affectedArtifactIds.length}</span>}
+      </button>;
+    })}</div>)}
+  </div>;
+}
+
+function CapacityTrack({ view }: { view: BattleCommandV3View }) {
+  const claims = new Map(view.projection.capacityTrack.claims.map((claim) => [claim.rank, claim]));
+  return <section className="capacity-track" aria-label="Shared Fibonacci capacity track"><div className="capacity-track-heading"><span>SHARED CAPACITY</span><small>{view.projection.capacityTrack.artilleryUnlocked ? "Artillery unlocked" : view.projection.capacityTrack.artilleryUnlockRound ? `Artillery at Register ${view.projection.capacityTrack.artilleryUnlockRound}` : "Rank 3 unlocks Artillery next Register"}</small></div><div className="capacity-slots">{view.rules.capacitySlots.map((slot) => {
+    const claim = claims.get(slot.rank);
+    const current = slot.rank === view.projection.capacityTrack.nextRank;
+    return <div key={slot.rank} className={`capacity-slot ${claim ? "claimed" : current ? "current" : "locked"}`}><b>R{slot.rank}</b><strong>+{slot.capacityAward}</strong><small>{claim ? `${claim.playerId} · ${claim.attentionPaid}` : `${slot.cost} attention`}</small></div>;
+  })}</div></section>;
+}
+
+function Armories({ view, selectedCardId, onCard }: { view: BattleCommandV3View; selectedCardId: string | null; onCard: (cardId: string) => void }) {
+  return <section className="v4-armories" aria-label="Public ordered armories">{view.projection.players.map((player) => <div key={player.playerId} className={player.playerId === PLAYER ? "friendly" : "hostile"}><header><strong>{player.playerId === PLAYER ? "Your armory" : "Doctrine armory"}</strong><span>Cooldown {player.armory.cooldown} · {player.armory.retaliationAvailable ? "COUNTERFIRE READY" : "ordinary fire"}</span></header><div>{player.armory.cards.map((card, index) => {
+    const legality = player.playerId === PLAYER ? view.legal.shellCards.find((item) => item.cardId === card.cardId) : null;
+    return <button key={card.cardId} disabled={player.playerId !== PLAYER || !legality?.legal} className={selectedCardId === card.cardId ? "active" : ""} onClick={() => onCard(card.cardId)} title={legality?.reason ?? shellCopy[card.shell].detail}><small>{index + 1}</small><strong>{shellCopy[card.shell].label}</strong><span>{legality?.usesRetaliation ? "BYPASS" : legality?.reason ?? "READY"}</span></button>;
+  })}</div></div>)}</section>;
+}
+
+function UnitRoster({ view, selection, plans, planMode, setPlanMode, append, clear, allocations, setAllocation, submitCommand, busy }: {
+  view: BattleCommandV3View;
+  selection: Selection | null;
+  plans: Record<string, AttentionV4KineticAction[]>;
+  planMode: PlanMode;
+  setPlanMode: (mode: PlanMode) => void;
+  append: (unit: AttentionV4UnitState, action: AttentionV4KineticAction) => void;
+  clear: (unitId: string) => void;
+  allocations: Record<string, Allocation>;
+  setAllocation: (unitId: string, allocation: Allocation) => void;
+  submitCommand: (intent: AttentionV4CommandIntent) => void;
+  busy: boolean;
+}) {
+  const own = view.projection.units.filter((unit) => unit.ownerPlayerId === PLAYER);
+  const active = view.projection.phase === "command" && view.legal.activeCommanderId === PLAYER;
+  return <section className="mech-roster"><div className="mech-roster-heading"><div><span>FLEET CONTROL</span><strong>Ordered plans and output allocation</strong><small>Battery UAP is snapshotted at Register; frozen generation remains online.</small></div></div><div className="mech-roster-cards">{own.map((unit) => {
+    const unitLegal = view.legal.kinetic.find((item) => item.unitId === unit.unitId);
+    const plan = plans[unit.unitId] ?? [];
+    const allocationLegal = view.legal.allocations.find((item) => item.unitId === unit.unitId)!;
+    const allocation = allocations[unit.unitId] ?? { volume: allocationLegal.prefillVolume, densityPct: allocationLegal.prefillDensityPct };
+    const maximum = Math.min(allocationLegal.maximumVolume, allocationLegal.maximumVolumeByDensity[String(allocation.densityPct)] ?? 0);
+    const densityOptions = view.rules.allocation.densities.filter((density) => density <= allocationLegal.maximumDensityPct);
+    const effectiveCalibration = unit.calibration * allocation.densityPct / 100;
+    const selected = selection?.kind === "unit" && selection.id === unit.unitId;
+    const plannedCondense = plan.filter((action) => action.kind === "condense-output").length;
+    const condenseLocked = plannedCondense > 0;
+    return <article key={unit.unitId} className={`v4-unit-card ${selected ? "selected" : ""} ${unit.uap.frozen ? "frozen" : ""}`}>
+      <header><div><span>{unitCode(unit.chassis)} · {displayChassis(unit.chassis)}</span><strong>R{unit.activeRange} · reactor {unit.reactorRating}</strong></div><b>{percent(unit.calibration)} CAL</b></header>
+      <div className="uap-breakdown"><span>BASE {unit.uap.base}</span><span>BATTERY +{unit.uap.batteryBonus}</span><strong>{unit.uap.frozen ? "0 FROZEN" : `${unit.uap.effective} UAP`}</strong></div>
+      <div className="unit-state"><span>{unit.chassis === "scout" ? `Condense ${view.projection.phase === "kinetic" ? plannedCondense : unit.condenseSteps}/2 · cap ${allocationLegal.maximumVolume}@${allocationLegal.maximumDensityPct}%` : unit.chassis === "line" ? "Step-Up / Scan" : unit.uplinkQueued ? "Uplink queued" : "Uplink idle"}</span><span>{unit.uap.freezeSources.length ? unit.uap.freezeSources.join(" + ") : unit.uap.nextFreezeSources.length ? `Next: ${unit.uap.nextFreezeSources.join(" + ")}` : "Mobile"}</span></div>
+      {view.projection.phase === "kinetic" && <><ol className="ordered-plan">{plan.length ? plan.map((action, index) => <li key={`${action.kind}-${index}`}><b>{index + 1}</b>{action.kind}{action.kind === "move" ? ` ${action.destination.x},${action.destination.y}` : action.kind === "support-scan" ? ` ${action.scoutUnitId.split(":").at(-1)}` : ""}</li>) : <li className="hold"><b>0</b>Explicit Hold</li>}</ol><div className="unit-actions"><button disabled={condenseLocked} onClick={() => setPlanMode("move")} className={planMode === "move" && selected ? "active" : ""}>Move on grid</button>{unit.chassis === "scout" && <button disabled={plannedCondense >= (unitLegal?.maxCondenseSteps ?? 0) || plan.length >= (unitLegal?.effectiveUap ?? 0)} onClick={() => append(unit, { kind: "condense-output" })}>Condense output</button>}{unit.chassis === "line" && <><button onClick={() => append(unit, { kind: "step-up" })}>Step-Up</button>{own.filter((candidate) => candidate.chassis === "scout").map((scout) => <button key={scout.unitId} onClick={() => append(unit, { kind: "support-scan", scoutUnitId: scout.unitId })}>Scan {scout.unitId.split(":").at(-1)}</button>)}</>}{unit.chassis === "heavy" && <button onClick={() => append(unit, { kind: "command-uplink" })}>Uplink</button>}<button disabled={condenseLocked} onClick={() => append(unit, { kind: "range-shift", delta: -1 })}>Range −</button><button disabled={condenseLocked} onClick={() => append(unit, { kind: "range-shift", delta: 1 })}>Range +</button><button onClick={() => clear(unit.unitId)}>Clear</button></div></>}
+      {view.projection.phase === "command" && <div className="output-allocation"><div><label>Volume <input type="number" min="1" max={maximum} value={allocation.volume} onChange={(event) => setAllocation(unit.unitId, { ...allocation, volume: Number(event.target.value) })} /></label><label>Density <select value={allocation.densityPct} onChange={(event) => { const densityPct = Number(event.target.value); const cap = Math.min(allocationLegal.maximumVolume, allocationLegal.maximumVolumeByDensity[String(densityPct)] ?? 0); setAllocation(unit.unitId, { volume: Math.max(1, Math.min(allocation.volume, cap)), densityPct }); }}>{densityOptions.map((density) => <option key={density} value={density}>{density}%</option>)}</select></label></div><p>{allocation.volume} × {allocation.densityPct} ≤ {unit.reactorRating * 100} · D×C = {percent(effectiveCalibration)}</p><div><button disabled={busy || !active || unit.outputDecision !== "pending" || allocation.volume < 1 || allocation.volume > maximum || allocation.densityPct > allocationLegal.maximumDensityPct} className="battle-primary" onClick={() => submitCommand({ kind: "emit", playerId: PLAYER, unitId: unit.unitId, volume: allocation.volume, densityPct: allocation.densityPct })}>Emit</button><button disabled={busy || !active || unit.outputDecision !== "pending"} onClick={() => submitCommand({ kind: "hold", playerId: PLAYER, unitId: unit.unitId })}>Hold</button></div><strong className={`decision ${unit.outputDecision}`}>{unit.outputDecision}</strong></div>}
+    </article>;
+  })}</div></section>;
+}
+
+function ArtifactPanel({ view, artifact, submit, busy }: { view: BattleCommandV3View; artifact?: AttentionV4ProjectedArtifact; submit: (intent: AttentionV4CommandIntent) => void; busy: boolean }) {
+  if (!artifact) return <section className="selection-panel empty"><span className="battle-kicker">CONTEXT INSPECTOR</span><h2>Select an artifact</h2><p>Artifact cards expose generation density, calibration multiplication, age, Context Limit, local traffic, and Battery state.</p></section>;
+  const source = view.projection.units.find((unit) => unit.unitId === artifact.sourceUnitId)!;
+  const legal = view.legal.artifacts.find((item) => item.artifactId === artifact.artifactId);
+  const hazard = view.legal.projectedHazards.find((item) => item.artifactId === artifact.artifactId);
+  const own = artifact.ownerPlayerId === PLAYER;
+  const active = view.legal.activeCommanderId === PLAYER;
+  return <section className="selection-panel v4-artifact-panel"><header><div><span className="battle-kicker">{own ? "FRIENDLY" : "HOSTILE"} ARTIFACT</span><h2>{artifact.artifactId.split(":").slice(-2).join(" · ")}</h2></div><strong>{percent(artifact.reportedConfidence)} confidence</strong></header>
+    <div className="artifact-metrics"><Metric label="Density" value={`${artifact.densityPct}%`} /><Metric label="Source calibration" value={percent(artifact.sourceCalibration)} /><Metric label="Effective D×C" value={percent(artifact.effectiveCalibration)} /><Metric label="Age / CL" value={`${artifact.age} / ${artifact.contextLimit}`} /><Metric label="Traffic" value={`${artifact.localTraffic} / 3 safe`} /><Metric label="Truth" value={artifact.revealedSound === null ? "hidden" : artifact.revealedSound ? "sound" : "unsound"} /></div>
+    <p>From {displayChassis(source.chassis)} at {artifact.position.x},{artifact.position.y}. {artifact.objectiveEligible ? "Inside its active objective front." : "Outside its active objective front."}</p>
+    {artifact.battery.active && <div className={`battery-banner ${artifact.battery.suppressed ? "suppressed" : ""}`}><strong>{artifact.battery.suppressed ? "BATTERY SUPPRESSED" : "ACTIVE BATTERY"}</strong><span>3×3 field · +1 next-Register UAP · −1 Verify/Seize on other artifacts</span></div>}
+    {hazard && <div className="detonation-warning" role="alert"><strong>PROJECTED DRIFT DETONATION</strong><span>{hazard.reasons.join(" + ")} · +2 Drift · freezes {hazard.frozenUnitIds.length} friendly unit(s)</span></div>}
+    {own && artifact.resolution === "pending" && <div className="artifact-actions"><button disabled={busy || !legal?.verify.legal} onClick={() => submit({ kind: "verify", playerId: PLAYER, artifactId: artifact.artifactId })}>Verify · {legal?.verify.cost.total ?? 1}{legal?.verify.cost.batteryDiscount ? " (Battery)" : ""}</button><button disabled={busy || !active} onClick={() => submit({ kind: "accept", playerId: PLAYER, artifactId: artifact.artifactId })}>Accept</button><button disabled={busy || !active} onClick={() => submit({ kind: "reject", playerId: PLAYER, artifactId: artifact.artifactId })}>Reject</button><button disabled={busy || !legal?.seize.legal} onClick={() => submit({ kind: "seize", playerId: PLAYER, artifactId: artifact.artifactId })}>Seize · {legal?.seize.cost.total ?? source.reactorRating}</button><button disabled={busy || !view.legal.abilities.perfectFocus.ready} onClick={() => submit({ kind: "perfect-focus", playerId: PLAYER, artifactId: artifact.artifactId })}>Perfect Focus</button></div>}
+  </section>;
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return <div><span>{label}</span><strong>{value}</strong></div>;
+}
+
+function ArtifactTray({ view, selection, onSelect }: { view: BattleCommandV3View; selection: Selection | null; onSelect: (selection: Selection) => void }) {
+  const artifacts = view.projection.artifacts.filter((artifact) => artifact.resolution === "pending").sort((left, right) => left.ownerPlayerId.localeCompare(right.ownerPlayerId) || left.artifactId.localeCompare(right.artifactId));
+  return <section className="artifact-tray"><div className="artifact-tray-heading"><div><span>PERSISTENT CONTEXT</span><strong>{artifacts.length} pending</strong><small>Verified artifacts stop aging; pending work never auto-accepts.</small></div></div><div className="artifact-pieces">{artifacts.map((artifact) => <button key={artifact.artifactId} aria-label={`${artifact.ownerPlayerId === PLAYER ? "friendly" : "hostile"} artifact ${artifact.artifactId}, ${percent(artifact.reportedConfidence)} confidence, age ${artifact.age} of ${artifact.contextLimit}`} className={`artifact-piece ${artifact.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${selection?.kind === "artifact" && selection.id === artifact.artifactId ? "selected" : ""}`} onClick={() => onSelect({ kind: "artifact", id: artifact.artifactId })}><span><i />{unitCode(artifact.sourceChassis)}{artifact.battery.active ? <b>B</b> : null}</span><strong>{percent(artifact.reportedConfidence)}</strong><small>{artifact.age}/{artifact.contextLimit} · T{artifact.localTraffic}</small></button>)}{artifacts.length === 0 && <p>No pending artifacts. Output decisions occur during Command.</p>}</div></section>;
+}
+
+function EventTicker({ view }: { view: BattleCommandV3View }) {
+  const items = view.events.filter((item) => !item.eventType.includes("phase.")).slice(-5).reverse();
+  const announcement = items.length ? `${items.length} updates. ${items.map((item) => item.eventType.replace("attention.v4.", "")).join(", ")}` : "No recent updates";
+  return <section className="event-ticker"><span>RECENT RESOLUTION</span>{items.map((item) => <div key={item.eventId}><b>{item.eventType.replace("attention.v4.", "").replaceAll(".", " / ")}</b><small>{item.actorId ?? "system"}</small></div>)}<p className="sr-only" aria-live="polite" aria-atomic="true">{announcement}</p></section>;
+}
+
+function Modal({ title, children, onClose, actions }: { title: string; children: ReactNode; onClose: () => void; actions?: ReactNode }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeRef.current?.focus();
+    const key = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") { onClose(); return; }
+      if (event.key !== "Tab") return;
+      const focusable = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? [])];
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable.at(-1)!;
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", key);
+    return () => { document.removeEventListener("keydown", key); previous?.focus(); };
+  }, [onClose]);
+  return <div className="rules-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><div ref={dialogRef} className="v4-dialog" role="dialog" aria-modal="true" aria-labelledby="v4-dialog-title"><div className="drawer-heading"><h2 id="v4-dialog-title">{title}</h2><button ref={closeRef} onClick={onClose}>Close</button></div><div className="dialog-body">{children}</div>{actions && <div className="dialog-actions">{actions}</div>}</div></div>;
+}
+
+function Rules({ view, onClose }: { view: BattleCommandV3View; onClose: () => void }) {
+  return <Modal title="Attention-economy v4.2 reference" onClose={onClose}><p><strong>{view.rules.rulesetVersion}</strong> · {view.rules.resolverVersion}</p><h3>Fleet weight</h3><p>Every fleet spends exactly 6 weight: Scout 1, Line 2, Heavy 3. Fleets contain 3–5 units, at most one Heavy, and at most four Scouts.</p><h3>Output</h3><p>Scout 3 UAP/reactor 3/calibration .20/range 2; Line 2/.60/range 3; Heavy 1/.90/range 4. A Scout may Condense output up to twice after movement: 3@20/.20, 2@60/.65, then 1@90/.85. Confirm an integer volume and 5-point density within the projected caps. Effective calibration is density × current calibration.</p><h3>Persistent context</h3><p>Scout, Line, and Heavy Context Limits are 1, 2, and 3. Only unverified pending artifacts age. The fourth successful UAP action in a 3×3 artifact field marks it over-taxed. Verify before Resolution to rescue it.</p><h3>Batteries</h3><p>A verified pending artifact becomes a Battery at density ≥80%, generation calibration ≥80%, and a sound or Perfect-Focus-guaranteed result. Fields do not stack; Smoke suppresses them.</p><h3>Artillery</h3><ul>{view.rules.artillery.shells.map((shell) => <li key={shell}><strong>{shellCopy[shell].label}:</strong> {shellCopy[shell].detail}</li>)}</ul><h3>Terminal order</h3><p>Four Drift defeats twelve Progress for an individual player. Bilateral terminal effects apply together, then compare Progress, lower Drift, and remaining Attention.</p></Modal>;
+}
+
+function PhaseDock({ view, plans, selectedCardId, target, submit, busy, openEndRisk, newOperation }: {
+  view: BattleCommandV3View;
+  plans: Record<string, AttentionV4KineticAction[]>;
+  selectedCardId: string | null;
+  target: AttentionV4Coordinate | null;
+  submit: (submission: BattleCommandV3Submission) => void;
+  busy: boolean;
+  openEndRisk: () => void;
+  newOperation: () => void;
+}) {
+  if (view.projection.phase === "terminal") {
+    const self = view.projection.players.find((player) => player.playerId === PLAYER)!;
+    return <div className="phase-dock terminal"><span className="battle-kicker">OPERATION COMPLETE · {view.projection.terminalReason}</span><strong>{view.projection.winnerPlayerId === PLAYER ? "Victory secured" : view.projection.winnerPlayerId ? "Threshold Doctrine prevailed" : "Exact draw"}</strong><small>{self.progress} Progress · {self.drift} Drift · {self.attention} Attention</small><button className="battle-primary" onClick={newOperation}>New operation</button></div>;
+  }
+  if (view.projection.phase === "kinetic") {
+    const own = view.projection.units.filter((unit) => unit.ownerPlayerId === PLAYER);
+    const queued = own.reduce((sum, unit) => sum + (plans[unit.unitId]?.length ?? 0), 0);
+    return <div className="phase-dock"><div><span className="battle-kicker">SIMULTANEOUS KINETIC</span><strong>{queued} ordered actions · {own.length} complete unit plans</strong><small>Every omitted action list is submitted explicitly as Hold. Traffic counts both fleets.</small></div><div className="dock-actions"><button className="battle-primary" disabled={busy} onClick={() => submit({ phase: "kinetic", plans: own.map((unit) => ({ unitId: unit.unitId, actions: plans[unit.unitId] ?? [] })) })}>Resolve Kinetic</button></div></div>;
+  }
+  if (view.projection.phase === "artillery") {
+    const card = view.projection.players.find((player) => player.playerId === PLAYER)!.armory.cards.find((item) => item.cardId === selectedCardId);
+    const preview = target && selectedCardId ? view.legal.artilleryPreviews.find((item) => item.cardId === selectedCardId && item.center.x === target.x && item.center.y === target.y) : null;
+    return <div className="phase-dock artillery-dock"><div><span className="battle-kicker">SIMULTANEOUS ARTILLERY</span><strong>{card ? `${shellCopy[card.shell].label} · ${target ? `${target.x},${target.y}` : "choose target"}` : "Choose a card or Pass"}</strong><small>{card ? shellCopy[card.shell].detail : view.projection.capacityTrack.artilleryUnlocked ? "Firing starts cooldown 3." : "Capacity rank 3 has not activated Artillery."}</small></div><div className="impact-preview"><span>EXACT SERVER PREVIEW</span><strong>{preview ? `${preview.affectedUnitIds.length} units · ${preview.affectedArtifactIds.length} artifacts · ${preview.affectedBatteryIds.length} Batteries` : "No target selected"}</strong><small>{preview?.blockedByScreenIds.length ? `Blocked by ${preview.blockedByScreenIds.length} hostile Chaff screen(s)` : "No hostile screen at center"}</small></div><div className="dock-actions"><button disabled={busy} onClick={() => submit({ phase: "artillery", cardId: null })}>Pass</button><button className="battle-primary" disabled={busy || !selectedCardId || !target} onClick={() => submit({ phase: "artillery", cardId: selectedCardId, center: target ?? undefined })}>Fire card</button></div></div>;
+  }
+  if (view.projection.phase === "capacity") return <div className="phase-dock capacity-dock"><CapacityTrack view={view} /><div><span className="battle-kicker">COMMAND OPEN · CAPACITY CLAIM</span><strong>{view.legal.capacity.available ? `Rank ${view.legal.capacity.rank}: ${view.legal.capacity.cost} Attention → +${view.legal.capacity.award}` : "Track complete"}</strong><small>Claims are simultaneous. First priority rotates each round.</small></div><div className="dock-actions"><button disabled={busy} onClick={() => submit({ phase: "capacity", claim: false })}>Pass</button><button className="battle-primary" disabled={busy || !view.legal.capacity.affordable} onClick={() => submit({ phase: "capacity", claim: true })}>Claim</button></div></div>;
+  const self = view.projection.players.find((player) => player.playerId === PLAYER)!;
+  return <div className="phase-dock"><div><span className="battle-kicker">ALTERNATING COMMAND</span><strong>{view.legal.activeCommanderId === PLAYER ? "Your intent" : "Doctrine resolving"} · {self.attention} Attention</strong><small>Every unit must explicitly Emit or Hold. Pending artifacts persist across rounds.</small></div><div className="dock-actions"><button disabled={busy || !view.legal.abilities.overclock.ready} onClick={() => submit({ phase: "command", intent: { kind: "overclock", playerId: PLAYER } })}>Overclock · −1 Seize</button><button className="battle-primary" disabled={busy || !view.legal.canEndCommand} onClick={openEndRisk}>End Command</button></div></div>;
+}
+
+export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } = {}) {
+  const [view, setView] = useState<BattleCommandV3View | null>(null);
+  const [briefing, setBriefing] = useState(true);
+  const [retired, setRetired] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const [plans, setPlans] = useState<Record<string, AttentionV4KineticAction[]>>({});
+  const [planMode, setPlanMode] = useState<PlanMode>("move");
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [target, setTarget] = useState<AttentionV4Coordinate | null>(null);
+  const [allocations, setAllocations] = useState<Record<string, Allocation>>({});
+  const [rulesOpen, setRulesOpen] = useState(false);
+  const [endRiskOpen, setEndRiskOpen] = useState(false);
+  const [playerFleet, setPlayerFleet] = useState<CompositionModule>("heavy-line-scout");
+  const [opponentFleet, setOpponentFleet] = useState<CompositionModule>("heavy-line-scout");
+  const [experience, setExperience] = useState<BattleExperience | null>(null);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [artAssets, setArtAssets] = useState<Record<string, ArtCatalogEntry>>({});
+  const [boardView, setBoardView] = useState<"perspective" | "tactical">(() => (localStorage.getItem("context-landscape.boardView") as "perspective" | "tactical" | null) ?? "perspective");
+
+  function applyFriendPayload(payload: FriendBattleCommandView) {
+    const normalized = normalizeFriend(payload);
+    setView(normalized.battle); setExperience(normalized.experience); setBriefing(false);
+  }
+
+  useEffect(() => {
+    if (friendMatchId) {
+      setBusy(true);
+      void requestJson<AuthSessionView>("/api/auth/session").then((session) => {
+        if (!session.authenticated) throw new ApiError(401, "authentication_required");
+        setCsrfToken(session.csrfToken);
+        return requestJson<FriendBattleCommandView>(`/api/battle-command/friend-matches/${friendMatchId}`);
+      }).then(applyFriendPayload).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : String(caught))).finally(() => setBusy(false));
+      return;
+    }
+    const linked = new URLSearchParams(window.location.search).get("battle");
+    const matchId = linked ?? localStorage.getItem("context-landscape.battleCommandMatch");
+    if (!matchId) return;
+    setBusy(true);
+    void requestJson<BattleCommandV3View>(`/api/battle-command/matches/${matchId}`).then((payload) => {
+      setView(payload); setBriefing(false); localStorage.setItem("context-landscape.battleCommandMatch", matchId);
+    }).catch((caught: unknown) => {
+      if (caught instanceof ApiError && caught.status === 410) setRetired(true);
+      if (!linked) localStorage.removeItem("context-landscape.battleCommandMatch");
+    }).finally(() => setBusy(false));
+  }, [friendMatchId]);
+
+  useEffect(() => {
+    if (!friendMatchId || !experience) return;
+    const stream = new EventSource(`/api/battle-command/matches/${friendMatchId}/stream`);
+    const listener = (event: Event) => {
+      const revision = Number((JSON.parse((event as MessageEvent).data) as { revision: number }).revision);
+      if (revision <= (view?.revision ?? -1)) return;
+      void requestJson<FriendBattleCommandView>(`/api/battle-command/friend-matches/${friendMatchId}`).then(applyFriendPayload).catch(() => undefined);
+    };
+    stream.addEventListener("revision", listener);
+    return () => stream.close();
+  }, [friendMatchId, experience?.accountSeats.alpha, view?.revision]);
+
+  useEffect(() => {
+    if (!experience) return;
+    const ids = new Set<string>();
+    for (const fleet of [experience.fleets.alpha, experience.fleets.bravo]) if (fleet) {
+      for (const unit of fleet.units) if (unit.artAssetId) ids.add(unit.artAssetId);
+      if (fleet.identity.commanderAssetId) ids.add(fleet.identity.commanderAssetId);
+      if (fleet.identity.battlefieldAssetId) ids.add(fleet.identity.battlefieldAssetId);
+    }
+    void Promise.all([...ids].map((id) => requestJson<ArtCatalogEntry>(`/api/art/catalog/${encodeURIComponent(id)}`).catch(() => null))).then((items) => setArtAssets(Object.fromEntries(items.filter(Boolean).map((item) => [item!.assetId, item!]))));
+  }, [experience?.fleets.alpha?.snapshotHash, experience?.fleets.bravo?.snapshotHash]);
+
+  useEffect(() => {
+    if (!view) return;
+    setAllocations(Object.fromEntries(view.legal.allocations.map((item) => [item.unitId, { volume: item.prefillVolume, densityPct: item.prefillDensityPct }])));
+  }, [view?.projection.matchId, view?.projection.round, view?.projection.phase]);
+
+  async function start() {
+    setBusy(true); setError("");
+    try {
+      const payload = await requestJson<BattleCommandV3View>("/api/battle-command/matches", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ playerCompositionModule: playerFleet, opponentCompositionModule: opponentFleet })
+      });
+      setView(payload); setBriefing(false); setRetired(false); setSelection(null); setPlans({});
+      localStorage.setItem("context-landscape.battleCommandMatch", payload.projection.matchId);
+    } catch (caught) { setError(caught instanceof Error ? caught.message : String(caught)); } finally { setBusy(false); }
+  }
+
+  async function submit(submission: BattleCommandV3Submission) {
+    if (!view) return;
+    setBusy(true); setError("");
+    try {
+      const path = friendMatchId ? `/api/battle-command/friend-matches/${view.projection.matchId}/actions` : `/api/battle-command/matches/${view.projection.matchId}/actions`;
+      const payload = await requestJson<BattleCommandV3View | FriendBattleCommandView>(path, {
+        method: "POST",
+        headers: { "content-type": "application/json", "idempotency-key": crypto.randomUUID(), ...(friendMatchId && csrfToken ? { "x-csrf-token": csrfToken } : {}) },
+        body: JSON.stringify({ revision: view.revision, submission })
+      });
+      if (friendMatchId) applyFriendPayload(payload as FriendBattleCommandView); else setView(payload as BattleCommandV3View);
+      setSelectedCardId(null); setTarget(null); setEndRiskOpen(false);
+      if (submission.phase === "kinetic") setPlans({});
+    } catch (caught) {
+      if (caught instanceof ApiError && caught.status === 410) {
+        setRetired(true); setBriefing(true); setView(null); localStorage.removeItem("context-landscape.battleCommandMatch");
+      } else {
+        const message = caught instanceof Error ? caught.message : String(caught);
+        setError(message);
+        if (message.includes("revision_conflict")) {
+          if (friendMatchId) applyFriendPayload(await requestJson<FriendBattleCommandView>(`/api/battle-command/friend-matches/${view.projection.matchId}`));
+          else setView(await requestJson<BattleCommandV3View>(`/api/battle-command/matches/${view.projection.matchId}`));
+        }
+      }
+    } finally { setBusy(false); }
+  }
+
+  function append(unit: AttentionV4UnitState, action: AttentionV4KineticAction) {
+    const effective = view?.legal.kinetic.find((item) => item.unitId === unit.unitId)?.effectiveUap ?? 0;
+    setPlans((current) => {
+      const actions = current[unit.unitId] ?? [];
+      return actions.length >= effective ? current : { ...current, [unit.unitId]: [...actions, action] };
+    });
+    setSelection({ kind: "unit", id: unit.unitId });
+  }
+
+  function clear(unitId: string) {
+    setPlans((current) => ({ ...current, [unitId]: [] }));
+  }
+
+  function handleCell(coordinate: AttentionV4Coordinate) {
+    if (!view) return;
+    if (view.projection.phase === "artillery" && selectedCardId) { setTarget(coordinate); return; }
+    if (view.projection.phase !== "kinetic" || selection?.kind !== "unit") return;
+    const unit = view.projection.units.find((candidate) => candidate.unitId === selection.id && candidate.ownerPlayerId === PLAYER);
+    if (!unit) return;
+    const currentPlan = plans[unit.unitId] ?? [];
+    if (currentPlan.some((action) => action.kind === "condense-output")) return;
+    const origin = [...currentPlan].reverse().find((action): action is Extract<AttentionV4KineticAction, { kind: "move" }> => action.kind === "move")?.destination ?? unit.position;
+    if (distance(origin, coordinate) !== 1) return;
+    append(unit, { kind: "move", destination: coordinate });
+  }
+
+  function newOperation() {
+    if (friendMatchId) { window.location.assign(appHref("view=hangar")); return; }
+    localStorage.removeItem("context-landscape.battleCommandMatch");
+    setView(null); setBriefing(true); setRetired(false); setSelection(null); setPlans({});
+  }
+
+  if (briefing || !view) return friendMatchId ? <main className="briefing-shell friend-loading"><ArtFrame subject="battlefield-context-furnace" className="briefing-hero"><div className="briefing-copy"><p className="battle-kicker">FRIEND CHALLENGE</p><h1>{error === "authentication_required" ? "Sign in to enter this operation" : "Joining the battlefield"}</h1><p>{error || "Loading your private projection and fleet identity…"}</p>{error === "authentication_required" && <a className="briefing-launch" href={`/api/auth/discord/start?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`}>Continue with Discord</a>}<a className="briefing-secondary" href={appHref("view=hangar")}>Return to Hangar</a></div></ArtFrame></main> : <><Briefing onStart={() => void start()} busy={busy} retired={retired} playerFleet={playerFleet} opponentFleet={opponentFleet} onPlayerFleet={setPlayerFleet} onOpponentFleet={setOpponentFleet} />{error && <div className="battle-toast error" role="alert">{error}</div>}</>;
+  const selectedArtifact = selection?.kind === "artifact" ? view.projection.artifacts.find((artifact) => artifact.artifactId === selection.id) : undefined;
+  const fleetArtForUnit = (unitId: string): string | undefined => {
+    const unit = view.projection.units.find((candidate) => candidate.unitId === unitId); if (!unit || !experience) return undefined;
+    const fleet = unit.ownerPlayerId === PLAYER ? experience.fleets.alpha : experience.fleets.bravo; if (!fleet) return undefined;
+    const ordinal = view.projection.units.filter((candidate) => candidate.ownerPlayerId === unit.ownerPlayerId && candidate.chassis === unit.chassis).findIndex((candidate) => candidate.unitId === unitId);
+    const identity = fleet.units.filter((candidate) => candidate.chassis === unit.chassis)[ordinal];
+    return identity?.artAssetId ? artAssets[identity.artAssetId]?.cardSrc : undefined;
+  };
+  const battlefieldAssetId = experience?.fleets.alpha?.identity.battlefieldAssetId;
+  const battlefieldArt = battlefieldAssetId ? artAssets[battlefieldAssetId]?.battlefieldSrc ?? artAssets[battlefieldAssetId]?.cardSrc : undefined;
+  const fleetPlate = (fleet: NonNullable<BattleExperience["fleets"]["alpha"]>, label: string) => {
+    const commander = fleet.identity.commanderAssetId ? artAssets[fleet.identity.commanderAssetId] : undefined;
+    return <article>{commander && <img src={commander.thumbnailSrc} alt="" />}<div><small>{label}</small><strong>{fleet.name}</strong><span>{fleet.compositionModule.replaceAll("-", " ")}</span></div></article>;
+  };
+  const waiting = experience?.waitingFor === "opponent";
+  const commandBusy = busy || waiting || experience?.status === "conceded";
+  return <main className="battle-shell">
+    <header className="battle-header"><div><p className="battle-kicker">CONTEXT LANDSCAPE · BATTLE COMMAND</p><h1>{view.rules.scenarioLabel}</h1></div><nav className="battle-nav"><a href={appHref("view=hangar")}>Fleet Hangar</a><a href={appHref("view=legacy")}>Research scenarios</a><a href={appHref("view=commander")}>Commander projection</a><a href={appHref("view=atlas")}>Evidence atlas</a><button onClick={() => setBriefing(true)}>Briefing</button><button onClick={newOperation}>New operation</button></nav></header>
+    {error && <div className="battle-toast error" role="alert">{error}</div>}
+    {experience && <div className={`friend-match-status ${waiting ? "waiting" : "ready"}`} role="status"><div><span>FRIEND OPERATION · {experience.status.toUpperCase()}</span><strong>{waiting ? "Orders locked — waiting for your opponent" : experience.status === "conceded" ? experience.winnerSeat === PLAYER ? "Opponent conceded" : "Operation conceded" : view.projection.phase === "terminal" ? "Operation complete" : "Live and resumable"}</strong></div><div className="friend-fleet-identities">{experience.fleets.alpha && fleetPlate(experience.fleets.alpha, "Your command")}{experience.fleets.bravo && fleetPlate(experience.fleets.bravo, "Opposing command")}</div><a href={appHref("view=hangar")}>Hangar</a>{experience.status === "active" && view.projection.phase !== "terminal" && <button onClick={() => void requestJson(`/api/battle-command/friend-matches/${view.projection.matchId}/concede`, { method: "POST", headers: csrfToken ? { "x-csrf-token": csrfToken } : {} }).then(() => window.location.reload())}>Concede</button>}</div>}
+    <StatusStrip view={view} />
+    <section className="battle-layout">
+      <Workflow view={view} onRules={() => setRulesOpen(true)} />
+      <div className="board-column"><div className="board-toolbar"><div><strong>Operational field</strong><span>Battery fields · action heat · hazard countdowns · artillery zones · paralysis</span></div><div className="board-view-switch" role="group" aria-label="Battlefield view"><button aria-pressed={boardView === "perspective"} onClick={() => { setBoardView("perspective"); localStorage.setItem("context-landscape.boardView", "perspective"); }}>Perspective</button><button aria-pressed={boardView === "tactical"} onClick={() => { setBoardView("tactical"); localStorage.setItem("context-landscape.boardView", "tactical"); }}>Tactical 2D</button></div><div><span className="base-rate">LATENT SOUNDNESS <b>70%</b></span><span>Roving grid focus · arrow keys move</span></div></div><ArtifactTray view={view} selection={selection} onSelect={setSelection} />{boardView === "perspective" ? <PerspectiveBoard view={view} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} unitArt={fleetArtForUnit} battlefieldArt={battlefieldArt} /> : <Board view={view} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} />}<Armories view={view} selectedCardId={selectedCardId} onCard={(cardId) => { setSelectedCardId(cardId); setTarget(null); }} /><EventTicker view={view} /></div>
+      <div className={`right-command-column phase-${view.projection.phase}`}><UnitRoster view={view} selection={selection} plans={plans} planMode={planMode} setPlanMode={setPlanMode} append={append} clear={clear} allocations={allocations} setAllocation={(unitId, allocation) => setAllocations((current) => ({ ...current, [unitId]: allocation }))} submitCommand={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} /><ArtifactPanel view={view} artifact={selectedArtifact} submit={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} /></div>
+    </section>
+    <PhaseDock view={view} plans={plans} selectedCardId={selectedCardId} target={target} submit={(submission) => void submit(submission)} busy={commandBusy} openEndRisk={() => setEndRiskOpen(true)} newOperation={newOperation} />
+    {rulesOpen && <Rules view={view} onClose={() => setRulesOpen(false)} />}
+    {endRiskOpen && <Modal title="End Command risk check" onClose={() => setEndRiskOpen(false)} actions={<><button onClick={() => setEndRiskOpen(false)}>Keep commanding</button><button className="battle-primary" disabled={busy} onClick={() => void submit({ phase: "command", intent: { kind: "end-command", playerId: PLAYER } })}>Confirm End</button></>}><p>Pending artifacts persist. The following unverified hazards will detonate during the automatic Resolution unless stabilized now.</p>{view.legal.projectedHazards.filter((item) => item.ownerPlayerId === PLAYER).length ? <ul className="risk-list">{view.legal.projectedHazards.filter((item) => item.ownerPlayerId === PLAYER).map((item) => <li key={item.artifactId}><strong>{item.artifactId.split(":").at(-1)}</strong><span>{item.reasons.join(" + ")} · +2 Drift · freeze {item.frozenUnitIds.length}</span></li>)}</ul> : <p className="safe-recap">No friendly Drift Detonations are projected.</p>}</Modal>}
+  </main>;
+}

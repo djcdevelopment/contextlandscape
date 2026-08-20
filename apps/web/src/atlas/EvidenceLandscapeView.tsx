@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { appHref } from "../navigation.js";
 import "./evidence-landscapes.css";
 
 type Mode = "commander" | "artillery" | "desperation";
@@ -78,10 +79,10 @@ async function fetchCompressedJson<T>(path: string): Promise<T> {
 
 function LandscapeNav({ mode }: { mode: Mode }) {
   return <nav className="evidence-nav" aria-label="Landscape mode">
-    <a href="/?view=atlas">Research atlas</a>
-    <a className={mode === "commander" ? "active" : ""} href="/?view=atlas&landscape=commander">Commander Field</a>
-    <a className={mode === "artillery" ? "active" : ""} href="/?view=atlas&landscape=artillery">Artillery Relief</a>
-    <a className={mode === "desperation" ? "active" : ""} href="/?view=atlas&landscape=desperation">Desperation Theatre</a>
+    <a href={appHref("view=atlas")}>Research atlas</a>
+    <a className={mode === "commander" ? "active" : ""} href={appHref("view=atlas&landscape=commander")}>Commander Field</a>
+    <a className={mode === "artillery" ? "active" : ""} href={appHref("view=atlas&landscape=artillery")}>Artillery Relief</a>
+    <a className={mode === "desperation" ? "active" : ""} href={appHref("view=atlas&landscape=desperation")}>Desperation Theatre</a>
   </nav>;
 }
 
@@ -275,7 +276,7 @@ export function EvidenceLandscapeView({ mode }: { mode: Mode }) {
     desperation: ["Desperation Theatre", "Watch HE, Smoke, and passive decisions accumulate over real rounds and coordinates."]
   };
   return <main className="atlas-shell evidence-shell">
-    <header className="atlas-header"><div><p className="atlas-eyebrow">CONTEXT LANDSCAPE · EVIDENCE CARTOGRAPHY</p><h1>{titles[mode][0]}</h1><p className="atlas-lede">{titles[mode][1]}</p></div><a className="return-field" href="/">Return to field lab</a></header>
+    <header className="atlas-header"><div><p className="atlas-eyebrow">CONTEXT LANDSCAPE · EVIDENCE CARTOGRAPHY</p><h1>{titles[mode][0]}</h1><p className="atlas-lede">{titles[mode][1]}</p></div><a className="return-field" href={appHref()}>Return to field lab</a></header>
     <LandscapeNav mode={mode} />
     {error ? <div className="atlas-error">Could not load landscape evidence: {error}</div> : !data ? <div className="atlas-loading">Resolving terrain from evidence…</div> : mode === "commander" ? <CommanderField data={data.commander} /> : mode === "artillery" ? <ArtilleryRelief data={data.artillery} /> : <DesperationTheatre data={data.desperation} />}
     {data && <footer className="atlas-provenance"><span>Generated {new Date(data.generatedAt).toLocaleString()}</span><code>{data.landscapeHash}</code></footer>}

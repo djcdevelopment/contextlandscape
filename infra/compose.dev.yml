@@ -40,6 +40,8 @@ services:
       context: ..
       target: dev
     command: npm run dev --workspace=@landscape/web -- --host 0.0.0.0
+    environment:
+      VITE_API_PROXY_TARGET: http://app:8080
     ports:
       - "127.0.0.1:${MECH_WEB_PORT:-5173}:5173"
     volumes:

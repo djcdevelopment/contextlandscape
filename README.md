@@ -7,9 +7,9 @@
 
 Context Landscape is a research prototype for an AI-orchestration autobattler. The player commands a small force through systems-engineering decisions—scout, establish a contract, implement, review, consolidate, or commit with a full send—while managing energy, heat, dispersion, confidence drift, and incomplete information.
 
-The repository combines a playable browser game with a deterministic simulation and experimentation platform. Its purpose is to discover whether the underlying decisions are legible and interesting before committing to the larger asynchronous PvP and social product.
+The repository combines a playable browser game with a deterministic simulation and experimentation platform. Its purpose is to discover whether the underlying decisions are legible and interesting before expanding the implemented private-friend slice into public matchmaking or a larger social product.
 
-> **Prototype status:** the baseline game, synthetic balance worker, and blinded single-player gameplay labs are implemented. Content and tuning remain research-grade; synthetic recommendations never promote themselves.
+> **Prototype status:** the baseline game, synthetic balance worker, blinded single-player gameplay labs, and human-release application surface are implemented. Public deployment acceptance is tracked separately; content and tuning remain research-grade, and synthetic recommendations never promote themselves.
 
 ## Table of contents
 
@@ -38,7 +38,7 @@ The project started from two design documents, both now archived under `docs/arc
 > implement, and they predate the current design direction. Read
 > [docs/IMPLEMENTED.md](docs/IMPLEMENTED.md) for what actually exists.
 
-This prototype narrows those ideas into a falsifiable question: can systems-engineering tradeoffs become understandable battlefield decisions? The current implementation therefore prioritizes deterministic mechanics, replayable evidence, synthetic search, and short human review labs over accounts, monetization, realtime play, or production art.
+This prototype narrows those ideas into a falsifiable question: can systems-engineering tradeoffs become understandable battlefield decisions? The current implementation therefore prioritizes deterministic mechanics, replayable evidence, synthetic search, and short human review labs over monetization, public matchmaking, ranked progression, or a broad content economy.
 
 ## Current status
 
@@ -49,20 +49,21 @@ This prototype narrows those ideas into a falsifiable question: can systems-engi
 | Scenario pack | Four versioned single-player scenarios with distinct lessons and rules profiles |
 | Rules engine | Deterministic TypeScript state transitions, seeded runs, idempotent commands, replay manifests, and event/projection hashes |
 | Persistence | PostgreSQL for matches, commands, events, observations, challenges, and gameplay-lab sessions; in-memory mode for portable runtime checks |
+| Human release | Discord identity, persistent cloud fleets, private friend challenges, a censused art catalog, and tactical/perspective battlefield views are implemented; live deployment acceptance is tracked separately |
 | Synthetic research | Seeded doctrine simulator plus a resumable, sharded Docker worker with train/holdout comparisons and recommendation-only candidate patches |
 | Broad v2 research | Versioned 6,400-profile doctrine catalog, fold-specific sparse matchup graphs, physical battle-sample catalog, durable shape-screen runner, forensic analysis, and explicit post-screen selection lineage |
 | Gameplay research | Five blinded lab packs, 24 playable variants, gated pre/post-reconstruction reviews, joined exports, and executable follow-up matrices |
 | CI | Typecheck, tests, a bounded mechanics matrix, report generation, and recommendation validation on pushes, pull requests, and a nightly schedule |
 
-The completed `sleep-01` campaign evaluated **19,456,000 deterministic matches**. It found useful policy and tuning boundaries, but also demonstrated that more simulation cannot recover a mechanic the engine does not currently exercise: composition labels do not yet produce valid chassis-balance evidence.
+The completed legacy `sleep-01` campaign evaluated **19,456,000 deterministic matches**. It found useful policy and tuning boundaries, but also demonstrated that more simulation cannot recover a mechanic that ruleset does not exercise: its composition labels do not produce valid chassis-balance evidence.
 
 Known boundaries:
 
 - no real population-level balance claim has been made;
 - the first human gameplay-lab cycle is still in progress;
-- composition needs mechanically distinct loadouts, initiative interactions, or multi-order slots before another large balance campaign;
+- legacy scenario composition needs mechanically distinct loadouts, initiative interactions, or multi-order slots before another large campaign on that ruleset;
 - the first 9,216,000-run v2 shape screen remains integrity-only evidence because commander modules were not compiled into match behavior; the [corrected campaign](plan/attention-v2-corrected-shape-screen.md) subsequently passed its 32,768-run differential probe, 256,000-run bounded audit, and all 9,216,000 enriched screen records. Its [causal assessment](data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md) advances rows 22, 8, 25, 1, 29, and 15 only to a 251,904-match multi-sample refinement—not final promotion;
-- Discord, profiles, matchmaking, ranked play, and durable progression are future product work.
+- Public matchmaking, ranked play, and durable progression remain future product work; Discord identity and private friend challenges are now implemented.
 
 ## Quick start
 
@@ -319,7 +320,7 @@ No command automatically promotes a candidate tuning into a scenario.
 │   └── web/                 # React/Vite battlefield and lab UI
 ├── packages/
 │   ├── contracts/           # shared Zod schemas and TypeScript contracts
-│   ├── discord-adapter/     # future transport seam
+│   ├── discord-adapter/     # challenge-message formatter; no bot transport
 │   ├── engine/              # deterministic rules, replay, reconstruction
 │   └── scenarios/           # scenario pack and gameplay-lab registry
 ├── infra/
@@ -337,11 +338,9 @@ No command automatically promotes a candidate tuning into a scenario.
 
 ## Deployment
 
-The current baseline is deployed behind a private Tailscale network and is not publicly reachable; its address lives in the untracked `.env.omen` rather than in this repository.
+The release stack is designed for an immutable image on the private runtime host behind Tailscale Funnel and an ingress-host Caddy allowlist. Real hosts, addresses, credentials, and database contents live only in the untracked `.env.omen` and the ignored deployment evidence directory.
 
-As of 2026-07-29, that route serves release `p0-rd-20260729-r5`. The newer gameplay-lab build is verified on OMEN but has not yet been promoted with the required AM4 Caddy allowlist changes, so the lab API families are not part of the current acceptance claim.
-
-> **Route rename:** the served path changed from `/mech/` to `/landscape/`. The AM4 Caddy allowlist still matches the old path, so ingress must be updated in the same release window or the deployment will 404.
+This repository does not claim that a particular release is currently healthy. Treat live state as unknown until `/version`, direct-runtime checks, public smokes, persistence checks, and the operator acceptance gates have been recorded for that deployment. `/landscape/` is the canonical browser path, `/mech/` remains a compatibility route, and SPA navigation must remain under `/landscape/`.
 
 Release properties:
 
@@ -349,10 +348,10 @@ Release properties:
 - tag with an explicit release ID;
 - transfer the immutable OCI image;
 - start remotely with `--no-build`;
-- validate application health and AM4 ingress independently;
-- retain both PostgreSQL and playtest-export data during rollback.
+- validate application health and ingress-host Caddy independently;
+- retain PostgreSQL, playtest-export data, and the read-only compiled art catalog during rollback.
 
-Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for release promotion, public smoke checks, ingress validation, persistence checks, and rollback.
+Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for the operational contract and [HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md](HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md) for the live, role-labelled promotion and rollback checklist.
 
 ## Documentation
 
@@ -370,6 +369,7 @@ Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for release promotion, public
 - [First-time playtest workbook](PLAYTEST_WORKBOOK.md)
 - [Gameplay-lab operator workbook](GAMEPLAY_LAB_WORKBOOK.md)
 - [Deployment runbook](DEPLOYMENT_RUNBOOK.md)
+- [Human-release deployment workbook](HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md)
 
 ### Research and implementation
 

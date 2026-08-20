@@ -11,6 +11,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "simulate": "tsx src/main.ts",
     "simulate:command": "node dist/command-main.js",
+    "probe:attention-v4": "tsx src/attention-v4-probe-main.ts",
+    "landscape:attention-v4": "tsx src/attention-v4-landscape-main.ts",
+    "study:attention-v4:deep": "tsx src/attention-v4-deep-main.ts",
     "test": "vitest run"
   },
   "dependencies": {

@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Pool } from "pg";
 import type {
   Challenge,
@@ -14,6 +15,9 @@ import type {
   PlaytestObservation
 } from "@landscape/contracts";
 import {
+  BattleCommandV3ActionRequestSchema,
+  BattleCommandV3CreateRequestSchema,
+  BattleCommandV3ViewSchema,
   ChallengeSchema,
   GameplayLabBookmarkSchema,
   GameplayLabReviewRequestSchema,
@@ -33,9 +37,20 @@ import {
 } from "./gameplay-lab-core.js";
 import { preflightGameplayLabs } from "./gameplay-lab-preflight.js";
 import { registerLandscapeRoutes } from "./landscape-routes.js";
+import { registerHumanReleaseRoutes } from "./human-release.js";
+import { runServerMigrations } from "./migrations.js";
+import {
+  createBattleCommandMatch,
+  isRetiredBattleCommandMatch,
+  projectBattleCommand,
+  submitBattleCommand,
+  type StoredBattleCommandMatch
+} from "./battle-command-core.js";
 
 type StoredMatch = { state: ReturnType<typeof createMatchState>; events: EventEnvelope[]; version?: number };
 const memory = new Map<string, StoredMatch>();
+const memoryBattleCommands = new Map<string, StoredBattleCommandMatch>();
+const battleCommandResponses = new Map<string, unknown>();
 const commandResponses = new Map<string, unknown>();
 const memoryObservations: Array<PlaytestObservation & { observationId: string }> = [];
 const memoryChallenges = new Map<string, Challenge>();
@@ -46,6 +61,7 @@ const pool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env
 const releaseId = process.env.CONTEXT_LANDSCAPE_RELEASE ?? "dev";
 const playtestExportRoot = process.env.PLAYTEST_EXPORT_ROOT ?? join(process.cwd(), "data", "playtests");
 const repoRoot = /[\\/]apps[\\/]server$/.test(process.cwd()) ? resolve(process.cwd(), "../..") : process.cwd();
+const artCatalogRoot = process.env.ART_CATALOG_ROOT ?? join(repoRoot, "data", "art", "release");
 // `auto` (the default) separates environment problems from rules defects: a checkout without the
 // large `sleep-01` reports still boots, but an unwinnable variant or a drifted control never does.
 // `strict` makes missing provenance fatal too (CI and release); `warn` downgrades everything.
@@ -92,6 +108,27 @@ async function initDb() {
       created_at timestamptz NOT NULL DEFAULT now(),
       PRIMARY KEY (match_id, idempotency_key)
     );
+    CREATE TABLE IF NOT EXISTS battle_command_matches (
+      match_id text PRIMARY KEY,
+      state jsonb NOT NULL,
+      metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+      revision integer NOT NULL DEFAULT 0,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    );
+    CREATE TABLE IF NOT EXISTS battle_command_events (
+      match_id text NOT NULL REFERENCES battle_command_matches(match_id) ON DELETE CASCADE,
+      sequence integer NOT NULL,
+      event jsonb NOT NULL,
+      PRIMARY KEY (match_id, sequence)
+    );
+    CREATE TABLE IF NOT EXISTS battle_command_requests (
+      match_id text NOT NULL REFERENCES battle_command_matches(match_id) ON DELETE CASCADE,
+      idempotency_key text NOT NULL,
+      response jsonb NOT NULL,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      PRIMARY KEY (match_id, idempotency_key)
+    );
     CREATE TABLE IF NOT EXISTS playtest_observations (
       observation_id text PRIMARY KEY,
       session_id text NOT NULL,
@@ -120,7 +157,9 @@ async function initDb() {
     );
     CREATE INDEX IF NOT EXISTS gameplay_lab_sessions_lab_id_idx ON gameplay_lab_sessions(lab_id);
     CREATE INDEX IF NOT EXISTS playtest_observations_lab_session_idx ON playtest_observations ((data->>'labSessionId'));
+    ALTER TABLE battle_command_matches ADD COLUMN IF NOT EXISTS metadata jsonb NOT NULL DEFAULT '{}'::jsonb;
   `);
+  await runServerMigrations(pool);
 }
 
 async function loadCommandResponse(matchId: string, key: string): Promise<unknown | undefined> {
@@ -137,6 +176,81 @@ async function saveCommandResponse(matchId: string, key: string, response: unkno
     return;
   }
   await pool.query("INSERT INTO match_commands (match_id, idempotency_key, response) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING", [matchId, key, response]);
+}
+
+async function loadBattleCommandResponse(matchId: string, key: string): Promise<unknown | undefined> {
+  const memoryKey = `${matchId}:${key}`;
+  if (!pool) return battleCommandResponses.get(memoryKey);
+  const result = await pool.query<{ response: unknown }>(
+    "SELECT response FROM battle_command_requests WHERE match_id = $1 AND idempotency_key = $2",
+    [matchId, key]
+  );
+  return result.rowCount ? result.rows[0].response : undefined;
+}
+
+async function saveBattleCommandResponse(matchId: string, key: string, response: unknown) {
+  const memoryKey = `${matchId}:${key}`;
+  if (!pool) {
+    battleCommandResponses.set(memoryKey, response);
+    return;
+  }
+  await pool.query(
+    "INSERT INTO battle_command_requests (match_id, idempotency_key, response) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
+    [matchId, key, response]
+  );
+}
+
+async function loadBattleCommandMatch(id: string): Promise<StoredBattleCommandMatch | undefined> {
+  if (!pool) return memoryBattleCommands.get(id);
+  const result = await pool.query<{ state: StoredBattleCommandMatch["state"]; metadata: StoredBattleCommandMatch["metadata"]; revision: number }>(
+    "SELECT state, metadata, revision FROM battle_command_matches WHERE match_id = $1",
+    [id]
+  );
+  if (!result.rowCount) return undefined;
+  const events = await pool.query("SELECT event FROM battle_command_events WHERE match_id = $1 ORDER BY sequence", [id]);
+  return {
+    state: result.rows[0].state,
+    metadata: result.rows[0].metadata,
+    revision: Number(result.rows[0].revision),
+    events: events.rows.map((row) => row.event as EventEnvelope)
+  };
+}
+
+async function saveBattleCommandMatch(id: string, match: StoredBattleCommandMatch, expectedRevision?: number) {
+  if (!pool) {
+    const current = memoryBattleCommands.get(id);
+    if (current && expectedRevision !== undefined && current.revision !== expectedRevision) throw new Error("battle_revision_conflict");
+    memoryBattleCommands.set(id, match);
+    return;
+  }
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const current = await client.query<{ revision: number }>(
+      "SELECT revision FROM battle_command_matches WHERE match_id = $1 FOR UPDATE",
+      [id]
+    );
+    if (current.rowCount && expectedRevision !== undefined && Number(current.rows[0].revision) !== expectedRevision) {
+      throw new Error("battle_revision_conflict");
+    }
+    await client.query(
+      `INSERT INTO battle_command_matches (match_id, state, metadata, revision) VALUES ($1, $2, $3, $4)
+       ON CONFLICT (match_id) DO UPDATE SET state = EXCLUDED.state, metadata = EXCLUDED.metadata, revision = EXCLUDED.revision, updated_at = now()`,
+      [id, match.state, match.metadata ?? {}, match.revision]
+    );
+    for (const item of match.events) {
+      await client.query(
+        "INSERT INTO battle_command_events (match_id, sequence, event) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
+        [id, item.sequence, item]
+      );
+    }
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 async function loadMatch(id: string): Promise<StoredMatch | undefined> {
@@ -544,11 +658,42 @@ async function writeGameplayLabExport(session: GameplayLabSession) {
   };
 }
 
-const app = Fastify({ logger: true });
+export function requestLogUrl(url: string): string {
+  const query = url.indexOf("?");
+  return query < 0 ? url : `${url.slice(0, query)}?[redacted]`;
+}
+
+export const app = Fastify({
+  logger: process.env.NODE_ENV === "test" ? false : {
+    serializers: {
+      req(request) {
+        return {
+          method: request.method,
+          url: requestLogUrl(request.url),
+          hostname: request.hostname,
+          remoteAddress: request.ip,
+          remotePort: request.socket.remotePort
+        };
+      }
+    }
+  }
+});
 await app.register(cors, { origin: true });
-const webRoot = join(process.cwd(), "apps/web/dist");
+const webRoot = join(repoRoot, "apps/web/dist");
 if (existsSync(webRoot)) await app.register(fastifyStatic, { root: webRoot, prefix: "/" });
+if (existsSync(artCatalogRoot)) await app.register(fastifyStatic, { root: artCatalogRoot, prefix: "/media/art/", decorateReply: false });
 registerLandscapeRoutes(app);
+await registerHumanReleaseRoutes(app, {
+  pool,
+  artRoot: artCatalogRoot,
+  battle: {
+    load: loadBattleCommandMatch,
+    save: saveBattleCommandMatch,
+    withLock: withMatchLock,
+    loadResponse: loadBattleCommandResponse,
+    saveResponse: saveBattleCommandResponse
+  }
+});
 
 app.get("/health/live", async () => ({ status: "ok", service: "context-landscape" }));
 app.get("/health/ready", async (_request, reply) => {
@@ -796,6 +941,63 @@ app.post<{ Body: unknown }>("/api/research/observations", async (request, reply)
   return reply.code(202).send({ accepted: true, observationId });
 });
 
+app.post<{ Body: unknown }>("/api/battle-command/matches", async (request, reply) => {
+  const parsed = BattleCommandV3CreateRequestSchema.safeParse(request.body ?? {});
+  if (!parsed.success) return reply.code(400).send({ error: "invalid_battle_setup", details: parsed.error.flatten() });
+  const { seed, playerCompositionModule, opponentCompositionModule } = parsed.data;
+  const id = `battle_${randomUUID()}`;
+  const generatedSeed = seed ?? Number.parseInt(id.replace(/\D/g, "").slice(0, 9) || "260813", 10);
+  const created = createBattleCommandMatch(id, generatedSeed, { playerCompositionModule, opponentCompositionModule });
+  await saveBattleCommandMatch(id, created.stored);
+  return reply.code(201).send(BattleCommandV3ViewSchema.parse(created.view));
+});
+
+app.get<{ Params: { id: string } }>("/api/battle-command/matches/:id", async (request, reply) => {
+  const stored = await loadBattleCommandMatch(request.params.id);
+  if (!stored) return reply.code(404).send({ error: "battle_not_found" });
+  if (isRetiredBattleCommandMatch(stored)) {
+    return reply.code(410).send({ error: "battle_ruleset_retired", createOperation: "/api/battle-command/matches" });
+  }
+  return BattleCommandV3ViewSchema.parse(projectBattleCommand(stored, stored.events));
+});
+
+app.post<{ Params: { id: string }; Body: unknown }>("/api/battle-command/matches/:id/actions", async (request, reply) => {
+  return withMatchLock(request.params.id, async () => {
+    const stored = await loadBattleCommandMatch(request.params.id);
+    if (!stored) return reply.code(404).send({ error: "battle_not_found" });
+    if (isRetiredBattleCommandMatch(stored)) {
+      return reply.code(410).send({ error: "battle_ruleset_retired", createOperation: "/api/battle-command/matches" });
+    }
+    const idempotencyKey = typeof request.headers["idempotency-key"] === "string" ? request.headers["idempotency-key"] : undefined;
+    if (idempotencyKey) {
+      const existing = await loadBattleCommandResponse(request.params.id, idempotencyKey);
+      if (existing) return existing;
+    }
+    const parsed = BattleCommandV3ActionRequestSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "invalid_battle_action", details: parsed.error.flatten() });
+    if (stored.revision !== parsed.data.revision) {
+      return reply.code(409).send({ error: "battle_revision_conflict", currentRevision: stored.revision });
+    }
+    try {
+      const result = submitBattleCommand(stored, parsed.data.submission);
+      await saveBattleCommandMatch(request.params.id, result.stored, stored.revision);
+      const response = BattleCommandV3ViewSchema.parse(result.view);
+      if (idempotencyKey) await saveBattleCommandResponse(request.params.id, idempotencyKey, response);
+      return response;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message === "battle_revision_conflict") return reply.code(409).send({ error: message });
+      if (message === "battle_complete" || message.startsWith("phase_mismatch:")) {
+        return reply.code(409).send({ error: message });
+      }
+      if (message === "battle_ruleset_retired") return reply.code(410).send({ error: message, createOperation: "/api/battle-command/matches" });
+      if (["artillery_target_required", "unit_unavailable", "kinetic_plan_incomplete"].includes(message) ||
+        message.startsWith("artillery_illegal:") || message.startsWith("command_illegal:")) return reply.code(400).send({ error: message });
+      throw error;
+    }
+  });
+});
+
 app.post<{ Body: { scenarioId?: string; creatorId?: string } }>("/api/challenges", async (request, reply) => {
   const scenario = scenarioById.get(request.body?.scenarioId ?? twoBakedSlices.scenarioId);
   if (!scenario) return reply.code(400).send({ error: "scenario_not_found" });
@@ -898,6 +1100,17 @@ app.get("/", async (_request, reply) => {
   return reply.sendFile("index.html");
 });
 
-await initDb();
-const port = Number(process.env.CONTEXT_LANDSCAPE_PORT ?? process.env.PORT ?? 8080);
-await app.listen({ host: "0.0.0.0", port });
+export function setMemoryBattleCommandMatchForTest(id: string, stored: StoredBattleCommandMatch): void {
+  if (process.env.NODE_ENV !== "test") throw new Error("test-only battle snapshot injection is unavailable outside tests");
+  if (pool) throw new Error("test-only battle snapshot injection requires the in-memory store");
+  memoryBattleCommands.set(id, stored);
+}
+
+export async function startContextLandscapeServer(): Promise<void> {
+  await initDb();
+  const port = Number(process.env.CONTEXT_LANDSCAPE_PORT ?? process.env.PORT ?? 8080);
+  await app.listen({ host: "0.0.0.0", port });
+}
+
+const invokedPath = process.argv[1] ? resolve(process.argv[1]) : "";
+if (invokedPath === resolve(fileURLToPath(import.meta.url))) await startContextLandscapeServer();

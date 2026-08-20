@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
-    "@fastify/static": "^8.2.0",
+    "@fastify/static": "^10.1.3",
     "@landscape/contracts": "0.1.0",
     "@landscape/engine": "0.1.0",
     "@landscape/scenarios": "0.1.0",
-    "fastify": "^5.3.3",
+    "fastify": "^5.12.1",
     "pg": "^8.16.0"
   }
 }

@@ -1,0 +1,227 @@
+{
+  "schemaVersion": "context-landscape-image-census-config/v1",
+  "outputDirectory": "output/image-census-v1",
+  "localRoots": [
+    {
+      "id": "omen-main-gallery-originals",
+      "path": "C:/work/omen-perception/data/img",
+      "corpus": "main-gallery",
+      "role": "scored-original-mirror"
+    },
+    {
+      "id": "omen-hearth-dream-cache",
+      "path": "C:/work/commandcenter/hearth/var/dreams",
+      "corpus": "main-gallery",
+      "role": "generation-cache"
+    },
+    {
+      "id": "omen-valheim-large",
+      "path": "C:/work/baseline/tools/selfie-stick/out/gallery/large",
+      "corpus": "valheim-gallery",
+      "role": "original"
+    },
+    {
+      "id": "omen-valheim-thumbs",
+      "path": "C:/work/baseline/tools/selfie-stick/out/gallery/thumb",
+      "corpus": "valheim-gallery",
+      "role": "thumbnail"
+    },
+    {
+      "id": "omen-context-landscape-gallery-review",
+      "path": "C:/work/contextlandscape/output/gallery-review",
+      "corpus": "context-landscape-local",
+      "role": "review-download"
+    },
+    {
+      "id": "omen-context-landscape-data",
+      "path": "C:/work/contextlandscape/data",
+      "corpus": "context-landscape-local",
+      "role": "project-asset"
+    },
+    {
+      "id": "omen-context-landscape-apps",
+      "path": "C:/work/contextlandscape/apps",
+      "corpus": "context-landscape-local",
+      "role": "application-asset",
+      "excludeDirectories": ["node_modules", "dist", "coverage"]
+    },
+    {
+      "id": "omen-imagegen-runs",
+      "path": "C:/work/imagegen/runs",
+      "corpus": "imagegen-runs",
+      "role": "run-sample"
+    },
+    {
+      "id": "omen-retired-comfy",
+      "path": "C:/work/_retired/comfy",
+      "corpus": "retired-comfy",
+      "role": "retired-state-or-test-asset",
+      "excludeDirectories": ["node_modules", ".git"]
+    },
+    {
+      "id": "omen-comfy-steward-view",
+      "path": "C:/work/ComfyStewardView",
+      "corpus": "miscellaneous",
+      "role": "application-sample",
+      "excludeDirectories": ["node_modules", ".git"]
+    },
+    {
+      "id": "omen-hearth-control-plane",
+      "path": "C:/work/hearth-execution-control-plane",
+      "corpus": "miscellaneous",
+      "role": "application-sample",
+      "excludeDirectories": ["node_modules", ".git"]
+    }
+  ],
+  "remoteProfiles": {
+    "am4": {
+      "sshHost": "am4",
+      "python": "/home/derek/ComfyUI/.venv/bin/python",
+      "roots": [
+        {
+          "id": "am4-main-gallery-originals",
+          "path": "/home/derek/bench/results_full/img",
+          "corpus": "main-gallery",
+          "role": "published-original"
+        },
+        {
+          "id": "am4-main-gallery-thumbs",
+          "path": "/home/derek/bench/results_full/thumb",
+          "corpus": "main-gallery",
+          "role": "thumbnail"
+        },
+        {
+          "id": "am4-comfy-primary-output",
+          "path": "/home/derek/ComfyUI/output",
+          "corpus": "comfy-raw",
+          "role": "primary-generation-output"
+        },
+        {
+          "id": "am4-comfy-secondary-output",
+          "path": "/home/derek/comfyB_out",
+          "corpus": "comfy-raw",
+          "role": "secondary-generation-output"
+        },
+        {
+          "id": "am4-comfy-inputs",
+          "path": "/home/derek/ComfyUI/input",
+          "corpus": "comfy-input",
+          "role": "reference-input"
+        },
+        {
+          "id": "am4-valheim-gallery",
+          "path": "/home/derek/valheim-gallery",
+          "corpus": "valheim-gallery",
+          "role": "published-gallery",
+          "excludeDirectories": ["node_modules", ".git"]
+        },
+        {
+          "id": "am4-bench-pilot",
+          "path": "/home/derek/bench/results_pilot",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-burst",
+          "path": "/home/derek/bench/results_burst",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-switch",
+          "path": "/home/derek/bench/results_switch",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-smoke",
+          "path": "/home/derek/bench/results_smoke",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-dualcard",
+          "path": "/home/derek/bench/results_dualcard",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-fluxsmoke",
+          "path": "/home/derek/bench/results_fluxsmoke",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-dream-e2e",
+          "path": "/home/derek/bench/results_dreamE2E",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-bench-bot-e2e",
+          "path": "/home/derek/bench/results_botE2E",
+          "corpus": "bench-small-runs",
+          "role": "benchmark-output"
+        },
+        {
+          "id": "am4-gallery-view",
+          "path": "/home/derek/gallery",
+          "corpus": "gallery-view",
+          "role": "index-and-application",
+          "excludeDirectories": [".git"]
+        },
+        {
+          "id": "am4-bot-runs",
+          "path": "/home/derek/am4bot/runs",
+          "corpus": "miscellaneous",
+          "role": "request-run-metadata"
+        },
+        {
+          "id": "am4-fleet-results",
+          "path": "/home/derek/am4-fleet-node/results",
+          "corpus": "miscellaneous",
+          "role": "fleet-result-metadata"
+        },
+        {
+          "id": "am4-steward-publish",
+          "path": "/home/derek/steward/publish",
+          "corpus": "miscellaneous",
+          "role": "steward-output"
+        },
+        {
+          "id": "am4-steward-world",
+          "path": "/home/derek/steward/world",
+          "corpus": "miscellaneous",
+          "role": "steward-world"
+        },
+        {
+          "id": "am4-topography-renders",
+          "path": "/home/derek/contextlandscape-topography/renders",
+          "corpus": "miscellaneous",
+          "role": "topography-render"
+        },
+        {
+          "id": "am4-valheim-lab-incoming",
+          "path": "/home/derek/comfy-valheim-lab/incoming",
+          "corpus": "valheim-gallery",
+          "role": "incoming"
+        },
+        {
+          "id": "am4-o1-results",
+          "path": "/home/derek/o1/results",
+          "corpus": "miscellaneous",
+          "role": "experiment-output"
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "mainGalleryMeta": "C:/work/omen-perception/data/meta",
+    "mainGalleryEmbeddings": "C:/work/omen-perception/embeddings",
+    "mainGalleryScores": "C:/work/omen-perception/scores.json",
+    "mainGalleryScoresV2": "C:/work/omen-perception/scores_v2.json",
+    "mainGalleryUnscoreable": "C:/work/omen-perception/unscoreable.json",
+    "mainGalleryIndexRemote": "/home/derek/gallery/index.json",
+    "valheimIndex": "C:/work/baseline/tools/selfie-stick/out/gallery/index.json"
+  }
+}
