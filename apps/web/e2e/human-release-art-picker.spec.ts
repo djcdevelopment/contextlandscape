@@ -64,6 +64,19 @@ test("art picker keeps stable scrollable cards and pages through plain-language 
   });
 
   await page.goto("/landscape/?view=hangar");
+  const paletteTrigger = page.getByRole("button", { name: "Fleet palette, Signal teal" });
+  await expect(paletteTrigger).toHaveAttribute("aria-expanded", "false");
+  await paletteTrigger.click();
+  const palette = page.getByRole("group", { name: "Fleet palette" });
+  await expect(palette.getByRole("button", { name: "Signal teal" })).toHaveAttribute("aria-pressed", "true");
+  await palette.getByRole("button", { name: "Oxide red" }).click();
+  await expect(page.getByRole("main")).toHaveClass(/palette-oxide-red/);
+  await expect(palette).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Fleet palette, Oxide red" })).toBeFocused();
+  const emblems = page.getByRole("group", { name: "Fleet emblem" });
+  await emblems.getByRole("button", { name: "Anvil" }).click();
+  await expect(emblems.getByRole("button", { name: "Anvil" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('.commander-card [data-emblem="anvil"]')).toBeVisible();
   const opener = page.getByRole("button", { name: "Choose any unit image" }).first();
   await opener.click();
   const picker = page.getByRole("dialog", { name: "Choose unit art" });
@@ -82,6 +95,9 @@ test("art picker keeps stable scrollable cards and pages through plain-language 
   const firstPageGeometry = await results.evaluate((element) => ({ clientHeight: element.clientHeight, scrollHeight: element.scrollHeight }));
   expect(firstPageGeometry.scrollHeight).toBeGreaterThan(firstPageGeometry.clientHeight);
   const firstCardHeight = await cards.first().evaluate((button) => button.getBoundingClientRect().height);
+  await expect(cards.first()).toHaveText("");
+  await expect(cards.first().locator("img")).toHaveAttribute("src", "/media/art/card/unit-0.webp");
+  await expect.poll(() => cards.first().locator("img").evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
   const firstImageVisibleHeight = await cards.first().evaluate((button) => {
     const image = button.querySelector("img")!;
     const cardBox = button.getBoundingClientRect();
@@ -111,8 +127,8 @@ test("art picker keeps stable scrollable cards and pages through plain-language 
   await picker.getByRole("button", { name: "Next page" }).click();
   await expect(picker.getByRole("status")).toContainText("Page 2 of 3");
   await expect(cards).toHaveCount(40);
-  await expect(picker.getByRole("button", { name: /Unit 40/ })).toBeVisible();
-  await expect(picker.getByRole("button", { name: /Unit 0/ })).toHaveCount(0);
+  await expect(picker.getByRole("button", { name: "Choose unit art option 41" })).toBeVisible();
+  await expect(picker.getByRole("button", { name: "Choose unit art option 1" })).toHaveCount(0);
   await expect.poll(() => results.evaluate((element) => element.scrollTop)).toBe(0);
   const secondCardHeight = await cards.first().evaluate((button) => button.getBoundingClientRect().height);
   expect(Math.abs(secondCardHeight - firstCardHeight)).toBeLessThanOrEqual(1);

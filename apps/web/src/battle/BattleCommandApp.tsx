@@ -17,6 +17,7 @@ import {
   type AttentionV4Shell,
   type AttentionV4UnitState,
   type ArtCatalogEntry,
+  type ArtCatalogPage,
   type AuthSessionView,
   type BattleExperience,
   type BattleCommandV3Submission,
@@ -32,6 +33,7 @@ const PLAYER = "alpha";
 type Selection = { kind: "unit"; id: string } | { kind: "artifact"; id: string } | { kind: "cell"; at: AttentionV4Coordinate };
 type PlanMode = "move";
 type Allocation = { volume: number; densityPct: number };
+type Chassis = AttentionV4UnitState["chassis"];
 type CompositionModule = AttentionV4CommanderProfile["compositionModule"];
 
 const fleetCopy: Record<CompositionModule, string> = {
@@ -275,7 +277,7 @@ function Armories({ view, selectedCardId, onCard }: { view: BattleCommandV3View;
   })}</div></div>)}</section>;
 }
 
-function UnitRoster({ view, selection, plans, planMode, setPlanMode, append, clear, allocations, setAllocation, submitCommand, busy }: {
+function UnitRoster({ view, selection, plans, planMode, setPlanMode, append, clear, allocations, setAllocation, submitCommand, busy, onSelect, unitArt }: {
   view: BattleCommandV3View;
   selection: Selection | null;
   plans: Record<string, AttentionV4KineticAction[]>;
@@ -287,6 +289,8 @@ function UnitRoster({ view, selection, plans, planMode, setPlanMode, append, cle
   setAllocation: (unitId: string, allocation: Allocation) => void;
   submitCommand: (intent: AttentionV4CommandIntent) => void;
   busy: boolean;
+  onSelect: (selection: Selection) => void;
+  unitArt: (unitId: string) => ArtCatalogEntry | undefined;
 }) {
   const own = view.projection.units.filter((unit) => unit.ownerPlayerId === PLAYER);
   const active = view.projection.phase === "command" && view.legal.activeCommanderId === PLAYER;
@@ -301,12 +305,18 @@ function UnitRoster({ view, selection, plans, planMode, setPlanMode, append, cle
     const selected = selection?.kind === "unit" && selection.id === unit.unitId;
     const plannedCondense = plan.filter((action) => action.kind === "condense-output").length;
     const condenseLocked = plannedCondense > 0;
-    return <article key={unit.unitId} className={`v4-unit-card ${selected ? "selected" : ""} ${unit.uap.frozen ? "frozen" : ""}`}>
+    const portrait = unitArt(unit.unitId);
+    const selectUnit = () => onSelect({ kind: "unit", id: unit.unitId });
+    return <article key={unit.unitId} aria-current={selected ? "true" : undefined} className={`v4-unit-card ${selected ? "selected" : ""} ${unit.uap.frozen ? "frozen" : ""}`} onPointerDownCapture={selectUnit} onFocusCapture={selectUnit}>
+      <div className="unit-control-surface">
       <header><div><span>{unitCode(unit.chassis)} · {displayChassis(unit.chassis)}</span><strong>R{unit.activeRange} · reactor {unit.reactorRating}</strong></div><b>{percent(unit.calibration)} CAL</b></header>
       <div className="uap-breakdown"><span>BASE {unit.uap.base}</span><span>BATTERY +{unit.uap.batteryBonus}</span><strong>{unit.uap.frozen ? "0 FROZEN" : `${unit.uap.effective} UAP`}</strong></div>
       <div className="unit-state"><span>{unit.chassis === "scout" ? `Condense ${view.projection.phase === "kinetic" ? plannedCondense : unit.condenseSteps}/2 · cap ${allocationLegal.maximumVolume}@${allocationLegal.maximumDensityPct}%` : unit.chassis === "line" ? "Step-Up / Scan" : unit.uplinkQueued ? "Uplink queued" : "Uplink idle"}</span><span>{unit.uap.freezeSources.length ? unit.uap.freezeSources.join(" + ") : unit.uap.nextFreezeSources.length ? `Next: ${unit.uap.nextFreezeSources.join(" + ")}` : "Mobile"}</span></div>
       {view.projection.phase === "kinetic" && <><ol className="ordered-plan">{plan.length ? plan.map((action, index) => <li key={`${action.kind}-${index}`}><b>{index + 1}</b>{action.kind}{action.kind === "move" ? ` ${action.destination.x},${action.destination.y}` : action.kind === "support-scan" ? ` ${action.scoutUnitId.split(":").at(-1)}` : ""}</li>) : <li className="hold"><b>0</b>Explicit Hold</li>}</ol><div className="unit-actions"><button disabled={condenseLocked} onClick={() => setPlanMode("move")} className={planMode === "move" && selected ? "active" : ""}>Move on grid</button>{unit.chassis === "scout" && <button disabled={plannedCondense >= (unitLegal?.maxCondenseSteps ?? 0) || plan.length >= (unitLegal?.effectiveUap ?? 0)} onClick={() => append(unit, { kind: "condense-output" })}>Condense output</button>}{unit.chassis === "line" && <><button onClick={() => append(unit, { kind: "step-up" })}>Step-Up</button>{own.filter((candidate) => candidate.chassis === "scout").map((scout) => <button key={scout.unitId} onClick={() => append(unit, { kind: "support-scan", scoutUnitId: scout.unitId })}>Scan {scout.unitId.split(":").at(-1)}</button>)}</>}{unit.chassis === "heavy" && <button onClick={() => append(unit, { kind: "command-uplink" })}>Uplink</button>}<button disabled={condenseLocked} onClick={() => append(unit, { kind: "range-shift", delta: -1 })}>Range −</button><button disabled={condenseLocked} onClick={() => append(unit, { kind: "range-shift", delta: 1 })}>Range +</button><button onClick={() => clear(unit.unitId)}>Clear</button></div></>}
       {view.projection.phase === "command" && <div className="output-allocation"><div><label>Volume <input type="number" min="1" max={maximum} value={allocation.volume} onChange={(event) => setAllocation(unit.unitId, { ...allocation, volume: Number(event.target.value) })} /></label><label>Density <select value={allocation.densityPct} onChange={(event) => { const densityPct = Number(event.target.value); const cap = Math.min(allocationLegal.maximumVolume, allocationLegal.maximumVolumeByDensity[String(densityPct)] ?? 0); setAllocation(unit.unitId, { volume: Math.max(1, Math.min(allocation.volume, cap)), densityPct }); }}>{densityOptions.map((density) => <option key={density} value={density}>{density}%</option>)}</select></label></div><p>{allocation.volume} × {allocation.densityPct} ≤ {unit.reactorRating * 100} · D×C = {percent(effectiveCalibration)}</p><div><button disabled={busy || !active || unit.outputDecision !== "pending" || allocation.volume < 1 || allocation.volume > maximum || allocation.densityPct > allocationLegal.maximumDensityPct} className="battle-primary" onClick={() => submitCommand({ kind: "emit", playerId: PLAYER, unitId: unit.unitId, volume: allocation.volume, densityPct: allocation.densityPct })}>Emit</button><button disabled={busy || !active || unit.outputDecision !== "pending"} onClick={() => submitCommand({ kind: "hold", playerId: PLAYER, unitId: unit.unitId })}>Hold</button></div><strong className={`decision ${unit.outputDecision}`}>{unit.outputDecision}</strong></div>}
+      </div>
+      <button type="button" className="unit-portrait-select" aria-label={`Select ${displayChassis(unit.chassis)} unit ${unit.unitId.split(":").at(-1)}`} aria-pressed={selected} onClick={selectUnit}>{portrait ? <img src={portrait.cardSrc} alt="" /> : <span className={`unit-portrait-fallback art-mech-${unit.chassis === "heavy" ? "siege" : unit.chassis}`}><b>{unitCode(unit.chassis)}</b><small>{displayChassis(unit.chassis)}</small></span>}<strong>{displayChassis(unit.chassis).toUpperCase()} · W{unit.chassis === "scout" ? 1 : unit.chassis === "line" ? 2 : 3}</strong></button>
+      <span className="unit-selection-indicator" aria-hidden="true" />
     </article>;
   })}</div></section>;
 }
@@ -416,6 +426,7 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
   const [experience, setExperience] = useState<BattleExperience | null>(null);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [artAssets, setArtAssets] = useState<Record<string, ArtCatalogEntry>>({});
+  const [autoArtPools, setAutoArtPools] = useState<Record<Chassis, ArtCatalogEntry[]>>({ scout: [], line: [], heavy: [] });
   const [boardView, setBoardView] = useState<"perspective" | "tactical">(() => (localStorage.getItem("context-landscape.boardView") as "perspective" | "tactical" | null) ?? "perspective");
 
   function applyFriendPayload(payload: FriendBattleCommandView) {
@@ -465,8 +476,19 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
       if (fleet.identity.commanderAssetId) ids.add(fleet.identity.commanderAssetId);
       if (fleet.identity.battlefieldAssetId) ids.add(fleet.identity.battlefieldAssetId);
     }
-    void Promise.all([...ids].map((id) => requestJson<ArtCatalogEntry>(`/api/art/catalog/${encodeURIComponent(id)}`).catch(() => null))).then((items) => setArtAssets(Object.fromEntries(items.filter(Boolean).map((item) => [item!.assetId, item!]))));
+    void Promise.all([...ids].map((id) => requestJson<ArtCatalogEntry>(`/api/art/catalog/${encodeURIComponent(id)}`).catch(() => null))).then((items) => setArtAssets((current) => ({ ...current, ...Object.fromEntries(items.filter(Boolean).map((item) => [item!.assetId, item!])) })));
   }, [experience?.fleets.alpha?.snapshotHash, experience?.fleets.bravo?.snapshotHash]);
+
+  useEffect(() => {
+    if (!view) return;
+    let active = true;
+    const subjects: Record<Chassis, string> = { scout: "mech-scout", line: "mech-line", heavy: "mech-siege" };
+    void Promise.all((Object.entries(subjects) as Array<[Chassis, string]>).map(async ([chassis, query]) => {
+      const page = await requestJson<ArtCatalogPage>(`/api/art/catalog?kind=unit&q=${query}&offset=0&limit=10`).catch(() => null);
+      return [chassis, page?.items ?? []] as const;
+    })).then((entries) => { if (active) setAutoArtPools(Object.fromEntries(entries) as Record<Chassis, ArtCatalogEntry[]>); });
+    return () => { active = false; };
+  }, [view?.projection.matchId]);
 
   useEffect(() => {
     if (!view) return;
@@ -547,12 +569,17 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
 
   if (briefing || !view) return friendMatchId ? <main className="briefing-shell friend-loading"><ArtFrame subject="battlefield-context-furnace" className="briefing-hero"><div className="briefing-copy"><p className="battle-kicker">FRIEND CHALLENGE</p><h1>{error === "authentication_required" ? "Sign in to enter this operation" : "Joining the battlefield"}</h1><p>{error || "Loading your private projection and fleet identity…"}</p>{error === "authentication_required" && <a className="briefing-launch" href={`/api/auth/discord/start?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`}>Continue with Discord</a>}<a className="briefing-secondary" href={appHref("view=hangar")}>Return to Hangar</a></div></ArtFrame></main> : <><Briefing onStart={() => void start()} busy={busy} retired={retired} playerFleet={playerFleet} opponentFleet={opponentFleet} onPlayerFleet={setPlayerFleet} onOpponentFleet={setOpponentFleet} />{error && <div className="battle-toast error" role="alert">{error}</div>}</>;
   const selectedArtifact = selection?.kind === "artifact" ? view.projection.artifacts.find((artifact) => artifact.artifactId === selection.id) : undefined;
-  const fleetArtForUnit = (unitId: string): string | undefined => {
-    const unit = view.projection.units.find((candidate) => candidate.unitId === unitId); if (!unit || !experience) return undefined;
-    const fleet = unit.ownerPlayerId === PLAYER ? experience.fleets.alpha : experience.fleets.bravo; if (!fleet) return undefined;
+  const unitArtFor = (unitId: string): ArtCatalogEntry | undefined => {
+    const unit = view.projection.units.find((candidate) => candidate.unitId === unitId); if (!unit) return undefined;
     const ordinal = view.projection.units.filter((candidate) => candidate.ownerPlayerId === unit.ownerPlayerId && candidate.chassis === unit.chassis).findIndex((candidate) => candidate.unitId === unitId);
-    const identity = fleet.units.filter((candidate) => candidate.chassis === unit.chassis)[ordinal];
-    return identity?.artAssetId ? artAssets[identity.artAssetId]?.cardSrc : undefined;
+    const fleet = experience ? unit.ownerPlayerId === PLAYER ? experience.fleets.alpha : experience.fleets.bravo : null;
+    const identity = fleet?.units.filter((candidate) => candidate.chassis === unit.chassis)[ordinal];
+    const assigned = identity?.artAssetId ? artAssets[identity.artAssetId] : undefined;
+    if (assigned) return assigned;
+    const pool = autoArtPools[unit.chassis];
+    if (!pool.length) return undefined;
+    const fallbackIndex = ordinal + (unit.ownerPlayerId === PLAYER ? 0 : 5);
+    return pool[fallbackIndex % pool.length];
   };
   const battlefieldAssetId = experience?.fleets.alpha?.identity.battlefieldAssetId;
   const battlefieldArt = battlefieldAssetId ? artAssets[battlefieldAssetId]?.battlefieldSrc ?? artAssets[battlefieldAssetId]?.cardSrc : undefined;
@@ -569,8 +596,8 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
     <StatusStrip view={view} />
     <section className="battle-layout">
       <Workflow view={view} onRules={() => setRulesOpen(true)} />
-      <div className="board-column"><div className="board-toolbar"><div><strong>Operational field</strong><span>Battery fields · action heat · hazard countdowns · artillery zones · paralysis</span></div><div className="board-view-switch" role="group" aria-label="Battlefield view"><button aria-pressed={boardView === "perspective"} onClick={() => { setBoardView("perspective"); localStorage.setItem("context-landscape.boardView", "perspective"); }}>Perspective</button><button aria-pressed={boardView === "tactical"} onClick={() => { setBoardView("tactical"); localStorage.setItem("context-landscape.boardView", "tactical"); }}>Tactical 2D</button></div><div><span className="base-rate">LATENT SOUNDNESS <b>70%</b></span><span>Roving grid focus · arrow keys move</span></div></div><ArtifactTray view={view} selection={selection} onSelect={setSelection} />{boardView === "perspective" ? <PerspectiveBoard view={view} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} unitArt={fleetArtForUnit} battlefieldArt={battlefieldArt} /> : <Board view={view} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} />}<Armories view={view} selectedCardId={selectedCardId} onCard={(cardId) => { setSelectedCardId(cardId); setTarget(null); }} /><EventTicker view={view} /></div>
-      <div className={`right-command-column phase-${view.projection.phase}`}><UnitRoster view={view} selection={selection} plans={plans} planMode={planMode} setPlanMode={setPlanMode} append={append} clear={clear} allocations={allocations} setAllocation={(unitId, allocation) => setAllocations((current) => ({ ...current, [unitId]: allocation }))} submitCommand={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} /><ArtifactPanel view={view} artifact={selectedArtifact} submit={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} /></div>
+      <div className="board-column"><div className="board-toolbar"><div><strong>Operational field</strong><span>Battery fields · action heat · hazard countdowns · artillery zones · paralysis</span></div><div className="board-view-switch" role="group" aria-label="Battlefield view"><button aria-pressed={boardView === "perspective"} onClick={() => { setBoardView("perspective"); localStorage.setItem("context-landscape.boardView", "perspective"); }}>Perspective</button><button aria-pressed={boardView === "tactical"} onClick={() => { setBoardView("tactical"); localStorage.setItem("context-landscape.boardView", "tactical"); }}>Tactical 2D</button></div><div><span className="base-rate">LATENT SOUNDNESS <b>70%</b></span><span>Roving grid focus · arrow keys move</span></div></div><ArtifactTray view={view} selection={selection} onSelect={setSelection} />{boardView === "perspective" ? <PerspectiveBoard view={view} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} unitArt={(unitId) => unitArtFor(unitId)?.cardSrc} battlefieldArt={battlefieldArt} /> : <Board view={view} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} />}<Armories view={view} selectedCardId={selectedCardId} onCard={(cardId) => { setSelectedCardId(cardId); setTarget(null); }} /><EventTicker view={view} /></div>
+      <div className={`right-command-column phase-${view.projection.phase}`}><UnitRoster view={view} selection={selection} plans={plans} planMode={planMode} setPlanMode={setPlanMode} append={append} clear={clear} allocations={allocations} setAllocation={(unitId, allocation) => setAllocations((current) => ({ ...current, [unitId]: allocation }))} submitCommand={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} onSelect={setSelection} unitArt={unitArtFor} /><ArtifactPanel view={view} artifact={selectedArtifact} submit={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} /></div>
     </section>
     <PhaseDock view={view} plans={plans} selectedCardId={selectedCardId} target={target} submit={(submission) => void submit(submission)} busy={commandBusy} openEndRisk={() => setEndRiskOpen(true)} newOperation={newOperation} />
     {rulesOpen && <Rules view={view} onClose={() => setRulesOpen(false)} />}

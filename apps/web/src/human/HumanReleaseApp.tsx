@@ -54,13 +54,74 @@ const ART_FILTERS: Record<ArtKind, ReadonlyArray<{ label: string; query: string 
   ]
 };
 
+type PaletteId = FleetDraftInput["identity"]["paletteId"];
+type EmblemId = FleetDraftInput["identity"]["emblemId"];
+
+const PALETTES: ReadonlyArray<{ id: PaletteId; label: string; color: string }> = [
+  { id: "signal-teal", label: "Signal teal", color: "#67e0d1" },
+  { id: "warning-amber", label: "Warning amber", color: "#efca70" },
+  { id: "oxide-red", label: "Oxide red", color: "#ed7c6e" },
+  { id: "furnace-violet", label: "Furnace violet", color: "#ba94ec" },
+  { id: "night-blue", label: "Night blue", color: "#84b5e9" }
+];
+
+const EMBLEMS: ReadonlyArray<{ id: EmblemId; label: string }> = [
+  { id: "aperture", label: "Aperture" },
+  { id: "chevron", label: "Chevron" },
+  { id: "orbit", label: "Orbit" },
+  { id: "signal", label: "Signal" },
+  { id: "anvil", label: "Anvil" }
+];
+
+function EmblemMark({ id }: { id: EmblemId }) {
+  return <svg className="emblem-mark" data-emblem={id} viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    {id === "aperture" && <><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /><path d="M12 4v5M19 8l-4 2M19 16l-4-2M12 20v-5M5 16l4-2M5 8l4 2" /></>}
+    {id === "chevron" && <><path d="m4 14 8-7 8 7" /><path d="m7 19 5-5 5 5" /></>}
+    {id === "orbit" && <><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(-25 12 12)" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="8" r="1" fill="currentColor" stroke="none" /></>}
+    {id === "signal" && <><path d="M12 19v-7M9 19h6M8.5 13a5 5 0 0 1 7 0M5.5 10a9 9 0 0 1 13 0" /><circle cx="12" cy="8" r="1.2" fill="currentColor" stroke="none" /></>}
+    {id === "anvil" && <path d="M4 6h16v4l-5 3v5H9v-5l-5-3V6Zm5 12h6" />}
+  </svg>;
+}
+
+function paletteLabel(id: PaletteId) { return PALETTES.find((palette) => palette.id === id)?.label ?? id; }
+function emblemLabel(id: EmblemId) { return EMBLEMS.find((emblem) => emblem.id === id)?.label ?? id; }
+
+function PalettePicker({ selected, onSelect }: { selected: PaletteId; onSelect: (palette: PaletteId) => void }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const current = PALETTES.find((palette) => palette.id === selected) ?? PALETTES[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const closeWithEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault(); setOpen(false); triggerRef.current?.focus();
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeWithEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeWithEscape);
+    };
+  }, [open]);
+
+  return <fieldset className="identity-choice palette-choice"><legend>Palette</legend><div ref={rootRef} className="palette-picker-shell">
+    <button ref={triggerRef} type="button" className="palette-trigger" aria-expanded={open} aria-controls="fleet-palette-options" aria-label={`Fleet palette, ${current.label}`} onClick={() => setOpen((value) => !value)}><span className="palette-swatch" style={{ backgroundColor: current.color }} /><span>{current.label}</span><b aria-hidden="true">⌄</b></button>
+    {open && <div id="fleet-palette-options" className="palette-popover" role="group" aria-label="Fleet palette">{PALETTES.map((palette) => <button key={palette.id} type="button" title={palette.label} aria-label={palette.label} aria-pressed={selected === palette.id} onClick={() => { onSelect(palette.id); setOpen(false); triggerRef.current?.focus(); }}><span className="palette-swatch" style={{ backgroundColor: palette.color }} /></button>)}</div>}
+  </div></fieldset>;
+}
+
 function accountAvatar(account: AccountView) {
   return account.avatarUrl ? <img src={account.avatarUrl} alt="" /> : <span>{account.displayName.slice(0, 2).toUpperCase()}</span>;
 }
 
 function FleetReveal({ label, fleet, assets }: { label: string; fleet: FleetView; assets: Record<string, ArtCatalogEntry> }) {
   const portrait = fleet.identity.commanderAssetId ? assets[fleet.identity.commanderAssetId] : undefined;
-  return <article>{portrait && <img src={portrait.thumbnailSrc} alt="" />}<div><small>{label}</small><strong>{fleet.name}</strong><span>{fleet.compositionModule?.replaceAll("-", " ")} · W{fleet.weight}</span></div></article>;
+  return <article>{portrait && <img src={portrait.thumbnailSrc} alt="" />}<EmblemMark id={fleet.identity.emblemId} /><div><small>{label}</small><strong>{fleet.name}</strong><span>{fleet.compositionModule?.replaceAll("-", " ")} · W{fleet.weight}</span></div></article>;
 }
 
 function ArtPicker({ kind, selected, onSelect, onClose }: { kind: ArtKind; selected: string | null; onSelect: (asset: ArtCatalogEntry) => void; onClose: () => void }) {
@@ -101,8 +162,8 @@ function ArtPicker({ kind, selected, onSelect, onClose }: { kind: ArtKind; selec
     <section ref={dialogRef} className="art-picker" role="dialog" aria-modal="true" aria-labelledby="art-picker-title" onKeyDown={manageDialogKeys}>
       <header><div><span>BASE CATALOG · {page?.total ?? 0} {kind.toUpperCase()} IMAGES</span><h2 id="art-picker-title">Choose {kind} art</h2></div><button autoFocus onClick={onClose}>Close</button></header>
       <div className="art-filters" role="group" aria-label={`${kind} art categories`}>{ART_FILTERS[kind].map((option) => <button key={option.label} type="button" aria-pressed={filter === option.query} aria-disabled={busy} onClick={() => { if (busy) return; setFilter(option.query); void load(0, option.query); }}>{option.label}</button>)}</div>
-      <div ref={resultsRef} className="art-grid" role="region" aria-label={`${kind} art results`} aria-busy={busy} tabIndex={0}>{page?.items.map((asset) => <button key={asset.assetId} type="button" aria-pressed={selected === asset.assetId} className={selected === asset.assetId ? "selected" : ""} onClick={() => { onSelect(asset); onClose(); }}>
-        <img src={asset.thumbnailSrc} alt={asset.alt} loading="lazy" /><strong>{asset.title}</strong><small>{asset.experimental ? "EXPERIMENTAL · " : ""}{asset.tier}</small>
+      <div ref={resultsRef} className="art-grid" role="region" aria-label={`${kind} art results`} aria-busy={busy} tabIndex={0}>{page?.items.map((asset, index) => <button key={asset.assetId} type="button" aria-label={`Choose ${kind} art option ${(page?.offset ?? 0) + index + 1}`} aria-pressed={selected === asset.assetId} className={selected === asset.assetId ? "selected" : ""} onClick={() => { onSelect(asset); onClose(); }}>
+        <img src={asset.cardSrc} alt="" loading="lazy" />
       </button>)}{page && page.items.length === 0 && <p className="art-empty">No art is available in this category.</p>}</div>
       {page && <nav className="art-pagination" aria-label="Art catalog pages"><button type="button" aria-label="Previous page" aria-disabled={busy || page.offset === 0} onClick={() => { if (!busy && page.offset > 0) void load(Math.max(0, page.offset - page.limit), filter); }}>← Previous</button><span role="status" aria-live="polite">Page {pageNumber} of {pageCount} · {firstItem}–{lastItem} of {page.total}</span><button type="button" aria-label="Next page" aria-disabled={busy || page.nextOffset === null} onClick={() => { if (!busy && page.nextOffset !== null) void load(page.nextOffset, filter); }}>Next →</button></nav>}
     </section>
@@ -246,11 +307,11 @@ export function HumanReleaseApp() {
       </aside>
       <section className="fleet-stage">
         <div className="fleet-stage-backdrop" style={draft.identity.battlefieldAssetId ? { backgroundImage: `linear-gradient(rgba(4,10,15,.38),rgba(4,10,15,.94)),url(${assets[draft.identity.battlefieldAssetId]?.battlefieldSrc ?? assets[draft.identity.battlefieldAssetId]?.cardSrc ?? ""})` } : undefined}>
-          <div className="commander-card"><button onClick={() => setPicker({ kind: "commander" })}>{draft.identity.commanderAssetId && assets[draft.identity.commanderAssetId] ? <img src={assets[draft.identity.commanderAssetId].cardSrc} alt={assets[draft.identity.commanderAssetId].alt} /> : <span>Choose commander portrait</span>}</button><div><input aria-label="Fleet name" value={draft.name} maxLength={48} onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} /><small>EMBLEM {draft.identity.emblemId.toUpperCase()}</small></div></div>
+          <div className="commander-card"><button onClick={() => setPicker({ kind: "commander" })}>{draft.identity.commanderAssetId && assets[draft.identity.commanderAssetId] ? <img src={assets[draft.identity.commanderAssetId].cardSrc} alt={assets[draft.identity.commanderAssetId].alt} /> : <span>Choose commander portrait</span>}</button><div><input aria-label="Fleet name" value={draft.name} maxLength={48} onChange={(event) => setDraft((current) => ({ ...current, name: event.target.value }))} /><div className="commander-identity"><EmblemMark id={draft.identity.emblemId} /><small>{emblemLabel(draft.identity.emblemId)} emblem · {paletteLabel(draft.identity.paletteId)}</small></div></div></div>
           <div className="unit-lineup">{draft.units.map((unit) => <article key={unit.slotId}><button className="unit-art-card" onClick={() => setPicker({ kind: "unit", slotId: unit.slotId })}>{unit.artAssetId && assets[unit.artAssetId] ? <img src={assets[unit.artAssetId].cardSrc} alt={assets[unit.artAssetId].alt} /> : <span>Choose any unit image</span>}<b>{unit.chassis.toUpperCase()} · W{ATTENTION_V4_CHASSIS_WEIGHTS[unit.chassis]}</b></button><select aria-label={`Chassis for unit ${unit.slotId}`} value={unit.chassis} onChange={(event) => setDraft((current) => ({ ...current, units: current.units.map((item) => item.slotId === unit.slotId ? { ...item, chassis: event.target.value as typeof item.chassis } : item) }))}><option value="scout">Scout · 1</option><option value="line">Line · 2</option><option value="heavy">Heavy · 3</option></select><button aria-label="Remove unit" onClick={() => setDraft((current) => ({ ...current, units: current.units.filter((item) => item.slotId !== unit.slotId) }))}>Remove</button></article>)}</div>
           <div className="add-unit"><span>Add chassis</span>{(["scout", "line", "heavy"] as const).map((chassis) => <button key={chassis} disabled={draft.units.length >= 5 || weight + ATTENTION_V4_CHASSIS_WEIGHTS[chassis] > 6 || (chassis === "heavy" && draft.units.some((unit) => unit.chassis === "heavy"))} onClick={() => setDraft((current) => ({ ...current, units: [...current.units, { slotId: crypto.randomUUID(), chassis, artAssetId: null }] }))}>+ {chassis}</button>)}</div>
         </div>
-        <footer className="fleet-controls"><div className={`weight-meter ${legal ? "legal" : ""}`}><span>FLEET WEIGHT</span><strong>{weight} / 6</strong><i style={{ width: `${Math.min(100, weight / 6 * 100)}%` }} /></div><label>Palette<select value={draft.identity.paletteId} onChange={(event) => setDraft((current) => ({ ...current, identity: { ...current.identity, paletteId: event.target.value as typeof current.identity.paletteId } }))}><option value="signal-teal">Signal teal</option><option value="warning-amber">Warning amber</option><option value="oxide-red">Oxide red</option><option value="furnace-violet">Furnace violet</option><option value="night-blue">Night blue</option></select></label><label>Emblem<select value={draft.identity.emblemId} onChange={(event) => setDraft((current) => ({ ...current, identity: { ...current.identity, emblemId: event.target.value as typeof current.identity.emblemId } }))}><option value="aperture">Aperture</option><option value="chevron">Chevron</option><option value="orbit">Orbit</option><option value="signal">Signal</option><option value="anvil">Anvil</option></select></label><button onClick={() => setPicker({ kind: "battlefield" })}>Choose battlefield</button><button className="hangar-primary" disabled={busy || !draft.name.trim()} onClick={() => void save()}>{selectedFleetId ? "Save fleet" : "Create fleet"}</button>{selectedFleetId && <button className="delete-account" disabled={busy} onClick={() => setDeleteFleetOpen(true)}>Delete fleet</button>}<button disabled={!selectedFleet || selectedFleet.status !== "ready" || busy} onClick={() => void createChallenge()}>Challenge friend</button></footer>
+        <footer className="fleet-controls"><div className={`weight-meter ${legal ? "legal" : ""}`}><span>FLEET WEIGHT</span><strong>{weight} / 6</strong><i style={{ width: `${Math.min(100, weight / 6 * 100)}%` }} /></div><PalettePicker selected={draft.identity.paletteId} onSelect={(paletteId) => setDraft((current) => ({ ...current, identity: { ...current.identity, paletteId } }))} /><fieldset className="identity-choice"><legend>Emblem</legend><div className="emblem-options" role="group" aria-label="Fleet emblem">{EMBLEMS.map((emblem) => <button key={emblem.id} type="button" title={emblem.label} aria-label={emblem.label} aria-pressed={draft.identity.emblemId === emblem.id} onClick={() => setDraft((current) => ({ ...current, identity: { ...current.identity, emblemId: emblem.id } }))}><EmblemMark id={emblem.id} /></button>)}</div><small>{emblemLabel(draft.identity.emblemId)} mark</small></fieldset><button onClick={() => setPicker({ kind: "battlefield" })}>Choose battlefield</button><button className="hangar-primary" disabled={busy || !draft.name.trim()} onClick={() => void save()}>{selectedFleetId ? "Save fleet" : "Create fleet"}</button>{selectedFleetId && <button className="delete-account" disabled={busy} onClick={() => setDeleteFleetOpen(true)}>Delete fleet</button>}<button disabled={!selectedFleet || selectedFleet.status !== "ready" || busy} onClick={() => void createChallenge()}>Challenge friend</button></footer>
         {!legal && <p className="fleet-rule-note">A ready fleet must total exactly 6 weight, contain 3–5 units, at most one Heavy, and at most four Scouts. Drafts remain saved safely.</p>}
       </section>
     </section>
