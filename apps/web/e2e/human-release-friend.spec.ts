@@ -1,5 +1,5 @@
 import { expect, test, type Page, type Route } from "@playwright/test";
-import type { BattleExperience, FleetView, FriendBattleCommandView, FriendChallengeView, ReadyFleetSnapshot } from "@landscape/contracts";
+import type { ArtCatalogEntry, BattleExperience, FleetView, FriendBattleCommandView, FriendChallengeView, ReadyFleetSnapshot } from "@landscape/contracts";
 import { battleViewFixture } from "../src/battle/fixture-v4.js";
 
 const timestamp = "2026-08-19T00:00:00.000Z";
@@ -10,7 +10,7 @@ function fleet(fleetId: string, ownerAccountId: string, name: string, compositio
   const chassis = compositionModule === "heavy-line-scout" ? ["heavy", "line", "scout"] as const : ["line", "line", "scout", "scout"] as const;
   return {
     schemaVersion: 1, fleetId, ownerAccountId, name, status: "ready", weight: 6, compositionModule,
-    units: chassis.map((unit, index) => ({ slotId: `${fleetId}-${index}`, chassis: unit, artAssetId: null })),
+    units: chassis.map((unit, index) => ({ slotId: `${fleetId}-${index}`, chassis: unit, artAssetId: `${fleetId}-${index}-art` })),
     identity: { commanderAssetId: null, battlefieldAssetId: null, paletteId: ownerAccountId === "account-alpha" ? "signal-teal" : "warning-amber", emblemId: ownerAccountId === "account-alpha" ? "aperture" : "chevron" },
     createdAt: timestamp, updatedAt: timestamp
   };
@@ -21,6 +21,12 @@ const bravoFleet = fleet("fleet-bravo", bravoAccount.accountId, "Bravo Screen", 
 const snapshot = (value: FleetView): ReadyFleetSnapshot => ({ ...value, status: "ready", weight: 6, compositionModule: value.compositionModule!, snapshotHash: `sha256:${(value.ownerAccountId === alphaAccount.accountId ? "a" : "b").repeat(64)}` } as ReadyFleetSnapshot);
 const alphaSnapshot = { ...snapshot(alphaFleet), snapshotHash: `sha256:${"a".repeat(64)}` };
 const bravoSnapshot = { ...snapshot(bravoFleet), snapshotHash: `sha256:${"b".repeat(64)}` };
+
+function art(assetId: string, chassis: "scout" | "line" | "heavy"): ArtCatalogEntry {
+  return { schemaVersion: 1, assetId, familyId: `family-${assetId}`, contentHash: `sha256:${"1".repeat(64)}`, tier: "confirmed", kind: "unit", title: assetId, alt: `${chassis} portrait`, subjects: [`mech-${chassis === "heavy" ? "siege" : chassis}`], aspect: "portrait", focalPoint: { x: 50, y: 45 }, thumbnailSrc: `/media/art/thumb/${assetId}.webp`, cardSrc: `/media/art/card/${assetId}.webp`, battlefieldSrc: null, experimental: false };
+}
+
+const fleetArt = new Map([alphaFleet, bravoFleet].flatMap((value) => value.units.map((unit) => [unit.artAssetId!, art(unit.artAssetId!, unit.chassis)] as const)));
 
 function challenge(status: "open" | "accepted", seat: "alpha" | "bravo"): FriendChallengeView {
   return {
@@ -66,8 +72,19 @@ test("two isolated players lock hidden fleets and resolve a simultaneous phase f
 
   const installApi = async (page: Page, seat: "alpha" | "bravo") => {
     await page.addInitScript(() => localStorage.clear());
+    await page.route("**/media/art/**", async (route) => route.fulfill({ status: 200, contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 4"><rect width="3" height="4" fill="#456"/></svg>' }));
     await page.route("**/api/**", async (route) => {
       const request = route.request(); const url = new URL(request.url()); const method = request.method();
+      if (url.pathname.startsWith("/api/art/catalog/")) {
+        const asset = fleetArt.get(decodeURIComponent(url.pathname.slice("/api/art/catalog/".length)));
+        return asset ? fulfill(route, asset) : fulfill(route, { error: "art_not_found" }, 404);
+      }
+      if (url.pathname === "/api/art/catalog") {
+        const query = url.searchParams.get("q") ?? "mech-scout";
+        const chassis = query === "mech-line" ? "line" : query === "mech-siege" ? "heavy" : "scout";
+        const items = Array.from({ length: 10 }, (_, index) => art(`auto-${chassis}-${index}`, chassis));
+        return fulfill(route, { schemaVersion: 1, catalogHash: `sha256:${"2".repeat(64)}`, censusReportHash: `sha256:${"3".repeat(64)}`, items, total: items.length, offset: 0, limit: 10, nextOffset: null });
+      }
       if (url.pathname === "/api/auth/session") return fulfill(route, { schemaVersion: 1, authenticated: true, account: seat === "alpha" ? alphaAccount : bravoAccount, csrfToken: `csrf-${seat}-token-with-enough-characters` });
       if (url.pathname === "/api/hangar/fleets") return fulfill(route, [seat === "alpha" ? alphaFleet : bravoFleet]);
       if (url.pathname === "/api/battle-command/challenges" && method === "GET") return fulfill(route, seat === "alpha" && created ? [challenge(accepted ? "accepted" : "open", seat)] : accepted ? [challenge("accepted", seat)] : []);
@@ -115,6 +132,20 @@ test("two isolated players lock hidden fleets and resolve a simultaneous phase f
     await expect(alphaPage.getByRole("region", { name: "Player-edge perspective battlefield" })).toBeVisible();
     await expect(bravoPage.getByRole("region", { name: "Player-edge perspective battlefield" })).toBeVisible();
     await expect(alphaPage.getByRole("button", { name: "Perspective" })).toHaveAttribute("aria-pressed", "true");
+
+    const alphaScoutPortrait = alphaPage.getByRole("button", { name: "Select Scout unit scout-1" });
+    await expect(alphaScoutPortrait.locator("img")).toHaveAttribute("src", "/media/art/card/fleet-alpha-2-art.webp");
+    await expect.poll(() => alphaScoutPortrait.locator("img").evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
+    const alphaScoutCard = alphaScoutPortrait.locator("xpath=..");
+    await alphaScoutCard.locator(".unit-control-surface > header").click();
+    await expect(alphaScoutCard).toHaveAttribute("aria-current", "true");
+    await expect(alphaScoutPortrait).toHaveAttribute("aria-pressed", "true");
+    await expect(alphaScoutCard.locator(".unit-selection-indicator")).toBeVisible();
+    const alphaHeavyPortrait = alphaPage.getByRole("button", { name: "Select Heavy unit heavy-1" });
+    await alphaHeavyPortrait.click();
+    await expect(alphaHeavyPortrait).toHaveAttribute("aria-pressed", "true");
+    await expect(alphaScoutPortrait).toHaveAttribute("aria-pressed", "false");
+    expect(await alphaPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
 
     await alphaPage.getByRole("button", { name: "Resolve Kinetic" }).click();
     await expect(alphaPage.getByText("Orders locked — waiting for your opponent")).toBeVisible();

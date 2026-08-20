@@ -87,6 +87,33 @@ describe("human release Hangar", () => {
 
     expect(await screen.findByText("6 / 6")).toBeInTheDocument();
     expect(screen.getByText(/balanced draft is ready/i)).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Palette" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "Emblem" })).not.toBeInTheDocument();
+    const paletteTrigger = screen.getByRole("button", { name: "Fleet palette, Signal teal" });
+    expect(paletteTrigger).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(paletteTrigger);
+    expect(paletteTrigger).toHaveAttribute("aria-expanded", "true");
+    const paletteChoices = screen.getByRole("group", { name: "Fleet palette" });
+    const signalTeal = within(paletteChoices).getByRole("button", { name: "Signal teal" });
+    expect(signalTeal).toHaveAttribute("aria-pressed", "true");
+    expect(signalTeal.querySelector(".palette-swatch")).toHaveStyle({ backgroundColor: "#67e0d1" });
+    fireEvent.click(within(paletteChoices).getByRole("button", { name: "Oxide red" }));
+    expect(screen.getByRole("main")).toHaveClass("palette-oxide-red");
+    expect(screen.queryByRole("group", { name: "Fleet palette" })).not.toBeInTheDocument();
+    const oxideTrigger = screen.getByRole("button", { name: "Fleet palette, Oxide red" });
+    expect(oxideTrigger).toHaveFocus();
+    fireEvent.click(oxideTrigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("group", { name: "Fleet palette" })).not.toBeInTheDocument();
+    expect(oxideTrigger).toHaveFocus();
+    fireEvent.click(oxideTrigger);
+    fireEvent.pointerDown(screen.getByText("FLEET WEIGHT"));
+    expect(screen.queryByRole("group", { name: "Fleet palette" })).not.toBeInTheDocument();
+    const emblemChoices = screen.getByRole("group", { name: "Fleet emblem" });
+    fireEvent.click(within(emblemChoices).getByRole("button", { name: "Anvil" }));
+    expect(within(emblemChoices).getByRole("button", { name: "Anvil" })).toHaveAttribute("aria-pressed", "true");
+    expect(document.querySelector('.commander-card [data-emblem="anvil"]')).toBeInTheDocument();
+    expect(screen.getByText("Anvil emblem · Oxide red")).toBeInTheDocument();
     const opener = screen.getByRole("button", { name: "Choose commander portrait" });
     opener.focus(); fireEvent.click(opener);
     let picker = await screen.findByRole("dialog", { name: "Choose commander art" });
@@ -94,7 +121,7 @@ describe("human release Hangar", () => {
     const result = await axe.run(picker, { rules: { "color-contrast": { enabled: false } } });
     expect(result.violations).toEqual([]);
     fireEvent.keyDown(picker, { key: "Tab", shiftKey: true });
-    expect(within(picker).getByRole("button", { name: /Signal Commander/ })).toHaveFocus();
+    expect(within(picker).getByRole("button", { name: "Choose commander art option 1" })).toHaveFocus();
     fireEvent.keyDown(picker, { key: "Tab" });
     expect(within(picker).getByRole("button", { name: "Close" })).toHaveFocus();
     fireEvent.keyDown(picker, { key: "Escape" });
@@ -103,7 +130,7 @@ describe("human release Hangar", () => {
 
     fireEvent.click(opener);
     picker = await screen.findByRole("dialog", { name: "Choose commander art" });
-    fireEvent.click(within(picker).getByRole("button", { name: /Signal Commander/ }));
+    fireEvent.click(within(picker).getByRole("button", { name: "Choose commander art option 1" }));
     expect(screen.getByRole("img", { name: commander.alt })).toBeInTheDocument();
 
     fireEvent.click(screen.getAllByRole("button", { name: "Remove unit" })[0]);
@@ -139,12 +166,15 @@ describe("human release Hangar", () => {
     const categories = within(picker).getByRole("group", { name: "unit art categories" });
     expect(within(categories).getByRole("button", { name: "All" })).toHaveAttribute("aria-pressed", "true");
     expect(within(picker).getByRole("status")).toHaveTextContent("Page 1 of 3 · 1–40 of 81");
-    expect(within(picker).getByRole("button", { name: /Unit 0/ })).toBeInTheDocument();
+    const firstOption = within(picker).getByRole("button", { name: "Choose unit art option 1" });
+    expect(firstOption).toBeInTheDocument();
+    expect(within(picker).queryByText("Unit 0")).not.toBeInTheDocument();
+    expect(firstOption.querySelector("img")).toHaveAttribute("src", "/media/art/card/unit-0.webp");
 
     fireEvent.click(within(picker).getByRole("button", { name: "Next page" }));
     await waitFor(() => expect(within(picker).getByRole("status")).toHaveTextContent("Page 2 of 3 · 41–80 of 81"));
-    expect(within(picker).getByRole("button", { name: /Unit 40/ })).toBeInTheDocument();
-    expect(within(picker).queryByRole("button", { name: /Unit 0/ })).not.toBeInTheDocument();
+    expect(within(picker).getByRole("button", { name: "Choose unit art option 41" })).toBeInTheDocument();
+    expect(within(picker).queryByRole("button", { name: "Choose unit art option 1" })).not.toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([input]) => String(input).includes("q=&offset=40&limit=40"))).toBe(true);
 
     fireEvent.click(within(categories).getByRole("button", { name: "Scout frames" }));
