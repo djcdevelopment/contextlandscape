@@ -42,6 +42,20 @@ const catalog: ArtCatalogPage = {
   items: [commander], total: 1, offset: 0, limit: 40, nextOffset: null
 };
 
+function unitAsset(index: number, subjects: string[] = []): ArtCatalogEntry {
+  return {
+    ...commander,
+    assetId: `unit-${index}`,
+    familyId: `family-unit-${index}`,
+    kind: "unit",
+    title: `Unit ${index}`,
+    alt: `Unit art ${index}`,
+    subjects,
+    thumbnailSrc: `/media/art/thumb/unit-${index}.webp`,
+    cardSrc: `/media/art/card/unit-${index}.webp`
+  };
+}
+
 describe("human release Hangar", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -73,15 +87,76 @@ describe("human release Hangar", () => {
 
     expect(await screen.findByText("6 / 6")).toBeInTheDocument();
     expect(screen.getByText(/balanced draft is ready/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Choose commander portrait" }));
-    const picker = await screen.findByRole("dialog", { name: "Choose commander art" });
+    const opener = screen.getByRole("button", { name: "Choose commander portrait" });
+    opener.focus(); fireEvent.click(opener);
+    let picker = await screen.findByRole("dialog", { name: "Choose commander art" });
     expect(within(picker).getByRole("button", { name: "Close" })).toHaveFocus();
+    const result = await axe.run(picker, { rules: { "color-contrast": { enabled: false } } });
+    expect(result.violations).toEqual([]);
+    fireEvent.keyDown(picker, { key: "Tab", shiftKey: true });
+    expect(within(picker).getByRole("button", { name: /Signal Commander/ })).toHaveFocus();
+    fireEvent.keyDown(picker, { key: "Tab" });
+    expect(within(picker).getByRole("button", { name: "Close" })).toHaveFocus();
+    fireEvent.keyDown(picker, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Choose commander art" })).not.toBeInTheDocument());
+    expect(opener).toHaveFocus();
+
+    fireEvent.click(opener);
+    picker = await screen.findByRole("dialog", { name: "Choose commander art" });
     fireEvent.click(within(picker).getByRole("button", { name: /Signal Commander/ }));
     expect(screen.getByRole("img", { name: commander.alt })).toBeInTheDocument();
 
     fireEvent.click(screen.getAllByRole("button", { name: "Remove unit" })[0]);
     expect(screen.getByText("5 / 6")).toBeInTheDocument();
     expect(screen.getByText(/must total exactly 6 weight/i)).toBeInTheDocument();
+  });
+
+  it("replaces loaded pages and offers plain-language catalog categories", async () => {
+    const units = Array.from({ length: 81 }, (_, index) => unitAsset(index, index < 12 ? ["mech-scout"] : []));
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input);
+      if (path === "/api/auth/session") return response(authenticated);
+      if (path === "/api/hangar/fleets") return response([]);
+      if (path === "/api/battle-command/challenges") return response([]);
+      if (path.startsWith("/api/art/catalog?")) {
+        const url = new URL(path, "http://local.test");
+        const offset = Number(url.searchParams.get("offset") ?? 0);
+        const filtered = url.searchParams.get("q") === "mech-scout" ? units.slice(0, 12) : units;
+        const items = filtered.slice(offset, offset + 40);
+        return response({ ...catalog, items, total: filtered.length, offset, limit: 40, nextOffset: offset + items.length < filtered.length ? offset + 40 : null });
+      }
+      throw new Error(`unexpected fetch ${path}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    render(<HumanReleaseApp />);
+
+    await screen.findByText("6 / 6");
+    const opener = screen.getAllByRole("button", { name: /^Choose any unit image/ })[0];
+    opener.focus(); fireEvent.click(opener);
+    const picker = await screen.findByRole("dialog", { name: "Choose unit art" });
+    expect(within(picker).queryByRole("textbox")).not.toBeInTheDocument();
+    expect(within(picker).getByRole("region", { name: "unit art results" })).toHaveAttribute("tabindex", "0");
+    const categories = within(picker).getByRole("group", { name: "unit art categories" });
+    expect(within(categories).getByRole("button", { name: "All" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(picker).getByRole("status")).toHaveTextContent("Page 1 of 3 · 1–40 of 81");
+    expect(within(picker).getByRole("button", { name: /Unit 0/ })).toBeInTheDocument();
+
+    fireEvent.click(within(picker).getByRole("button", { name: "Next page" }));
+    await waitFor(() => expect(within(picker).getByRole("status")).toHaveTextContent("Page 2 of 3 · 41–80 of 81"));
+    expect(within(picker).getByRole("button", { name: /Unit 40/ })).toBeInTheDocument();
+    expect(within(picker).queryByRole("button", { name: /Unit 0/ })).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([input]) => String(input).includes("q=&offset=40&limit=40"))).toBe(true);
+
+    fireEvent.click(within(categories).getByRole("button", { name: "Scout frames" }));
+    await waitFor(() => expect(within(picker).getByRole("status")).toHaveTextContent("Page 1 of 1 · 1–12 of 12"));
+    expect(within(categories).getByRole("button", { name: "Scout frames" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(categories).getByRole("button", { name: "All" })).toHaveAttribute("aria-pressed", "false");
+    expect(fetchMock.mock.calls.some(([input]) => String(input).includes("q=mech-scout&offset=0&limit=40"))).toBe(true);
+
+    fireEvent.keyDown(picker, { key: "Escape" });
+    await waitFor(() => expect(picker).not.toBeInTheDocument());
+    expect(opener).toHaveFocus();
+    expect(document.body.style.overflow).toBe("");
   });
 
   it("provides explicit sign-out and account deletion without a browser confirm", async () => {

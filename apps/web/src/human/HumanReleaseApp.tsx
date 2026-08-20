@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import {
   ATTENTION_V4_CHASSIS_WEIGHTS,
   ART_CENSUS_REPORT_HASH,
@@ -29,6 +29,31 @@ const starter: FleetDraftInput = {
   identity: blankIdentity
 };
 
+const ART_FILTERS: Record<ArtKind, ReadonlyArray<{ label: string; query: string }>> = {
+  unit: [
+    { label: "All", query: "" },
+    { label: "Scout frames", query: "mech-scout" },
+    { label: "Line frames", query: "mech-line" },
+    { label: "Heavy frames", query: "mech-siege" },
+    { label: "Ability scenes", query: "ability-card" }
+  ],
+  commander: [
+    { label: "All", query: "" },
+    { label: "Scout commanders", query: "commander-scout-mobile-focus" },
+    { label: "Siege commanders", query: "commander-adaptive-siege-anchor" }
+  ],
+  battlefield: [
+    { label: "All", query: "" },
+    { label: "Furnace arenas", query: "battlefield-context-furnace" },
+    { label: "Fortress arenas", query: "battlefield-documentation-fortress" }
+  ],
+  event: [
+    { label: "All", query: "" },
+    { label: "Macro flare", query: "ability-macro-flare" },
+    { label: "Artillery", query: "artillery" }
+  ]
+};
+
 function accountAvatar(account: AccountView) {
   return account.avatarUrl ? <img src={account.avatarUrl} alt="" /> : <span>{account.displayName.slice(0, 2).toUpperCase()}</span>;
 }
@@ -40,35 +65,46 @@ function FleetReveal({ label, fleet, assets }: { label: string; fleet: FleetView
 
 function ArtPicker({ kind, selected, onSelect, onClose }: { kind: ArtKind; selected: string | null; onSelect: (asset: ArtCatalogEntry) => void; onClose: () => void }) {
   const [page, setPage] = useState<ArtCatalogPage | null>(null);
-  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("");
   const [busy, setBusy] = useState(false);
   const dialogRef = useRef<HTMLElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const returnFocus = useRef<HTMLElement | null>(document.activeElement instanceof HTMLElement ? document.activeElement : null);
-  const load = async (offset = 0, append = false) => {
+  const load = async (offset = 0, filterQuery = filter) => {
     setBusy(true);
     try {
-      const next = await json<ArtCatalogPage>(`/api/art/catalog?kind=${kind}&q=${encodeURIComponent(query)}&offset=${offset}&limit=40`);
-      setPage((current) => append && current ? { ...next, items: [...current.items, ...next.items] } : next);
+      const next = await json<ArtCatalogPage>(`/api/art/catalog?kind=${kind}&q=${encodeURIComponent(filterQuery)}&offset=${offset}&limit=40`);
+      setPage(next);
     } finally { setBusy(false); }
   };
-  useEffect(() => { void load(); return () => returnFocus.current?.focus(); }, [kind]);
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    setFilter(""); setPage(null); void load(0, "");
+    return () => { document.body.style.overflow = previousBodyOverflow; returnFocus.current?.focus(); };
+  }, [kind]);
+  useLayoutEffect(() => { if (resultsRef.current) resultsRef.current.scrollTop = 0; }, [page]);
   const manageDialogKeys = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "Escape") { event.preventDefault(); onClose(); return; }
     if (event.key !== "Tab") return;
-    const controls = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]') ?? [])];
+    const controls = [...(dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled):not([aria-disabled="true"]),input:not(:disabled),select:not(:disabled),a[href]') ?? [])];
     if (!controls.length) return;
     const first = controls[0]; const last = controls[controls.length - 1];
     if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   };
+  const pageNumber = page ? Math.floor(page.offset / page.limit) + 1 : 1;
+  const pageCount = Math.max(1, Math.ceil((page?.total ?? 0) / (page?.limit ?? 40)));
+  const firstItem = page && page.total > 0 ? page.offset + 1 : 0;
+  const lastItem = page ? page.offset + page.items.length : 0;
   return <div className="hangar-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
     <section ref={dialogRef} className="art-picker" role="dialog" aria-modal="true" aria-labelledby="art-picker-title" onKeyDown={manageDialogKeys}>
       <header><div><span>BASE CATALOG · {page?.total ?? 0} {kind.toUpperCase()} IMAGES</span><h2 id="art-picker-title">Choose {kind} art</h2></div><button autoFocus onClick={onClose}>Close</button></header>
-      <form onSubmit={(event) => { event.preventDefault(); void load(); }}><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Filter titles and subjects" aria-label="Filter art" /><button disabled={busy}>Search</button></form>
-      <div className="art-grid">{page?.items.map((asset) => <button key={asset.assetId} className={selected === asset.assetId ? "selected" : ""} onClick={() => { onSelect(asset); onClose(); }}>
+      <div className="art-filters" role="group" aria-label={`${kind} art categories`}>{ART_FILTERS[kind].map((option) => <button key={option.label} type="button" aria-pressed={filter === option.query} aria-disabled={busy} onClick={() => { if (busy) return; setFilter(option.query); void load(0, option.query); }}>{option.label}</button>)}</div>
+      <div ref={resultsRef} className="art-grid" role="region" aria-label={`${kind} art results`} aria-busy={busy} tabIndex={0}>{page?.items.map((asset) => <button key={asset.assetId} type="button" aria-pressed={selected === asset.assetId} className={selected === asset.assetId ? "selected" : ""} onClick={() => { onSelect(asset); onClose(); }}>
         <img src={asset.thumbnailSrc} alt={asset.alt} loading="lazy" /><strong>{asset.title}</strong><small>{asset.experimental ? "EXPERIMENTAL · " : ""}{asset.tier}</small>
-      </button>)}</div>
-      {page?.nextOffset !== null && <button className="load-more" disabled={busy} onClick={() => void load(page?.nextOffset ?? 0, true)}>Load more</button>}
+      </button>)}{page && page.items.length === 0 && <p className="art-empty">No art is available in this category.</p>}</div>
+      {page && <nav className="art-pagination" aria-label="Art catalog pages"><button type="button" aria-label="Previous page" aria-disabled={busy || page.offset === 0} onClick={() => { if (!busy && page.offset > 0) void load(Math.max(0, page.offset - page.limit), filter); }}>← Previous</button><span role="status" aria-live="polite">Page {pageNumber} of {pageCount} · {firstItem}–{lastItem} of {page.total}</span><button type="button" aria-label="Next page" aria-disabled={busy || page.nextOffset === null} onClick={() => { if (!busy && page.nextOffset !== null) void load(page.nextOffset, filter); }}>Next →</button></nav>}
     </section>
   </div>;
 }
