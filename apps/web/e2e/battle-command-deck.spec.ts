@@ -112,6 +112,10 @@ test("the permanent Command Deck remains usable without dock overlap or viewport
   expect(tooltipBox!.x + tooltipBox!.width).toBeLessThanOrEqual(viewportAtTooltip.width + 1);
   await page.keyboard.press("Escape");
   await expect(tooltip).toBeHidden();
+  await help.dispatchEvent("click");
+  await expect(tooltip).toBeVisible();
+  await help.dispatchEvent("click");
+  await expect(tooltip).toBeHidden();
   await help.hover();
   await expect(tooltip).toBeVisible();
   await tooltip.hover();
