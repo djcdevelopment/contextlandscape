@@ -38,6 +38,18 @@ any live deployment.
 - Solo operations use a compiled deterministic doctrine. Authenticated friend operations use
   viewer-relative projections, buffer each simultaneous submission, alternate Command by seat, persist
   revisions, and notify the other browser through a revision event stream.
+- The browser uses a phase-led Command Deck: a five-stage stepper, permanent operation rail, persistent
+  context and armory regions, portrait-linked board/fleet selection, an in-flow action dock, and four
+  user-controlled interface scales. Kinetic orders remain visible on every planned unit card and board
+  token after focus changes; available actions use icon/beacon affordances and staged actions retain a
+  dashed locked treatment.
+- Resolution is an explicit client presentation assembled from the completed-round view and atomic
+  server recap. It is read-only and keyboard-focused on Continue; because Register and Resolution are
+  atomic in the v4.2 contract, reconnecting after that transition may skip the presentation and show the
+  next authoritative Kinetic view directly.
+- Desktop short-wide sizing is based on actual viewport height rather than board width. The production
+  layout is regression-tested without document overflow at a 2048×900 CSS viewport in both Perspective
+  and Tactical modes; tablet and mobile layouts use contained scroll regions and in-flow controls.
 - The v4.2 ruleset is frozen as the human-playtest baseline, not declared balanced. Deterministic
   controller evidence is still dominated by Drift terminals while the Progress route is effectively
   absent.

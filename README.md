@@ -44,7 +44,7 @@ This prototype narrows those ideas into a falsifiable question: can systems-engi
 
 | Surface | Implemented state |
 | --- | --- |
-| Playable game | React/Vite 10×10 board, selectable cells, explicit unit orders, transaction console, and post-battle reconstruction |
+| Playable game | React/Vite 10×10 board, phase-led Battle Command deck, portrait-linked units, persistent ordered-plan markers, explicit unit orders, transaction console, and post-battle reconstruction |
 | Commander landscape | Opt-in sparse Canvas view of a 6,400×6,400 theater with 32×32 chunk LOD and 32×32×32 battle drill-down |
 | Scenario pack | Four versioned single-player scenarios with distinct lessons and rules profiles |
 | Rules engine | Deterministic TypeScript state transitions, seeded runs, idempotent commands, replay manifests, and event/projection hashes |
@@ -353,6 +353,12 @@ Release properties:
 
 Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for the operational contract and [HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md](HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md) for the live, role-labelled promotion and rollback checklist.
 
+The latest recorded promotion is `p0-rd-20260820-r7`, built from application source commit
+`cc7d516`. It passed direct health, the public human-release smoke, the frozen 3,501-item catalog gate,
+and live 2048×900 Perspective/Tactical overflow probes before the planned runtime-host motherboard
+maintenance. This is historical evidence, not a claim of continuing availability. See the
+[current handoff](docs/HANDOFF.md) before restarting or promoting anything.
+
 ## Documentation
 
 ### What is actually built
@@ -370,10 +376,13 @@ Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for the operational contract 
 - [Gameplay-lab operator workbook](GAMEPLAY_LAB_WORKBOOK.md)
 - [Deployment runbook](DEPLOYMENT_RUNBOOK.md)
 - [Human-release deployment workbook](HUMAN_RELEASE_DEPLOYMENT_WORKBOOK.md)
+- [Current repository and operations handoff](docs/HANDOFF.md)
+- [Next-work plan](docs/NEXT_WORK_PLAN.md)
 
 ### Research and implementation
 
 - [Context Landscape R&D lab](R_AND_D_LAB.md)
+- [Battle Command Command Deck design handoff](design/design_handoff_battle_command_1c/README.md)
 - [Overnight experiment plan and outcome](OVERNIGHT_EXPERIMENT_PLAN.md)
 - [Synthetic-to-gameplay lab plan](GAMEPLAY_LAB_PLAN.md)
 - [Gameplay-lab implementation retrospective](GAMEPLAY_LAB_RETROSPECTIVE.md)
