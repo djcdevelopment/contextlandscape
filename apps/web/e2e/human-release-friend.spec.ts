@@ -132,12 +132,18 @@ test("two isolated players lock hidden fleets and resolve a simultaneous phase f
     await expect(alphaPage.getByRole("region", { name: "Player-edge perspective battlefield" })).toBeVisible();
     await expect(bravoPage.getByRole("region", { name: "Player-edge perspective battlefield" })).toBeVisible();
     await expect(alphaPage.getByRole("button", { name: "Perspective" })).toHaveAttribute("aria-pressed", "true");
+    await alphaPage.getByText("More", { exact: true }).click();
+    await expect(alphaPage.getByRole("button", { name: "Briefing" })).toHaveCount(0);
+    await expect(bravoPage.getByRole("article").filter({ hasText: "Your command" }).getByText("Bravo Screen")).toBeVisible();
+    await expect(bravoPage.getByRole("article").filter({ hasText: "Opposing command" }).getByText("Alpha Anchor")).toBeVisible();
+    const bravoScoutPortrait = bravoPage.getByRole("button", { name: "Select Scout unit scout-1" });
+    await expect(bravoScoutPortrait.locator("img")).toHaveAttribute("src", "/media/art/card/fleet-bravo-2-art.webp");
 
     const alphaScoutPortrait = alphaPage.getByRole("button", { name: "Select Scout unit scout-1" });
     await expect(alphaScoutPortrait.locator("img")).toHaveAttribute("src", "/media/art/card/fleet-alpha-2-art.webp");
     await expect.poll(() => alphaScoutPortrait.locator("img").evaluate((image) => getComputedStyle(image).objectFit)).toBe("contain");
-    const alphaScoutCard = alphaScoutPortrait.locator("xpath=..");
-    await alphaScoutCard.locator(".unit-control-surface > header").click();
+    const alphaScoutCard = alphaScoutPortrait.locator("xpath=ancestor::article");
+    await alphaScoutCard.locator(".fleet-card-summary").click();
     await expect(alphaScoutCard).toHaveAttribute("aria-current", "true");
     await expect(alphaScoutPortrait).toHaveAttribute("aria-pressed", "true");
     await expect(alphaScoutCard.locator(".unit-selection-indicator")).toBeVisible();
@@ -146,13 +152,20 @@ test("two isolated players lock hidden fleets and resolve a simultaneous phase f
     await expect(alphaHeavyPortrait).toHaveAttribute("aria-pressed", "true");
     await expect(alphaScoutPortrait).toHaveAttribute("aria-pressed", "false");
     expect(await alphaPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    await alphaScoutPortrait.click();
+    await alphaPage.getByRole("button", { name: "Condense output" }).click();
+    await expect(alphaScoutCard.getByText("condense-output")).toBeVisible();
 
     await alphaPage.getByRole("button", { name: "Resolve Kinetic" }).click();
     await expect(alphaPage.getByText("Orders locked — waiting for your opponent")).toBeVisible();
+    await expect(alphaScoutCard.getByText("condense-output")).toBeVisible();
+    await expect(alphaScoutCard.getByRole("button", { name: "Condense output" })).toBeDisabled();
+    await expect(alphaPage.getByLabel("Player-edge perspective battlefield")).toHaveAttribute("data-read-only", "true");
     await bravoPage.getByRole("button", { name: "Resolve Kinetic" }).click();
     await expect(bravoPage.getByText("SIMULTANEOUS ARTILLERY")).toBeVisible();
     await alphaPage.reload();
     await expect(alphaPage.getByText("SIMULTANEOUS ARTILLERY")).toBeVisible();
+    await expect(alphaPage.getByText("condense-output")).toHaveCount(0);
     expect(actionBodies).toHaveLength(2);
     expect(actionBodies).toEqual(expect.arrayContaining([expect.objectContaining({ revision: 0, submission: expect.objectContaining({ phase: "kinetic" }) })]));
   } finally {

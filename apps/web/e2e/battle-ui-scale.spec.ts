@@ -28,13 +28,13 @@ test("wide displays default to readable large type and preserve a chosen scale",
 
   const requiredText = [
     ".battle-nav a",
-    ".battle-status span",
-    ".workflow-stages li strong",
-    ".workflow-help p",
-    ".board-toolbar span",
-    ".unit-control-surface > header strong",
-    ".uap-breakdown span",
-    ".unit-state",
+    ".operation-state div > span",
+    ".phase-stepper li strong",
+    ".phase-guidance > p",
+    ".operation-legend span",
+    ".context-tools .base-rate",
+    ".fleet-card-summary b",
+    ".fleet-card-summary > span",
     ".unit-actions button",
     ".phase-dock > div:first-child > small"
   ];
