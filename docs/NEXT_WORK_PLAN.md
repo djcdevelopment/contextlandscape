@@ -19,6 +19,10 @@ Exit criterion: direct and public health are green, `r7` is served, the 3,501-it
 the public browser reproduces the no-overflow geometry. Also inspect PostgreSQL logs after the first
 checkpoint; any WAL flush, missing TOAST chunk, or abnormal recovery message is a stop condition.
 
+Once runtime recovery is proven, open a fresh PR from `agent/battle-command-deck` to `main`. PR #7 is
+already merged and predates the post-merge planning-control and overflow commits; no current Actions run
+covers the branch head.
+
 ## 2. Complete the only missing human-release gate
 
 - Use two distinct Discord accounts in isolated browser profiles.

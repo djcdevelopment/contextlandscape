@@ -19,6 +19,13 @@ Updated 2026-08-20 for the planned OMEN motherboard swap.
 The wrap-up documentation commit comes after `cc7d516` and does not change deployable application code.
 Do not expect the `r7` image revision label to equal the later docs-only branch head.
 
+GitHub PR [#7](https://github.com/djcdevelopment/contextlandscape/pull/7) merged the earlier Command
+Deck checkpoint at `1a6a9c0`. The subsequent planning-control commit `1cb825b`, deployed overflow fix
+`cc7d516`, preserved design bundle, and this handoff are pushed to `agent/battle-command-deck` but are
+not on `main`. There is no open PR for those post-merge commits, so their branch pushes did not start a
+new Actions run. Open a fresh PR from the existing branch after the hardware restart; do not assume PR
+#7 contains the deployed source.
+
 ## What landed
 
 - The Battle Command screen now follows the checked-in Command Deck handoff: a compact five-stage
