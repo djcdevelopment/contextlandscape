@@ -2,11 +2,12 @@ node_modules
 dist
 coverage
 .git
-.env
+.env*
+**/.env*
 infra/data
+output/
 *.docx
 *.log
 data/**
 !data/lab/
-!data/lab/**/
-!data/lab/**/report.json
+!data/lab/sleep-01-summary.json

@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export * from "./landscape.js";
 export * from "./attention-v2.js";
+export * from "./attention-v4.js";
+export * from "./human-release.js";
 
 export const ActionSchema = z.enum([
   "scout",

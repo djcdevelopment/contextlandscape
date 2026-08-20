@@ -27,10 +27,16 @@ services:
     image: "${CONTEXT_LANDSCAPE_IMAGE:?CONTEXT_LANDSCAPE_IMAGE must be set}"
     restart: unless-stopped
     environment:
+      NODE_ENV: production
+      LAB_PREFLIGHT: strict
       PORT: 8080
       DATABASE_URL: postgresql://mech:${MECH_POSTGRES_PASSWORD}@postgres:5432/mech
       CONTEXT_LANDSCAPE_RELEASE: "${CONTEXT_LANDSCAPE_RELEASE:?CONTEXT_LANDSCAPE_RELEASE must be set}"
       PLAYTEST_EXPORT_ROOT: /workspace/data/playtests
+      ART_CATALOG_ROOT: /workspace/data/art/release
+      DISCORD_CLIENT_ID: "${DISCORD_CLIENT_ID:?DISCORD_CLIENT_ID must be set}"
+      DISCORD_CLIENT_SECRET: "${DISCORD_CLIENT_SECRET:?DISCORD_CLIENT_SECRET must be set}"
+      DISCORD_REDIRECT_URI: "${DISCORD_REDIRECT_URI:?DISCORD_REDIRECT_URI must be set}"
     ports:
       - "${MECH_BIND_ADDRESS:-127.0.0.1}:${MECH_APP_PORT:-9080}:8080"
     depends_on:
@@ -40,3 +46,4 @@ services:
         condition: service_completed_successfully
     volumes:
       - ${MECH_DATA_ROOT:-./data}/playtests:/workspace/data/playtests
+      - ${MECH_DATA_ROOT:-./data}/art:/workspace/data/art:ro

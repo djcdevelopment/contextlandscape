@@ -1,0 +1,1743 @@
+{
+  "schemaVersion": 1,
+  "probeId": "attention-v4-paired-module-probe-1",
+  "modelVersion": "duel-capacity-v3-experimental",
+  "rulesetVersion": "attention-economy-v4",
+  "rulesetHash": "sha256:289c8f465489548957f65f19c8bba570618ba3202761af63da910468916b9901",
+  "resolverVersion": "attention-v4-resolver-1",
+  "compilerVersion": "attention-v4-commander-compiler-1",
+  "commanderCatalogHash": "sha256:6a1d426bdd79b850ad5e238cf3a2252442a9f0c2fd6a1d7185b3fa0bb74497aa",
+  "design": {
+    "formula": "32 module contrasts × 2 seats × 4 pressure samples × 64 seeds × 2 arms",
+    "contrasts": 32,
+    "seats": 2,
+    "pressureSamples": 4,
+    "seeds": 64,
+    "arms": 2,
+    "pairs": 16384,
+    "matches": 32768,
+    "canonical": true,
+    "replayEnabled": true
+  },
+  "totals": {
+    "pairs": 16384,
+    "matches": 32768,
+    "changedPairs": 16352,
+    "replayMismatches": 0,
+    "streamMismatches": 0,
+    "attributionMismatches": 0
+  },
+  "outcomeTotals": {
+    "controlWin": 8192,
+    "controlLoss": 8192,
+    "controlDraw": 0,
+    "treatmentWin": 8508,
+    "treatmentLoss": 7786,
+    "treatmentDraw": 90
+  },
+  "mechanicCounters": {
+    "control": {
+      "system:attention.v4.register": 54144,
+      "tested:attention.v4.kinetic.plan.resolved": 156864,
+      "tested:uap:command-uplink": 53376,
+      "tested:attention.v4.support-scan.reserved": 53280,
+      "tested:uap:support-scan": 53280,
+      "tested:uap:step-up": 100896,
+      "tested:uap:move": 50560,
+      "tested:uap:turbo-charge": 47584,
+      "opponent:attention.v4.kinetic.plan.resolved": 156864,
+      "opponent:uap:command-uplink": 53376,
+      "opponent:attention.v4.support-scan.reserved": 53280,
+      "opponent:uap:support-scan": 53280,
+      "opponent:uap:step-up": 100896,
+      "opponent:uap:move": 50560,
+      "opponent:uap:turbo-charge": 47584,
+      "system:attention.v4.phase.artillery": 54144,
+      "tested:attention.v4.artillery.passed": 49088,
+      "opponent:attention.v4.artillery.passed": 49088,
+      "system:attention.v4.phase.capacity": 54144,
+      "tested:attention.v4.capacity.claimed": 27040,
+      "opponent:attention.v4.capacity.rejected": 37664,
+      "system:attention.v4.phase.command": 54144,
+      "tested:attention.v4.support-scan.attached": 49536,
+      "tested:attention.v4.output.emitted": 162432,
+      "tested:artifacts-emitted": 327360,
+      "opponent:attention.v4.support-scan.attached": 49536,
+      "opponent:attention.v4.output.emitted": 162432,
+      "opponent:artifacts-emitted": 327360,
+      "tested:attention.v4.artifact.verified": 27360,
+      "opponent:attention.v4.artifact.rejected": 36800,
+      "tested:attention.v4.artifact.accepted": 3776,
+      "opponent:attention.v4.command.ended": 54144,
+      "tested:attention.v4.command.ended": 54144,
+      "system:attention.v4.resolution.started": 54144,
+      "system:attention.v4.resolution.completed": 54144,
+      "opponent:attention.v4.capacity.claimed": 27040,
+      "tested:attention.v4.capacity.rejected": 37664,
+      "opponent:attention.v4.overclock.activated": 16384,
+      "tested:attention.v4.overclock.activated": 16384,
+      "tested:attention.v4.artifact.rejected": 36800,
+      "opponent:attention.v4.artifact.verified": 27360,
+      "tested:attention.v4.kinetic.plan.rejected": 5568,
+      "opponent:attention.v4.kinetic.plan.rejected": 5568,
+      "tested:attention.v4.artillery.shell.fired": 5056,
+      "tested:shell:he": 2176,
+      "opponent:attention.v4.artillery.shell.fired": 5056,
+      "opponent:shell:he": 2176,
+      "tested:attention.v4.artillery.he.resolved": 13632,
+      "opponent:attention.v4.artillery.he.resolved": 13632,
+      "opponent:attention.v4.artifact.accepted": 3776,
+      "tested:attention.v4.artifact.detonated": 39360,
+      "tested:detonations": 39360,
+      "opponent:attention.v4.artifact.detonated": 39360,
+      "opponent:detonations": 39360,
+      "tested:attention.v4.perfect-focus.applied": 14784,
+      "tested:shell:emp": 1408,
+      "tested:attention.v4.artillery.emp.applied": 1408,
+      "opponent:shell:emp": 1408,
+      "opponent:attention.v4.artillery.emp.applied": 1408,
+      "tested:attention.v4.capacity.passed": 96,
+      "opponent:attention.v4.capacity.passed": 96,
+      "opponent:attention.v4.perfect-focus.applied": 14784,
+      "tested:attention.v4.battery.activated": 13568,
+      "tested:batteries": 13568,
+      "opponent:attention.v4.battery.activated": 13568,
+      "opponent:batteries": 13568,
+      "tested:shell:smoke": 832,
+      "opponent:shell:smoke": 832,
+      "opponent:attention.v4.support-scan.cancelled": 576,
+      "system:attention.v4.smoke.reset": 832,
+      "tested:attention.v4.support-scan.cancelled": 576,
+      "tested:shell:flare": 640,
+      "opponent:shell:flare": 640
+    },
+    "treatment": {
+      "system:attention.v4.register": 53350,
+      "tested:attention.v4.kinetic.plan.resolved": 157206,
+      "tested:uap:move": 55162,
+      "tested:uap:turbo-charge": 35912,
+      "tested:uap:step-up": 78622,
+      "opponent:attention.v4.kinetic.plan.resolved": 157206,
+      "opponent:uap:command-uplink": 52383,
+      "opponent:attention.v4.support-scan.reserved": 51990,
+      "opponent:uap:support-scan": 51990,
+      "opponent:uap:step-up": 101931,
+      "opponent:uap:move": 52619,
+      "opponent:uap:turbo-charge": 49528,
+      "system:attention.v4.phase.artillery": 53350,
+      "tested:attention.v4.artillery.passed": 48476,
+      "opponent:attention.v4.artillery.passed": 48476,
+      "system:attention.v4.phase.capacity": 53350,
+      "tested:attention.v4.capacity.claimed": 22259,
+      "opponent:attention.v4.capacity.rejected": 34102,
+      "system:attention.v4.phase.command": 53350,
+      "tested:attention.v4.output.emitted": 160050,
+      "tested:artifacts-emitted": 321227,
+      "opponent:attention.v4.support-scan.attached": 48159,
+      "opponent:attention.v4.output.emitted": 160050,
+      "opponent:artifacts-emitted": 323325,
+      "tested:attention.v4.artifact.rejected": 36317,
+      "opponent:attention.v4.artifact.rejected": 36611,
+      "tested:attention.v4.command.ended": 53350,
+      "opponent:attention.v4.command.ended": 53350,
+      "system:attention.v4.resolution.started": 53350,
+      "system:attention.v4.resolution.completed": 53350,
+      "opponent:attention.v4.capacity.claimed": 31046,
+      "tested:attention.v4.capacity.rejected": 33414,
+      "opponent:attention.v4.overclock.activated": 16384,
+      "tested:attention.v4.overclock.activated": 13824,
+      "tested:attention.v4.artifact.verified": 21213,
+      "tested:attention.v4.artifact.accepted": 6521,
+      "opponent:attention.v4.artifact.verified": 26260,
+      "tested:attention.v4.artifact.detonated": 40559,
+      "tested:detonations": 40559,
+      "opponent:attention.v4.artifact.detonated": 37695,
+      "opponent:detonations": 37695,
+      "opponent:attention.v4.artifact.accepted": 3584,
+      "tested:attention.v4.perfect-focus.applied": 13060,
+      "opponent:attention.v4.perfect-focus.applied": 15211,
+      "tested:attention.v4.battery.activated": 7544,
+      "tested:batteries": 7544,
+      "opponent:attention.v4.battery.activated": 13155,
+      "opponent:batteries": 13155,
+      "tested:attention.v4.kinetic.plan.rejected": 2844,
+      "opponent:attention.v4.kinetic.plan.rejected": 2844,
+      "tested:uap:command-uplink": 43074,
+      "tested:attention.v4.support-scan.reserved": 29545,
+      "tested:uap:support-scan": 29545,
+      "tested:attention.v4.support-scan.attached": 27813,
+      "tested:attention.v4.artillery.shell.fired": 4874,
+      "tested:shell:he": 1528,
+      "opponent:attention.v4.artillery.shell.fired": 4874,
+      "opponent:shell:he": 1724,
+      "tested:attention.v4.artillery.he.resolved": 10482,
+      "opponent:attention.v4.artillery.he.resolved": 9905,
+      "tested:shell:emp": 1268,
+      "tested:attention.v4.artillery.emp.applied": 1268,
+      "opponent:shell:emp": 1318,
+      "opponent:attention.v4.artillery.emp.applied": 1268,
+      "tested:shell:smoke": 936,
+      "opponent:shell:smoke": 907,
+      "opponent:attention.v4.support-scan.cancelled": 655,
+      "system:attention.v4.smoke.reset": 1143,
+      "tested:shell:flare": 916,
+      "opponent:shell:flare": 925,
+      "tested:attention.v4.capacity.passed": 7648,
+      "tested:attention.v4.support-scan.cancelled": 245,
+      "opponent:attention.v4.capacity.passed": 58,
+      "tested:attention.v4.artillery.chaff.established": 226,
+      "tested:shell:chaff": 226,
+      "opponent:attention.v4.artillery.shell.blocked": 88,
+      "tested:attention.v4.artifact.seized": 2968
+    }
+  },
+  "contrasts": [
+    {
+      "contrastId": "composition:scout-scout-scout",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "scout-scout-scout",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 510,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 140,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:f40b776114f9a8e653d101101c197b19d5301418bb4f8f8bb088dd6e40f07885",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 1,
+          "drift": 14,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "composition:scout-scout-line",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "scout-scout-line",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 500,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 137,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:944fed1b7aa8e77a97d4532caf33474ebb1004d3bf619d50f17f92e55f5b0a12",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 1,
+          "drift": 4,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "composition:scout-scout-siege",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "scout-scout-siege",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 496,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 129,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:e6daea1b41938ebba2e85c5ae484afa82b9065edead140082177d1ba5e048c11",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 2,
+          "drift": 5,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "simultaneous",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "composition:scout-line-line",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "scout-line-line",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 428,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 76,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:bc09272dd15b5d324623de08ef19997ac5c4007ab661ab8c4292533c28f23fe3",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 4,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "simultaneous",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "composition:scout-siege-siege",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "scout-siege-siege",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 367,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 50,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:0e7a4d66b758ce6082a16074b9c5e389e5d0487eb65ae03e84705aaddfd0cb99",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 2,
+          "drift": 3,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "composition:line-line-line",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "line-line-line",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 487,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 205,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:6d92a2b0d5744c39b7975fd319bbbf3b97078e69fc62e53be2399286a040b4c9",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 4,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "simultaneous",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "composition:line-line-siege",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "line-line-siege",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 499,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 205,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:dfd69a018dc346900b298847899e650315b6561e9250016b71165550255df929",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 0,
+          "drift": 3,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "composition:line-siege-siege",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "line-siege-siege",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 501,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 205,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:f2742013d6bef7c743f7bc6558dd73ada81b6db386d334c738401209156992ff",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 0,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "composition:siege-siege-siege",
+      "dimension": "composition",
+      "controlModule": "scout-line-siege",
+      "treatmentModule": "siege-siege-siege",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 501,
+      "startingRangeDifferentials": 512,
+      "shellChoiceDifferentials": 205,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:38ec55dcba28c4ed77e5bb2b075e140b751355421a7394ee1cd166775b689003",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 0,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "triage:accept-all",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "accept-all",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 504,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 140,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:6af6fdbc1d1c96d1e68c8a43b5b998a48843b9ccd7984356625eb2c14abece34",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 0,
+          "drift": 8,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "triage:verify-lowest",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "verify-lowest",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 511,
+      "mechanicTraceChanges": 511,
+      "counterChanges": 511,
+      "outcomeChanges": 493,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 131,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:4f14085ebafe42d7e68016b286475f3c2ccb09c5f60c59a76ec30c303d6ce060",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 1,
+          "drift": 4,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "triage:seize-cheapest",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "seize-cheapest",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 479,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 117,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:8cfa8fe1c02c925d392e9dc4174926b58a8ca9fd1676aab2c376f5d54d31485b",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 4,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "simultaneous",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "triage:confidence-reject",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "confidence-reject",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 501,
+      "mechanicTraceChanges": 501,
+      "counterChanges": 489,
+      "outcomeChanges": 442,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 124,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:7f3cca511960d6ca635354bc73607d7742f8fca996280b15022aa29c98230a01",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 0,
+          "drift": 4,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "triage:confidence-verify",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "confidence-verify",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 508,
+      "mechanicTraceChanges": 508,
+      "counterChanges": 504,
+      "outcomeChanges": 435,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 126,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:05a6aabcb8ed22b3aa3dbdb67178d0f6dff7d63abd5b9546410a89825f6a7cb7",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 1,
+          "drift": 4,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "triage:recon-reject",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "recon-reject",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 510,
+      "mechanicTraceChanges": 510,
+      "counterChanges": 506,
+      "outcomeChanges": 423,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 117,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:062d5291b84aeab91fabeeae9d2dfbbbfba8728cad7188cccff9b83a539148ba",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 4,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "simultaneous",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "triage:line-assist",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "line-assist",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 465,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 140,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:3f29d13cf93983bd7519d7be6b374bf12dab5fe44639e7d70b9e84b1940a831d",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 0,
+          "drift": 4,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "triage:siege-seize",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "siege-seize",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 504,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 140,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:c0b7343a089d9484ca73ae098ba47c62cf7eab029c68e7397a4f53e67e5ebe75",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 0,
+          "drift": 8,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "triage:pressure-adaptive",
+      "dimension": "triage",
+      "controlModule": "risk-adaptive",
+      "treatmentModule": "pressure-adaptive",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 498,
+      "mechanicTraceChanges": 498,
+      "counterChanges": 494,
+      "outcomeChanges": 402,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 107,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:d64188f14933985e3abcadd2cc7017585da09d30be018ccde49d238f5892a31c",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 1,
+          "drift": 5,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "movement:hold",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "hold",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 488,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 197,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:cbb48ce254ef92c08965ff3c5c8ad39995672e5b88e955446f6c7c9fdcab05e5",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 3,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "movement:own-front",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "own-front",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 437,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 122,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:78cbe9b43a4719e5e3ac301ed091ab4faea7d7c9a21b7a81124ddcbfa6ae2819",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 0,
+          "drift": 3,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "movement:enemy-front",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "enemy-front",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 453,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 122,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:a0ff766cfa1c77f69f40494781b47adcef96340aeb1c7c3eedb6aeb127052211",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 5,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "simultaneous",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "movement:scout-mobile",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "scout-mobile",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 459,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 153,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:19eb751fef8bbff26aaf2477a9c769f0b4b3491f1f80e625381cb875d94573f6",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "loss",
+          "progress": 0,
+          "drift": 4,
+          "opponentProgress": 0,
+          "opponentDrift": 0,
+          "terminalReason": "drift",
+          "rounds": 3
+        }
+      }
+    },
+    {
+      "contrastId": "movement:escort",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "escort",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 484,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 187,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:c6708393e29700f02c1ab666c78a5da3553dc8f024ec45cab296af1b65024931",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 3,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "movement:siege-anchor",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "siege-anchor",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 416,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 105,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:44d4cdc00a081980f82f72aec332361e04b743293ec9a45043c683e35e7098df",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "movement:flare-evade",
+      "dimension": "movement",
+      "controlModule": "chassis-native",
+      "treatmentModule": "flare-evade",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 488,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 197,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:cbb48ce254ef92c08965ff3c5c8ad39995672e5b88e955446f6c7c9fdcab05e5",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 3,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:never",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "never",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 164,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 144,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:e514a5d3226a3e1814824386044e8480a8478ea32b13686fce49b77acfe71be3",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 2,
+          "drift": 10,
+          "opponentProgress": 0,
+          "opponentDrift": 8,
+          "terminalReason": "simultaneous",
+          "rounds": 5
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:pioneer-focus",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "pioneer-focus",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 151,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 143,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:08bbf69100a649a129ea1e5459b79f6823432dbfffdbb8dcb0cb772540622ad1",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 8,
+          "opponentProgress": 0,
+          "opponentDrift": 10,
+          "terminalReason": "simultaneous",
+          "rounds": 5
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:follower-focus",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "follower-focus",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 98,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 74,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:70ce64c58d19cd445d2d8dee567554652717abb78c0a57d07e37b2b824cf5099",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:pioneer-overclock",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "pioneer-overclock",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 145,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 115,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:895d697b34bf4d78e51d20e5869bd861b3706c79ba0edcbab6e36546319b3ac9",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 8,
+          "opponentProgress": 0,
+          "opponentDrift": 10,
+          "terminalReason": "simultaneous",
+          "rounds": 5
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:follower-overclock",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "follower-overclock",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 150,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 142,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:4b10ba504b52ae6c32f537af6641412814cfd4ff0dbe8f1776fd96619a906d2d",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 8,
+          "opponentProgress": 0,
+          "opponentDrift": 8,
+          "terminalReason": "simultaneous",
+          "rounds": 5
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:pioneer-flare",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "pioneer-flare",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 107,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 140,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:42dcc66c84a09ed3bbffb60abe0f1396b9e1510d66d4ba8efe5c20c3e4cd0b5d",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 0,
+          "opponentDrift": 8,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    },
+    {
+      "contrastId": "capacity:follower-flare",
+      "dimension": "capacity",
+      "controlModule": "adaptive",
+      "treatmentModule": "follower-flare",
+      "pairs": 512,
+      "eligiblePairs": 512,
+      "executedPairs": 512,
+      "changedPairs": 512,
+      "mechanicTraceChanges": 512,
+      "counterChanges": 512,
+      "outcomeChanges": 125,
+      "startingRangeDifferentials": 0,
+      "shellChoiceDifferentials": 115,
+      "firstChangedPair": {
+        "seat": 0,
+        "pressure": 0,
+        "seed": 0,
+        "controlTraceHash": "sha256:a82bf935b94fd795fdf5f54d6e82cc698c777b6eed6c2ac8f6fc8fe310595cf9",
+        "treatmentTraceHash": "sha256:6663e8b1b1fd7867eee66ed9a889ca5ee18a9ea6e478f8934af822e5ef132fda",
+        "controlOutcome": {
+          "result": "win",
+          "progress": 3,
+          "drift": 2,
+          "opponentProgress": 1,
+          "opponentDrift": 5,
+          "terminalReason": "drift",
+          "rounds": 4
+        },
+        "treatmentOutcome": {
+          "result": "win",
+          "progress": 1,
+          "drift": 0,
+          "opponentProgress": 0,
+          "opponentDrift": 6,
+          "terminalReason": "drift",
+          "rounds": 4
+        }
+      }
+    }
+  ],
+  "moduleCoverage": [
+    {
+      "dimension": "capacity",
+      "module": "adaptive",
+      "eligibleMatches": 3584,
+      "executedMatches": 3584,
+      "changedPairs": 3584
+    },
+    {
+      "dimension": "capacity",
+      "module": "follower-flare",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "capacity",
+      "module": "follower-focus",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "capacity",
+      "module": "follower-overclock",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "capacity",
+      "module": "never",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "capacity",
+      "module": "pioneer-flare",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "capacity",
+      "module": "pioneer-focus",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "capacity",
+      "module": "pioneer-overclock",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "line-line-line",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "line-line-siege",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "line-siege-siege",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "scout-line-line",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "scout-line-siege",
+      "eligibleMatches": 4608,
+      "executedMatches": 4608,
+      "changedPairs": 4608
+    },
+    {
+      "dimension": "composition",
+      "module": "scout-scout-line",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "scout-scout-scout",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "scout-scout-siege",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "scout-siege-siege",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "composition",
+      "module": "siege-siege-siege",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "chassis-native",
+      "eligibleMatches": 3584,
+      "executedMatches": 3584,
+      "changedPairs": 3584
+    },
+    {
+      "dimension": "movement",
+      "module": "enemy-front",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "escort",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "flare-evade",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "hold",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "own-front",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "scout-mobile",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "movement",
+      "module": "siege-anchor",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "triage",
+      "module": "accept-all",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "triage",
+      "module": "confidence-reject",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 501
+    },
+    {
+      "dimension": "triage",
+      "module": "confidence-verify",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 508
+    },
+    {
+      "dimension": "triage",
+      "module": "line-assist",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "triage",
+      "module": "pressure-adaptive",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 498
+    },
+    {
+      "dimension": "triage",
+      "module": "recon-reject",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 510
+    },
+    {
+      "dimension": "triage",
+      "module": "risk-adaptive",
+      "eligibleMatches": 4608,
+      "executedMatches": 4608,
+      "changedPairs": 4576
+    },
+    {
+      "dimension": "triage",
+      "module": "seize-cheapest",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "triage",
+      "module": "siege-seize",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 512
+    },
+    {
+      "dimension": "triage",
+      "module": "verify-lowest",
+      "eligibleMatches": 512,
+      "executedMatches": 512,
+      "changedPairs": 511
+    }
+  ],
+  "gates": {
+    "dimensionsComplete": true,
+    "everyModuleEligible": true,
+    "everyModuleExecuted": true,
+    "everyModuleChangedPair": true,
+    "startingRangeDifferentials": true,
+    "shellChoiceDifferentials": true,
+    "zeroReplayMismatches": true,
+    "zeroStreamMismatches": true,
+    "zeroAttributionMismatches": true,
+    "passed": true
+  },
+  "reportHash": "sha256:3a0b2e4060aaaefbb8052ebd58a67ecf71ad8c891c1b67ca7450c813bbdfa3f8"
+}

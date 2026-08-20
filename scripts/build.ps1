@@ -3,7 +3,8 @@ param(
   [ValidateSet('Verify', 'Image', 'Smoke')]
   [string] $Target = 'Verify',
   [string] $ReleaseId = 'dev',
-  [string] $ImageTag
+  [string] $ImageTag,
+  [switch] $AllowDirty
 )
 
 $ErrorActionPreference = 'Stop'
@@ -18,6 +19,14 @@ try {
     $revision = 'workspace'
     if ((Get-Command git -ErrorAction SilentlyContinue) -and (Test-Path (Join-Path $root '.git'))) {
       $revision = (& git -C $root rev-parse HEAD).Trim()
+      if ($LASTEXITCODE -ne 0) { throw 'Could not resolve the Git revision for the image build' }
+      if (-not $AllowDirty) {
+        $changes = @(& git -C $root status --porcelain --untracked-files=all)
+        if ($LASTEXITCODE -ne 0) { throw 'Could not inspect the Git worktree before the image build' }
+        if ($changes.Count -gt 0) {
+          throw 'Image builds require a clean Git worktree. Commit or stash changes, or pass -AllowDirty explicitly.'
+        }
+      }
     }
     docker build --target runtime -t $ImageTag --label "org.opencontainers.image.version=$ReleaseId" --label "org.opencontainers.image.revision=$revision" .
     if ($LASTEXITCODE -ne 0) { throw 'Docker image build failed' }

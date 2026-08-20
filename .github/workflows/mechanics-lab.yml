@@ -16,10 +16,42 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - run: npm ci
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - run: python -m pip install numpy pillow pytest
       - run: npm run build
       - run: npm run typecheck
       - run: npm test
+      - name: Image census tests
+        run: npm run test:image-census
+      - name: Art catalog compiler tests
+        run: npm run test:art-catalog
+      - name: Art catalog verifier tests
+        run: npm run test:verify-art-catalog
+      - name: Attention v4 commander compiler coverage
+        run: npm run verify:attention-v4-compiler
+      - name: Attention v4 canonical activation report
+        run: npm run verify:attention-v4-conformance
+      - name: Attention v4.2 descriptive landscape report
+        run: npm run verify:attention-v4-landscape
+      - name: Attention v4.2 expanded topology report
+        run: npm run verify:attention-v4-topology
+      - name: Attention v4.2 degree-88 topology report
+        run: npm run verify:attention-v4-regular-topology
+      - name: Attention v4.2 exact fleet matrix report
+        run: npm run verify:attention-v4-fleet-matrix
+      - name: Attention v4.2 deep-study harness smoke
+        run: npm run study:attention-v4:deep:smoke
+      - name: Attention v4 paired probe smoke
+        run: npm run probe:attention-v4:smoke
+      - name: Install browser runtime
+        run: npx playwright install --with-deps chromium
+      - name: Attention v4 deterministic browser journey
+        run: npm run test:e2e --workspace=@landscape/web
       - run: npm run lab -- --matrix=ci-${{ github.run_id }} --runs=${{ github.event_name == 'schedule' && 100 || 5 }} --policies=8 --tunings=2 --shards=1 --shard=0 --canonical=true
       - name: Validate report
         env:

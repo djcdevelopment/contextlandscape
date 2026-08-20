@@ -56,6 +56,10 @@ export * from "./command.js";
 export * from "./attention.js";
 export * from "./attention-v2.js";
 export * from "./attention-v3.js";
+export * from "./attention-v4.js";
+export * from "./attention-v4-commander.js";
+export * from "./attention-v4-controller.js";
+export * from "./attention-v4-conformance.js";
 export * from "./landscape.js";
 
 export type ReplayBatch = { orders: Order[]; playerId?: string };

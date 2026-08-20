@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type {
   EventEnvelope,
@@ -11,8 +11,10 @@ import type {
 import { CommanderView } from "./commander/CommanderView.js";
 import { LabAtlasView } from "./atlas/LabAtlasView.js";
 import { EvidenceLandscapeView } from "./atlas/EvidenceLandscapeView.js";
-import { BattleCommandApp } from "./battle/BattleCommandApp.js";
 import "./style.css";
+
+const BattleCommandApp = lazy(async () => ({ default: (await import("./battle/BattleCommandApp.js")).BattleCommandApp }));
+const HumanReleaseApp = lazy(async () => ({ default: (await import("./human/HumanReleaseApp.js")).HumanReleaseApp }));
 
 const actions = ["scout", "build_contract", "implement", "review", "defend", "full_send", "consolidate"] as const;
 type Action = typeof actions[number];
@@ -809,14 +811,16 @@ function Metric({ label, value }: { label: string; value: string }) {
 const requestedSearch = new URLSearchParams(window.location.search);
 const requestedView = requestedSearch.get("view");
 const requestedLandscape = requestedSearch.get("landscape");
+const requestedFriendBattle = requestedSearch.get("friendBattle");
 const requestedLegacy = requestedView === "legacy"
-  || requestedSearch.has("challenge")
   || requestedSearch.has("labSession")
   || requestedSearch.has("labs");
 createRoot(document.getElementById("root")!).render(
-  requestedView === "commander" ? <CommanderView /> : requestedView === "atlas"
+  <Suspense fallback={<main className="route-loading" role="status">Opening Context Landscape…</main>}>{requestedView === "hangar" || requestedSearch.has("challenge") ? <HumanReleaseApp />
+    : requestedFriendBattle ? <BattleCommandApp friendMatchId={requestedFriendBattle} />
+    : requestedView === "commander" ? <CommanderView /> : requestedView === "atlas"
     ? requestedLandscape === "commander" || requestedLandscape === "artillery" || requestedLandscape === "desperation"
       ? <EvidenceLandscapeView mode={requestedLandscape} />
       : <LabAtlasView />
-    : requestedLegacy ? <App /> : <BattleCommandApp />
+    : requestedLegacy ? <App /> : <BattleCommandApp />}</Suspense>
 );

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent } from "react";
+import { appHref } from "../navigation.js";
 import "./lab-atlas.css";
 
 type MetricId = "runVolume" | "evidenceDepth" | "artifactCompleteness";
@@ -162,15 +163,15 @@ export function LabAtlasView() {
       <div className="atlas-summary" aria-label="Atlas totals">
         <span><strong>{atlas.totals.labs}</strong> labs</span>
         <span><strong>{formatInteger(atlas.totals.recordedRuns)}</strong> recorded runs</span>
-        <a href="/">Return to field lab</a>
+        <a href={appHref()}>Return to field lab</a>
       </div>
     </header>
 
     <nav className="evidence-nav" aria-label="Landscape mode">
-      <a className="active" href="/?view=atlas">Research atlas</a>
-      <a href="/?view=atlas&landscape=commander">Commander Field</a>
-      <a href="/?view=atlas&landscape=artillery">Artillery Relief</a>
-      <a href="/?view=atlas&landscape=desperation">Desperation Theatre</a>
+      <a className="active" href={appHref("view=atlas")}>Research atlas</a>
+      <a href={appHref("view=atlas&landscape=commander")}>Commander Field</a>
+      <a href={appHref("view=atlas&landscape=artillery")}>Artillery Relief</a>
+      <a href={appHref("view=atlas&landscape=desperation")}>Desperation Theatre</a>
     </nav>
 
     <section className="atlas-toolbar" aria-label="Map controls">
@@ -252,7 +253,7 @@ export function LabAtlasView() {
           <div className="atlas-mini-bars">
             {metricOrder.map((id) => <div key={id}><span>{atlas.metrics[id].label}</span><i><b style={{ width: `${(selected.metrics[id] ?? 0) * 100}%` }} /></i><output>{selected.metrics[id] === null ? "unknown" : `${Math.round((selected.metrics[id] ?? 0) * 100)}%`}</output></div>)}
           </div>
-          {landscapeFor(selectedLandscape) ? <a className="atlas-open-landscape" href={`/?view=atlas&landscape=${landscapeFor(selectedLandscape)}`}>Open evidence landscape</a> : <p className="atlas-no-landscape">Catalog-level evidence only in this release.</p>}
+          {landscapeFor(selectedLandscape) ? <a className="atlas-open-landscape" href={appHref(`view=atlas&landscape=${landscapeFor(selectedLandscape)}`)}>Open evidence landscape</a> : <p className="atlas-no-landscape">Catalog-level evidence only in this release.</p>}
         </> : <p>Select a lab marker to inspect its provenance.</p>}
         <div className="atlas-method-note">
           <strong>Map semantics</strong>
