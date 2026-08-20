@@ -1203,3 +1203,406 @@
   .battle-shell button:not(.unit-portrait-select),
   .briefing-shell button { min-height:40px; }
 }
+
+/* Command Deck: a single, phase-led command surface. */
+.battle-shell {
+  min-width:0;
+  padding:0 16px 28px;
+}
+
+.command-deck-header {
+  display:grid;
+  min-height:52px;
+  grid-template-columns:minmax(190px,auto) minmax(430px,1fr) auto;
+  align-items:center;
+  gap:14px;
+  margin:0 -16px;
+  padding:0 16px;
+}
+
+.command-deck-brand { min-width:0; }
+.command-deck-brand .battle-kicker { font-size:var(--battle-type-micro);letter-spacing:.11em; }
+.command-deck-brand h1 {
+  max-width:260px;
+  margin:1px 0 0;
+  overflow:hidden;
+  font-size:var(--battle-type-section);
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.phase-stepper { min-width:0; }
+.phase-stepper ol {
+  display:flex;
+  min-width:0;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.phase-stepper li {
+  position:relative;
+  display:flex;
+  flex:0 0 auto;
+  min-width:0;
+  min-height:32px;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border:1px solid transparent;
+  color:#667c88;
+  background:rgba(10,21,29,.58);
+  font-size:var(--battle-type-label);
+  white-space:nowrap;
+}
+.phase-stepper li.complete { color:#87a3a7; }
+.phase-stepper li.complete .phase-chip-prefix { color:var(--battle-cyan); }
+.phase-stepper li.current { border-color:#756433;color:#fff2c6;background:#251f12;box-shadow:inset 0 -2px var(--battle-gold); }
+.phase-chip-prefix { color:#526a76;font:700 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.phase-help { display:inline-flex; }
+.battle-shell .phase-info {
+  display:grid;
+  width:20px;
+  min-width:20px;
+  height:20px;
+  min-height:20px;
+  padding:0;
+  place-items:center;
+  border:0;
+  border-radius:50%;
+  color:var(--battle-gold);
+  background:transparent;
+  font-size:var(--battle-type-label);
+}
+.phase-tooltip {
+  position:absolute;
+  z-index:30;
+  top:calc(100% + 8px);
+  left:50%;
+  display:grid;
+  width:min(320px,78vw);
+  gap:5px;
+  padding:10px 12px;
+  visibility:hidden;
+  border:1px solid #516675;
+  color:#9db0b8;
+  background:#09141c;
+  box-shadow:0 14px 38px rgba(0,0,0,.65);
+  font-size:var(--battle-type-label);
+  line-height:1.45;
+  opacity:0;
+  transform:translate(-50%,5px);
+  pointer-events:auto;
+}
+.phase-tooltip b { color:#f0f6f6; }
+.phase-tooltip span { white-space:normal; }
+.phase-tooltip em { color:#8097a2;font:normal 700 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.phase-tooltip em.risk { color:var(--battle-red); }
+.phase-tooltip.open { visibility:visible;opacity:1;transform:translate(-50%,0); }
+
+.command-deck-header .battle-nav {
+  align-self:center;
+  gap:7px;
+  padding:0;
+  border:0;
+  background:transparent;
+  white-space:nowrap;
+}
+.command-deck-header .battle-nav a,
+.battle-more summary { font-size:var(--battle-type-label); }
+.command-deck-header .battle-nav > button { min-height:32px;padding:6px 9px; }
+.battle-more { position:relative; }
+.battle-more summary {
+  padding:7px 8px;
+  color:#8fa6b5;
+  cursor:pointer;
+  list-style:none;
+}
+.battle-more summary::-webkit-details-marker { display:none; }
+.battle-more summary::after { margin-left:5px;content:"▾";color:#647b87; }
+.battle-more[open] summary { color:var(--battle-cyan); }
+.battle-more > div {
+  position:absolute;
+  z-index:35;
+  top:calc(100% + 9px);
+  right:0;
+  display:grid;
+  min-width:210px;
+  gap:2px;
+  padding:7px;
+  border:1px solid #3a5360;
+  background:#09141c;
+  box-shadow:0 16px 42px rgba(0,0,0,.7);
+}
+.battle-more > div a,
+.battle-more > div button { display:block;padding:9px;text-align:left; }
+
+.battle-layout {
+  display:grid;
+  grid-template-columns:210px minmax(0,1fr);
+  gap:12px;
+  max-width:1920px;
+  margin:12px auto 0;
+}
+
+.operation-rail {
+  display:grid;
+  align-self:start;
+  gap:8px;
+}
+.operation-rail > section {
+  min-width:0;
+  padding:11px;
+  border:1px solid var(--battle-line);
+  background:rgba(8,17,24,.96);
+}
+.operation-state header { display:grid;gap:8px;margin-bottom:10px; }
+.operation-state header > span,
+.phase-guidance > span,
+.next-phase-preview > span {
+  color:var(--battle-gold);
+  font:750 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.11em;
+}
+.operation-state header > div { display:flex;align-items:end;justify-content:space-between;gap:8px; }
+.operation-state header > div > strong { color:#edf5f6;font:800 1.65rem ui-monospace,SFMono-Regular,Consolas,monospace; }
+.operation-state header > div > strong small { color:#607985;font-size:var(--battle-type-label); }
+.operation-state header > div > b { color:var(--battle-cyan);font-size:var(--battle-type-control);text-transform:uppercase; }
+.operation-state > div:not(.operation-pair),
+.operation-pair > div { display:grid;grid-template-columns:1fr auto;gap:4px;margin-top:8px; }
+.operation-state div > span { color:#8197a1;font-size:var(--battle-type-label); }
+.operation-state div > strong { color:#edf5f6;font:750 var(--battle-type-metric) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.operation-state div.danger > strong { color:var(--battle-red); }
+.operation-state div > i { grid-column:1/-1;height:3px;overflow:hidden;background:#1b2a35; }
+.operation-state div > i > b { display:block;height:100%;background:var(--battle-cyan); }
+.operation-state div.danger > i > b { background:var(--battle-red); }
+.operation-pair { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+.operation-pair > div { padding:7px;border:1px solid #233845;background:#071118; }
+.phase-guidance { display:grid;gap:8px; }
+.phase-guidance > p,
+.phase-guidance > div p { margin:0;color:#9bb0b8;font-size:var(--battle-type-body);line-height:1.45; }
+.phase-guidance > div { display:grid;gap:3px;padding:8px;border-left:2px solid var(--battle-cyan);background:#0b211f; }
+.phase-guidance > div.risk { border-color:var(--battle-red);background:#29171b; }
+.phase-guidance > div strong { color:#dce9eb;font-size:var(--battle-type-micro);letter-spacing:.08em; }
+.phase-guidance button { justify-self:start;min-height:32px;padding:5px 8px; }
+.operation-legend { display:grid;grid-template-columns:1fr 1fr;gap:7px; }
+.operation-legend span { display:flex;align-items:center;gap:5px;color:#8298a3;font-size:var(--battle-type-label); }
+.operation-legend i { width:8px;height:8px;border:1px solid currentColor;border-radius:50%; }
+.operation-legend .friendly { color:var(--battle-cyan);background:var(--battle-cyan); }
+.operation-legend .hostile { color:var(--battle-red);background:var(--battle-red); }
+.operation-legend .artifact { color:var(--battle-gold);border-radius:0;transform:rotate(45deg); }
+.operation-legend .range { border-style:dashed;color:var(--battle-blue); }
+.next-phase-preview { display:grid;gap:6px; }
+.next-phase-preview strong { color:#9eb1b9;font-size:var(--battle-type-label);line-height:1.4; }
+
+.board-column.command-deck-board {
+  display:grid;
+  min-width:0;
+  gap:10px;
+  border:0;
+  background:transparent;
+}
+.context-bar {
+  display:flex;
+  min-width:0;
+  min-height:42px;
+  align-items:stretch;
+  border:1px solid var(--battle-line);
+  background:#081119;
+}
+.context-label { display:flex;align-items:center;gap:7px;padding:7px 10px;border-right:1px solid var(--battle-line);white-space:nowrap; }
+.context-label span { color:var(--battle-gold);font:750 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em; }
+.context-label strong { display:grid;width:22px;height:22px;place-items:center;border:1px solid #5e532f;color:var(--battle-gold);font-size:var(--battle-type-label); }
+.context-bar .artifact-pieces { flex:1;min-width:120px;min-height:40px;gap:4px;padding:4px 6px; }
+.context-bar .artifact-piece { display:flex;min-width:max-content;height:32px;align-items:center;gap:6px;padding:4px 7px; }
+.context-bar .artifact-piece::after { right:5px;bottom:2px;left:5px;height:1px; }
+.context-bar .artifact-piece > strong,
+.context-bar .artifact-piece > small { grid-column:auto;grid-row:auto;align-self:auto; }
+.context-bar .artifact-piece > strong { font-size:var(--battle-type-label); }
+.context-bar .artifact-piece > small { font-size:var(--battle-type-micro); }
+.context-bar .artifact-piece.verified { border-color:#746332;background:#211e13; }
+.context-tools { display:flex;align-items:center;gap:8px;padding:4px 6px;border-left:1px solid var(--battle-line); }
+.context-tools .base-rate { color:#8196a0;font:700 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;white-space:nowrap; }
+.context-tools .base-rate b { color:var(--battle-cyan); }
+.context-tools .board-view-switch { flex:none; }
+.context-tools .board-view-switch button { min-height:26px;padding:4px 7px;font-size:var(--battle-type-micro); }
+
+.battle-board-surface { min-width:0;border:1px solid #2b4653;background:#03090e; }
+.battle-board-surface.read-only { border-color:#756433;box-shadow:inset 0 0 0 1px rgba(239,201,108,.24); }
+.battle-board-surface.read-only .perspective-board,
+.battle-board-surface.read-only .v4-board { opacity:.85; }
+.command-deck-board .perspective-board { border:0; }
+.command-deck-board .perspective-canvas-shell { height:clamp(360px,31vw,520px); }
+.command-deck-board .v4-board { width:min(100%,700px);margin:0 auto; }
+.planned-step-markers { position:absolute;z-index:6;bottom:3px;left:3px;display:flex;gap:2px; }
+.planned-step-markers b { display:grid;width:17px;height:17px;place-items:center;border:1px solid #fff2bf;border-radius:50%;color:#061014;background:var(--battle-gold);font:800 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;box-shadow:0 1px 4px #000; }
+
+.v4-armories { position:relative; }
+.v4-armories.inactive { filter:saturate(.35); }
+.v4-armories.inactive > div:not(.armory-inactive-caption) { opacity:.42; }
+.armory-inactive-caption { position:absolute;z-index:4;top:50%;left:50%;padding:5px 9px;border:1px solid #566875;color:#d4dfe2;background:rgba(7,14,20,.92);font:800 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;transform:translate(-50%,-50%); }
+
+.mech-roster.fleet-strip { padding:0;overflow:visible;border:1px solid var(--battle-line); }
+.mech-roster.fleet-strip::before { display:none; }
+.fleet-strip .mech-roster-heading { min-height:44px;padding:8px 11px; }
+.fleet-strip-deck { display:grid;min-width:0;grid-template-columns:minmax(0,1fr) 300px;gap:8px;padding:8px; }
+.fleet-strip-scroll { min-width:0;overflow-x:auto;scrollbar-color:#35505e #071119; }
+.fleet-strip .mech-roster-cards { display:grid;width:100%;gap:8px; }
+.fleet-strip .v4-unit-card {
+  display:block;
+  min-width:0;
+  min-height:168px;
+  border:1px solid #293f4c;
+  background:#09131b;
+}
+.fleet-card-header { position:relative;display:grid;min-height:58px;grid-template-columns:58px minmax(0,1fr);gap:8px;padding:7px;border-bottom:1px solid #263b48; }
+.fleet-card-header .unit-portrait-select { width:58px;min-width:58px;height:58px;min-height:58px;padding:0 !important;border:1px solid #304955 !important; }
+.fleet-card-header .unit-portrait-select > strong { padding:4px;font-size:var(--battle-type-micro); }
+.fleet-card-header .unit-portrait-fallback b { font-size:var(--battle-type-metric); }
+.fleet-card-header .unit-portrait-fallback small { display:none; }
+.fleet-card-summary { display:grid;min-width:0;align-content:center;gap:4px; }
+.fleet-card-summary > div { display:flex;align-items:center;justify-content:space-between;gap:6px; }
+.fleet-card-summary b { color:#dce8ea;font-size:var(--battle-type-control); }
+.fleet-card-summary b small { color:#718994;font-size:var(--battle-type-micro); }
+.fleet-card-summary > div > strong { color:var(--battle-gold);font:750 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.fleet-card-summary > span,
+.fleet-card-summary > small { overflow:hidden;color:#8096a0;font-size:var(--battle-type-micro);line-height:1.3;text-overflow:ellipsis;white-space:nowrap; }
+.fleet-card-summary > small { color:#637b86; }
+.uap-tooltip { position:absolute;z-index:20;top:68px;left:7px;display:none;min-width:180px;gap:3px;padding:8px;border:1px solid #4b626e;background:#081219;box-shadow:0 9px 25px #000;font-size:var(--battle-type-micro); }
+.uap-tooltip b,.uap-tooltip span,.uap-tooltip strong { display:block; }
+.uap-tooltip b { color:var(--battle-gold); }
+.uap-tooltip.open { display:grid; }
+.fleet-strip .unit-control-surface { padding:7px; }
+.fleet-strip .ordered-plan { margin:0 0 7px; }
+.fleet-strip .ordered-plan li { min-height:28px;padding:4px 6px; }
+.fleet-strip .unit-actions { gap:4px; }
+.fleet-strip .unit-actions button { min-height:30px;padding:4px 6px;font-size:var(--battle-type-micro); }
+.fleet-phase-content { animation:fleet-phase-in 160ms ease-out; }
+.fleet-inactive-caption,
+.fleet-resolution-state { display:grid;min-height:56px;align-content:center;gap:4px;color:#728994;font:700 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.fleet-resolution-state span { color:#8197a1;font:500 var(--battle-type-label) Inter,ui-sans-serif,system-ui,sans-serif; }
+.fleet-strip .output-allocation { margin-top:0;padding-top:0;border-top:0; }
+.fleet-strip .allocation-row { display:grid;grid-template-columns:minmax(90px,1fr) auto auto;align-items:center; }
+.allocation-fields { display:flex;align-items:center;gap:4px; }
+.allocation-fields label { min-width:42px; }
+.fleet-strip .output-allocation input,
+.fleet-strip .output-allocation select { width:100%;min-height:30px; }
+.fleet-strip .compact-inspector { width:auto;min-width:300px;min-height:168px;padding:10px;border:1px solid #354a56;background:#0c1820; }
+.compact-inspector h2 { margin:5px 0;color:#edf5f6;font-size:var(--battle-type-section); }
+.compact-inspector p { margin:5px 0;color:#879ca6;font-size:var(--battle-type-label);line-height:1.4; }
+.compact-inspector button { min-height:32px;margin-top:8px;padding:5px 8px; }
+.fleet-strip .inspector-expansion { grid-column:1/-1;padding:12px;border:1px solid #4a5f6a;background:#0b171f; }
+
+.event-ticker { overflow-x:auto; }
+.event-ticker > span,
+.event-ticker > div { min-width:150px; }
+
+.command-deck-board .phase-dock {
+  position:static;
+  z-index:auto;
+  right:auto;
+  bottom:auto;
+  left:auto;
+  min-height:78px;
+  max-width:none;
+  margin:0;
+  padding:11px 13px;
+  box-shadow:none;
+  backdrop-filter:none;
+}
+.command-deck-board .artillery-dock { grid-template-columns:minmax(210px,1fr) minmax(220px,1fr) auto; }
+.command-deck-board .capacity-dock { grid-template-columns:minmax(300px,1.35fr) minmax(210px,.9fr) auto; }
+.resolution-dock { grid-template-columns:minmax(260px,1.3fr) minmax(190px,.7fr) auto;border-color:var(--battle-gold);background:linear-gradient(90deg,#1c1a11,#0c171d); }
+.resolution-results { display:grid;gap:4px;padding-left:13px;border-left:1px solid #665b35; }
+.resolution-results span { color:#9b8c5d;font:700 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase; }
+.resolution-results strong { color:#f2d98f;font-size:var(--battle-type-control); }
+
+@keyframes fleet-phase-in {
+  from { opacity:0;transform:translateY(4px); }
+  to { opacity:1;transform:translateY(0); }
+}
+
+@media (min-width:1800px) {
+  .battle-layout { grid-template-columns:210px minmax(0,1fr);max-width:min(96vw,2560px);gap:16px; }
+  .command-deck-board .perspective-canvas-shell { height:clamp(480px,31vw,760px); }
+  .command-deck-board .phase-dock { max-width:none; }
+}
+
+@media (max-width:1180px) {
+  .command-deck-header { grid-template-columns:minmax(200px,1fr) auto;min-height:auto;padding-top:8px;padding-bottom:8px; }
+  .command-deck-header .phase-stepper { grid-column:1/-1;grid-row:2; }
+  .phase-stepper ol { justify-content:flex-start;overflow-x:auto; }
+  .battle-layout { grid-template-columns:210px minmax(0,1fr); }
+  .fleet-strip-deck { grid-template-columns:minmax(0,1fr); }
+  .fleet-strip .compact-inspector { grid-column:1; }
+  .command-deck-board .artillery-dock,
+  .command-deck-board .capacity-dock { grid-template-columns:1fr auto; }
+  .command-deck-board .artillery-dock .impact-preview,
+  .command-deck-board .capacity-dock .capacity-track { grid-column:1/-1; }
+  .battle-shell { padding-bottom:28px; }
+}
+
+@media (max-width:820px) {
+  .command-deck-header { display:grid;margin:0 -16px;padding:10px 16px; }
+  .command-deck-header .battle-nav { margin:0;border:0;overflow-x:auto; }
+  .command-deck-header .battle-nav > a,
+  .command-deck-header .battle-nav > button,
+  .battle-more summary,
+  .phase-guidance button,
+  .fleet-strip .unit-actions button,
+  .fleet-strip .output-allocation input,
+  .fleet-strip .output-allocation select,
+  .compact-inspector button { min-height:40px; }
+  .command-deck-header .battle-nav > a,
+  .battle-more summary { display:flex;align-items:center; }
+  .battle-ui-scale button { min-width:40px; }
+  .battle-shell .phase-info { width:40px;min-width:40px;height:40px;min-height:40px; }
+  .phase-stepper li { padding:5px 7px; }
+  .phase-tooltip { position:fixed;top:96px;left:50%; }
+  .battle-layout { display:grid;grid-template-columns:1fr; }
+  .operation-rail { grid-template-columns:1fr 1fr; }
+  .operation-state { grid-row:span 2; }
+  .operation-legend { align-content:center; }
+  .context-bar { flex-wrap:wrap; }
+  .context-bar .artifact-pieces { order:3;flex-basis:100%;border-top:1px solid var(--battle-line); }
+  .context-tools { flex:1;justify-content:flex-end; }
+  .context-tools .board-view-switch button { min-height:40px; }
+  .command-deck-board .perspective-canvas-shell { height:clamp(430px,62vh,620px); }
+  .v4-armories { grid-template-columns:1fr 1fr; }
+  .v4-armories > div + div { border-top:0;border-left:1px solid var(--battle-line); }
+  .command-deck-board .phase-dock,
+  .command-deck-board .artillery-dock { position:static;display:grid;grid-template-columns:1fr auto;max-height:none; }
+  .resolution-dock { grid-template-columns:1fr auto; }
+  .resolution-results { grid-column:1; }
+  .right-command-column { position:static; }
+}
+
+@media (max-width:580px) {
+  .battle-shell { padding-right:8px;padding-left:8px;padding-bottom:20px; }
+  .command-deck-header { margin-right:-8px;margin-left:-8px;padding-right:8px;padding-left:8px; }
+  .command-deck-header { grid-template-columns:1fr; }
+  .command-deck-header .phase-stepper,
+  .command-deck-header .battle-nav { grid-column:1; }
+  .command-deck-header .battle-nav { justify-content:flex-start; }
+  .operation-rail { grid-template-columns:1fr; }
+  .operation-state { grid-row:auto; }
+  .context-label { flex:1; }
+  .context-tools { flex-basis:100%;justify-content:space-between;border-top:1px solid var(--battle-line);border-left:0; }
+  .context-tools .base-rate { white-space:normal; }
+  .v4-armories { grid-template-columns:1fr; }
+  .v4-armories > div + div { border-top:1px solid var(--battle-line);border-left:0; }
+  .command-deck-board .phase-dock,
+  .command-deck-board .artillery-dock,
+  .command-deck-board .capacity-dock,
+  .resolution-dock { display:flex;max-height:none;flex-direction:column;align-items:stretch; }
+  .resolution-results { padding-top:8px;padding-left:0;border-top:1px solid #665b35;border-left:0; }
+  .command-deck-board .phase-dock .dock-actions { justify-content:stretch; }
+  .command-deck-board .phase-dock .dock-actions button { flex:1; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .fleet-phase-content { animation:none; }
+  .phase-tooltip { transition:none; }
+}

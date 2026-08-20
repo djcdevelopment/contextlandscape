@@ -144,6 +144,12 @@ test("deterministic Battery, EMP, counterfire, reload, detonation, and terminal 
     localStorage.clear();
     localStorage.setItem("context-landscape.boardView", "tactical");
   });
+  await page.route("**/api/art/catalog**", async (route) => fulfill(route, {
+    schemaVersion: 1,
+    catalogHash: `sha256:${"2".repeat(64)}`,
+    censusReportHash: `sha256:${"3".repeat(64)}`,
+    items: [], total: 0, offset: 0, limit: 10, nextOffset: null
+  }));
   await page.route("**/api/battle-command/matches**", async (route) => {
     const request = route.request();
     if (request.method() === "POST" && !request.url().endsWith("/actions")) return fulfill(route, kinetic, 201);
@@ -175,8 +181,8 @@ test("deterministic Battery, EMP, counterfire, reload, detonation, and terminal 
   await page.getByRole("button", { name: "Confirm End" }).click();
 
   await expect(page.getByText("Victory secured")).toBeVisible();
-  await expect(page.getByText("1 detonated")).toBeVisible();
-  await expect(page.getByText("0 FROZEN")).toBeVisible();
+  await expect(page.getByLabel("Current phase guidance").getByText("1 committed · 1 detonated", { exact: true })).toBeVisible();
+  await expect(page.locator(".fleet-card-summary > span").filter({ hasText: "0 FROZEN" }).first()).toBeVisible();
   await expect(page.getByText(/register \/ armory \/ reloaded/i)).toBeVisible();
   await expect(page.getByText(/artillery \/ counterfire \/ consumed/i)).toBeVisible();
   await page.getByRole("link", { name: "Evidence atlas" }).click();
