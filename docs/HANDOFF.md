@@ -1,30 +1,29 @@
 # Context Landscape handoff
 
-Updated 2026-08-20 for the planned OMEN motherboard swap.
+Updated 2026-08-27 after the OMEN motherboard swap and recovery gates.
 
 ## Resume point
 
 - Source branch: `agent/battle-command-deck`
 - Deployed application source: `cc7d516` (`Eliminate short-wide page overflow`)
-- Public release at the maintenance boundary: `p0-rd-20260820-r7`
+- Current public release: `p0-rd-20260820-r7`
 - Immutable image: `context-landscape:p0-rd-20260820-r7`
 - Image ID: `sha256:43f4c670913863c0aacbc993f31a386f87376ec1901cfc31cc24d3bddcbc5887`
 - Prior rollback images: `p0-rd-20260820-r6` and `p0-rd-20260820-r5`
 - Canonical browser path: `https://am4.tail8e749c.ts.net/landscape/`
 - Runtime Compose project: `context-landscape-public`
 - Runtime configuration: ignored `.env.omen`; never copy its values into Git or chat
-- Current runtime state: intentionally stopped for motherboard maintenance; public unavailability is
-  expected until the post-swap restart gates pass
+- Current runtime state: running and healthy after post-swap recovery; operational classification is
+  **LIVE CANARY** until the real two-account acceptance gate passes
 
 The wrap-up documentation commit comes after `cc7d516` and does not change deployable application code.
 Do not expect the `r7` image revision label to equal the later docs-only branch head.
 
 GitHub PR [#7](https://github.com/djcdevelopment/contextlandscape/pull/7) merged the earlier Command
 Deck checkpoint at `1a6a9c0`. The subsequent planning-control commit `1cb825b`, deployed overflow fix
-`cc7d516`, preserved design bundle, and this handoff are pushed to `agent/battle-command-deck` but are
-not on `main`. There is no open PR for those post-merge commits, so their branch pushes did not start a
-new Actions run. Open a fresh PR from the existing branch after the hardware restart; do not assume PR
-#7 contains the deployed source.
+`cc7d516`, preserved design bundle, and this handoff are covered by
+[PR #8](https://github.com/djcdevelopment/contextlandscape/pull/8). Its first post-recovery
+`verify-and-simulate` run passed. Do not assume PR #7 contains the deployed source.
 
 ## What landed
 
@@ -101,6 +100,19 @@ both fail and a deliberate forensic recovery is being performed.
 
 ## Post-swap restart
 
+Recovery completed on 2026-08-27:
+
+- the immutable `r7` image ID and repaired PostgreSQL mount matched this handoff;
+- PostgreSQL and the app became healthy, while the one-shot `playtest-data` service exited zero;
+- local and public `/version` returned `p0-rd-20260820-r7` with strict verified lab preflight;
+- the first forced PostgreSQL checkpoint completed, with no WAL, TOAST, flush, abnormal-recovery, or
+  application level-40/50 log matches;
+- the public human-release smoke passed the exact 3,501-item catalog and frozen-hash gates; and
+- a fresh public Chromium session passed the 2048×900 no-page-overflow gate in both Perspective and
+  Tactical modes.
+
+The commands below remain the canonical restart and diagnostic recipe.
+
 From `C:\work\contextlandscape`:
 
 ```powershell
@@ -137,13 +149,12 @@ the rollback procedure in [DEPLOYMENT_RUNBOOK.md](../DEPLOYMENT_RUNBOOK.md).
 
 ## Acceptance status
 
-- Automated source, container, catalog, OAuth-contract, ingress, and viewport gates: passed before the
-  maintenance boundary.
+- Automated source, container, catalog, OAuth-contract, ingress, and viewport gates: passed again after
+  the maintenance boundary.
 - Single-account visual use: exercised during the R&D loop, but not recorded as a formal workbook gate.
 - Real two-account Discord friend acceptance and restart persistence: **PENDING**. Mocked two-browser
   E2E coverage is green but does not replace this gate.
-- Release classification before shutdown: **LIVE CANARY**, not fully accepted. Current operational
-  classification: **MAINTENANCE OFFLINE**.
+- Current operational classification: **LIVE CANARY**, not fully accepted.
 
 ## Known boundaries
 

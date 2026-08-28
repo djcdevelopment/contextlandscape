@@ -3,7 +3,11 @@
 This is the ordered resume plan after the 2026-08-20 motherboard maintenance. The operational state and
 exact restart commands are in [HANDOFF.md](HANDOFF.md).
 
-## 1. Restore and prove the canary
+Current resume point: step 1 completed on 2026-08-27, and
+[PR #8](https://github.com/djcdevelopment/contextlandscape/pull/8) is open with its first
+`verify-and-simulate` run green. Continue at step 2.
+
+## 1. Restore and prove the canary — COMPLETED 2026-08-27
 
 - Start Docker Desktop and Tailscale; bring up the existing `context-landscape-public` Compose project
   without rebuilding or pulling.
@@ -19,9 +23,8 @@ Exit criterion: direct and public health are green, `r7` is served, the 3,501-it
 the public browser reproduces the no-overflow geometry. Also inspect PostgreSQL logs after the first
 checkpoint; any WAL flush, missing TOAST chunk, or abnormal recovery message is a stop condition.
 
-Once runtime recovery is proven, open a fresh PR from `agent/battle-command-deck` to `main`. PR #7 is
-already merged and predates the post-merge planning-control and overflow commits; no current Actions run
-covers the branch head.
+Runtime recovery met the exit criterion, and PR #8 now covers the post-merge planning-control,
+overflow, and handoff commits. PR #7 remains the earlier checkpoint.
 
 ## 2. Complete the only missing human-release gate
 

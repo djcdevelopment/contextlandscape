@@ -356,8 +356,9 @@ Use [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md) for the operational contract 
 The latest recorded promotion is `p0-rd-20260820-r7`, built from application source commit
 `cc7d516`. It passed direct health, the public human-release smoke, the frozen 3,501-item catalog gate,
 and live 2048×900 Perspective/Tactical overflow probes before the planned runtime-host motherboard
-maintenance. This is historical evidence, not a claim of continuing availability. See the
-[current handoff](docs/HANDOFF.md) before restarting or promoting anything.
+maintenance. The same recovery gates passed again after the 2026-08-27 restart, and the release is
+running as a live canary. This remains recorded evidence rather than a promise of continuing
+availability; see the [current handoff](docs/HANDOFF.md) before restarting or promoting anything.
 
 ## Documentation
 
