@@ -230,6 +230,35 @@ function kineticPlanComplete(actions: readonly AttentionV4KineticAction[], effec
   return actions.length === 0 || actions.some((action) => action.kind === "condense-output") || actions.length >= effectiveUap;
 }
 
+function unitPlanCode(unit: AttentionV4UnitState): string {
+  return `${unitCode(unit.chassis)}${unit.unitId.split("-").at(-1) ?? ""}`;
+}
+
+function kineticActionLabel(action: AttentionV4KineticAction): string {
+  if (action.kind === "move") return `Move to ${action.destination.x},${action.destination.y}`;
+  if (action.kind === "condense-output") return "Condense output";
+  if (action.kind === "step-up") return "Step-Up";
+  if (action.kind === "command-uplink") return "Command uplink";
+  if (action.kind === "support-scan") return `Scan ${action.scoutUnitId.split(":").at(-1)}`;
+  return action.delta < 0 ? "Range down" : "Range up";
+}
+
+function KineticActionButton({ label, icon, stagedCount = 0, active = false, disabled, onClick }: {
+  label: string;
+  icon: string;
+  stagedCount?: number;
+  active?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  const accessibleLabel = stagedCount > 0 ? `${label}, staged ${stagedCount} ${stagedCount === 1 ? "time" : "times"}` : label;
+  return <button type="button" aria-label={accessibleLabel} title={accessibleLabel} disabled={disabled} className={`kinetic-action ${active ? "active" : ""} ${stagedCount ? "is-staged" : ""}`} onClick={onClick}>
+    <span className="kinetic-action-icon" aria-hidden="true">{icon}</span>
+    <span className="kinetic-action-label">{label}</span>
+    <span className="kinetic-action-beacon" aria-hidden="true">{stagedCount || ""}</span>
+  </button>;
+}
+
 function recapCopy(view: BattleCommandV3View, active: Stage): { label: string; detail: string; risk?: boolean } {
   if (active === "kinetic") return {
     label: "REGISTER RECAP",
@@ -304,14 +333,14 @@ function Status({ label, value, marker, meter, danger, accent }: { label: string
   return <div className={`${danger ? "danger" : ""} ${accent ? "accent" : ""}`}><span>{label}</span><strong>{value}{marker && <span aria-hidden="true">{marker}</span>}</strong>{meter !== undefined && <i><b style={{ width: `${Math.min(100, meter * 100)}%` }} /></i>}</div>;
 }
 
-function Board({ view, selection, onSelect, selectedCardId, target, onCell, plannedSteps, readOnly }: {
+function Board({ view, selection, onSelect, selectedCardId, target, onCell, plannedPlans, readOnly }: {
   view: BattleCommandV3View;
   selection: Selection | null;
   onSelect: (selection: Selection) => void;
   selectedCardId: string | null;
   target: AttentionV4Coordinate | null;
   onCell: (coordinate: AttentionV4Coordinate) => void;
-  plannedSteps: readonly AttentionV4KineticAction[];
+  plannedPlans: Readonly<Record<string, readonly AttentionV4KineticAction[]>>;
   readOnly?: boolean;
 }) {
   const [focus, setFocus] = useState<AttentionV4Coordinate>({ x: 0, y: 0 });
@@ -352,10 +381,14 @@ function Board({ view, selection, onSelect, selectedCardId, target, onCell, plan
       const inFriendlyFront = distance(friendlyFront.center, coordinate) <= friendlyFront.radius;
       const inHostileFront = distance(hostileFront.center, coordinate) <= hostileFront.radius;
       const frozen = units.some((unit) => unit.uap.frozen || unit.uap.nextFreezeSources.length > 0);
-      const plannedOrdinals = plannedSteps.flatMap((action, actionIndex) => action.kind === "move" && action.destination.x === coordinate.x && action.destination.y === coordinate.y ? [actionIndex + 1] : []);
+      const plannedMarkers = Object.entries(plannedPlans).flatMap(([unitId, actions]) => actions.flatMap((action, actionIndex) => {
+        if (action.kind !== "move" || action.destination.x !== coordinate.x || action.destination.y !== coordinate.y) return [];
+        const plannedUnit = view.projection.units.find((unit) => unit.unitId === unitId);
+        return plannedUnit ? [{ unitId, label: `${unitPlanCode(plannedUnit)}:${actionIndex + 1}`, order: actionIndex + 1 }] : [];
+      }));
       const selected = selection?.kind === "cell" && selection.at.x === coordinate.x && selection.at.y === coordinate.y;
       const classes = ["v4-cell", battery && "battery-field", hazard && "hazard-field", flare && "flare-field", smoke && "smoke-field", chaff && "chaff-field", inRange && "unit-range", inTarget && "target-field", inFriendlyFront && "friendly-front", inHostileFront && "hostile-front", frozen && "frozen-cell", selected && "selected"].filter(Boolean).join(" ");
-      const label = [`${coordinate.x},${coordinate.y}`, ...units.map((unit) => `${unit.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${displayChassis(unit.chassis)}`), `${artifacts.length} artifacts`, traffic ? `${traffic} actions` : "", plannedOrdinals.length ? `planned steps ${plannedOrdinals.join(", ")}` : ""].filter(Boolean).join(", ");
+      const label = [`${coordinate.x},${coordinate.y}`, ...units.map((unit) => `${unit.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${displayChassis(unit.chassis)}${plannedPlans[unit.unitId]?.length ? ", staged for Kinetic" : ""}`), `${artifacts.length} artifacts`, traffic ? `${traffic} actions` : "", ...plannedMarkers.map((marker) => `${marker.label} staged move`)].filter(Boolean).join(", ");
       return <button key={index} type="button" role="gridcell" data-battle-cell={`${coordinate.x},${coordinate.y}`} tabIndex={focus.x === coordinate.x && focus.y === coordinate.y ? 0 : -1}
         className={classes} aria-label={label} onFocus={() => setFocus(coordinate)} onKeyDown={(event) => moveFocus(event, coordinate)} onClick={() => {
           if (units[0]) onSelect({ kind: "unit", id: units[0].unitId });
@@ -365,8 +398,8 @@ function Board({ view, selection, onSelect, selectedCardId, target, onCell, plan
         }}>
         <small>{coordinate.x},{coordinate.y}</small>
         {traffic > 0 && <b className={`traffic heat-${Math.min(4, traffic)}`} aria-label={`${traffic} successful actions`}>{traffic}</b>}
-        <span className="cell-tokens">{units.map((unit) => <i key={unit.unitId} className={`unit-token-v4 ${unit.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${unit.uap.frozen ? "paralyzed" : ""}`} title={unit.unitId}>{unitCode(unit.chassis)}</i>)}{artifacts.slice(0, 3).map((artifact) => <i key={artifact.artifactId} className={`artifact-token-v4 ${artifact.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${artifact.verified ? "verified" : ""} ${artifact.battery.active ? "battery" : ""}`} title={artifact.artifactId}>{artifact.battery.active ? "B" : "◆"}</i>)}</span>
-        {plannedOrdinals.length > 0 && <span className="planned-step-markers" aria-hidden="true">{plannedOrdinals.map((ordinal) => <b key={ordinal}>{ordinal}</b>)}</span>}
+        <span className="cell-tokens">{units.map((unit) => <i key={unit.unitId} className={`unit-token-v4 ${unit.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${unit.uap.frozen ? "paralyzed" : ""} ${plannedPlans[unit.unitId]?.length ? "staged" : ""} ${selection?.kind === "unit" && selection.id === unit.unitId ? "selected-unit" : ""}`} title={unit.unitId}>{unitCode(unit.chassis)}</i>)}{artifacts.slice(0, 3).map((artifact) => <i key={artifact.artifactId} className={`artifact-token-v4 ${artifact.ownerPlayerId === PLAYER ? "friendly" : "hostile"} ${artifact.verified ? "verified" : ""} ${artifact.battery.active ? "battery" : ""}`} title={artifact.artifactId}>{artifact.battery.active ? "B" : "◆"}</i>)}</span>
+        {plannedMarkers.length > 0 && <span className="planned-step-markers" aria-hidden="true">{plannedMarkers.map((marker) => <b key={`${marker.unitId}-${marker.order}`}>{marker.label}</b>)}</span>}
         {selectedPreview && inTarget && <span className="preview-count">{selectedPreview.affectedUnitIds.length + selectedPreview.affectedArtifactIds.length}</span>}
       </button>;
     })}</div>)}
@@ -425,19 +458,54 @@ function UnitRoster({ view, stage, selection, plans, planMode, setPlanMode, appe
     const plannedCondense = plan.filter((action) => action.kind === "condense-output").length;
     const condenseLocked = plannedCondense > 0;
     const planComplete = kineticPlanComplete(plan, unitLegal?.effectiveUap ?? 0);
+    const remainingUap = Math.max(0, (unitLegal?.effectiveUap ?? 0) - plan.length);
+    const moveCount = plan.filter((action) => action.kind === "move").length;
+    const stepUpCount = plan.filter((action) => action.kind === "step-up").length;
+    const uplinkCount = plan.filter((action) => action.kind === "command-uplink").length;
+    const scanCounts = new Map(own.filter((candidate) => candidate.chassis === "scout").map((scout) => [scout.unitId, plan.filter((action) => action.kind === "support-scan" && action.scoutUnitId === scout.unitId).length]));
+    const rangeDownCount = plan.filter((action) => action.kind === "range-shift" && action.delta === -1).length;
+    const rangeUpCount = plan.filter((action) => action.kind === "range-shift" && action.delta === 1).length;
+    const projectedRange = unit.activeRange + rangeUpCount - rangeDownCount;
+    const projectedPosition = [...plan].reverse().find((action): action is Extract<AttentionV4KineticAction, { kind: "move" }> => action.kind === "move")?.destination ?? unit.position;
+    const scanCount = plan.filter((action) => action.kind === "support-scan").length;
     const portrait = unitArt(unit.unitId);
     const selectUnit = () => onSelect({ kind: "unit", id: unit.unitId });
     const tooltipId = `uap-${unit.unitId.replace(/[^a-z0-9_-]/gi, "-")}`;
     const mobility = unit.uap.freezeSources.length ? unit.uap.freezeSources.join(" + ") : unit.uap.nextFreezeSources.length ? `Next: ${unit.uap.nextFreezeSources.join(" + ")}` : "Mobile";
     const capability = unit.chassis === "scout" ? `Condense ${kinetic ? plannedCondense : unit.condenseSteps}/2 · cap ${allocationLegal.maximumVolume}@${allocationLegal.maximumDensityPct}%` : unit.chassis === "line" ? "Step-Up / Scan" : unit.uplinkQueued ? "Uplink queued" : "Uplink idle";
-    return <article key={unit.unitId} aria-current={selected ? "true" : undefined} className={`v4-unit-card ${selected ? "selected" : ""} ${unit.uap.frozen ? "frozen" : ""}`} onPointerDownCapture={selectUnit} onFocusCapture={selectUnit}>
+    const planState = plan.length === 0 ? "hold" : planComplete ? "staged" : "planning";
+    return <article key={unit.unitId} aria-current={selected ? "true" : undefined} data-plan-state={kinetic ? planState : undefined} className={`v4-unit-card ${selected ? "selected" : ""} ${plan.length ? "has-staged-plan" : ""} ${unit.uap.frozen ? "frozen" : ""}`} onPointerDownCapture={selectUnit} onFocusCapture={selectUnit}>
       <header className="fleet-card-header">
         <button type="button" className="unit-portrait-select" aria-label={`Select ${displayChassis(unit.chassis)} unit ${unit.unitId.split(":").at(-1)}`} aria-pressed={selected} aria-describedby={tooltipId} onClick={selectUnit} onMouseEnter={() => setTooltipUnitId(unit.unitId)} onMouseLeave={() => setTooltipUnitId(null)} onFocus={() => setTooltipUnitId(unit.unitId)} onBlur={() => setTooltipUnitId(null)} onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); setTooltipUnitId(null); } }}>{portrait ? <img src={portrait.cardSrc} alt="" /> : <span className={`unit-portrait-fallback art-mech-${unit.chassis === "heavy" ? "siege" : unit.chassis}`}><b>{unitCode(unit.chassis)}</b><small>{displayChassis(unit.chassis)}</small></span>}<strong>{displayChassis(unit.chassis).toUpperCase()} · W{unit.chassis === "scout" ? 1 : unit.chassis === "line" ? 2 : 3}</strong></button>
         <div className="fleet-card-summary"><div><b>{displayChassis(unit.chassis)} <small>{unit.unitId.split(":").at(-1)}</small></b><strong>{percent(unit.calibration)} CAL</strong></div><span>R{unit.activeRange} · reactor {unit.reactorRating} · {unit.uap.frozen ? "0 FROZEN" : `${unit.uap.effective} UAP`} · {mobility}</span><small>{capability}</small></div>
         <span id={tooltipId} role="tooltip" className={`uap-tooltip ${tooltipUnitId === unit.unitId ? "open" : ""}`}><b>UNIT ACTION POINTS</b><span>BASE {unit.uap.base}</span><span>BATTERY +{unit.uap.batteryBonus}</span><strong>{unit.uap.frozen ? "0 FROZEN" : `${unit.uap.effective} TOTAL`}</strong></span>
       </header>
       <div className="unit-control-surface"><div key={stage} className="fleet-phase-content">
-      {kinetic && <><ol className="ordered-plan">{plan.length ? <>{plan.map((action, index) => <li key={`${action.kind}-${index}`}><b>{index + 1}</b>{action.kind}{action.kind === "move" ? ` ${action.destination.x},${action.destination.y}` : action.kind === "support-scan" ? ` ${action.scoutUnitId.split(":").at(-1)}` : ""}</li>)}{!planComplete && <li className="placeholder"><b>{plan.length + 1}</b>choose…</li>}</> : <li className="hold"><b>0</b>Explicit Hold</li>}</ol><div className="unit-actions"><button disabled={busy || condenseLocked} onClick={() => setPlanMode("move")} className={planMode === "move" && selected ? "active" : ""}>Move on grid</button>{unit.chassis === "scout" && <button disabled={busy || plannedCondense >= (unitLegal?.maxCondenseSteps ?? 0) || plan.length >= (unitLegal?.effectiveUap ?? 0)} onClick={() => append(unit, { kind: "condense-output" })}>Condense output</button>}{unit.chassis === "line" && <><button disabled={busy} onClick={() => append(unit, { kind: "step-up" })}>Step-Up</button>{own.filter((candidate) => candidate.chassis === "scout").map((scout) => <button key={scout.unitId} disabled={busy} onClick={() => append(unit, { kind: "support-scan", scoutUnitId: scout.unitId })}>Scan {scout.unitId.split(":").at(-1)}</button>)}</>}{unit.chassis === "heavy" && <button disabled={busy} onClick={() => append(unit, { kind: "command-uplink" })}>Uplink</button>}<button disabled={busy || condenseLocked} onClick={() => append(unit, { kind: "range-shift", delta: -1 })}>Range −</button><button disabled={busy || condenseLocked} onClick={() => append(unit, { kind: "range-shift", delta: 1 })}>Range +</button><button disabled={busy} onClick={() => clear(unit.unitId)}>Clear</button></div></>}
+      {kinetic && <>
+        <div className={`kinetic-plan-status ${planState}`} aria-label={`${planState === "hold" ? "Hold" : planState === "staged" ? "Staged" : "Planning"} for Kinetic`}>
+          <span>{planState === "hold" ? "HOLD · KINETIC" : planState === "staged" ? "STAGED · KINETIC" : "PLANNING · KINETIC"}</span>
+          <ol className="ordered-plan">{plan.length ? <>{plan.map((action, index) => <li key={`${action.kind}-${index}`}><b>{index + 1}</b><span>{kineticActionLabel(action)}</span></li>)}{!planComplete && <li className="placeholder"><b>{plan.length + 1}</b><span>Action open</span></li>}</> : <li className="hold"><b>0</b><span>Explicit Hold</span></li>}</ol>
+        </div>
+        <div className="unit-actions" aria-label={`${displayChassis(unit.chassis)} Kinetic actions`}>
+          <KineticActionButton label="Move on grid" icon={"\u2197"} stagedCount={moveCount} active={planMode === "move" && selected} disabled={busy || condenseLocked || remainingUap === 0} onClick={() => setPlanMode("move")} />
+          {unit.chassis === "scout" && <KineticActionButton label="Condense output" icon={"\u25C6"} stagedCount={plannedCondense} disabled={busy || plannedCondense >= (unitLegal?.maxCondenseSteps ?? 0) || remainingUap === 0} onClick={() => append(unit, { kind: "condense-output" })} />}
+          {unit.chassis === "line" && <>
+            <KineticActionButton label="Step-Up" icon={"\u21E7"} stagedCount={stepUpCount} disabled={busy || stepUpCount > 0 || remainingUap === 0} onClick={() => append(unit, { kind: "step-up" })} />
+            {own.filter((candidate) => candidate.chassis === "scout").map((scout) => {
+              const stagedScans = scanCounts.get(scout.unitId) ?? 0;
+              const scanAvailable = distance(projectedPosition, scout.position) <= projectedRange;
+              return <KineticActionButton key={scout.unitId} label={`Scan ${scout.unitId.split(":").at(-1)}`} icon={"\u25CE"} stagedCount={stagedScans} disabled={busy || remainingUap === 0 || scanCount >= (unitLegal?.maxSupportScans ?? 0) || !scanAvailable} onClick={() => append(unit, { kind: "support-scan", scoutUnitId: scout.unitId })} />;
+            })}
+          </>}
+          {unit.chassis === "heavy" && <KineticActionButton label="Uplink" icon={"\u2301"} stagedCount={uplinkCount} disabled={busy || uplinkCount > 0 || remainingUap === 0} onClick={() => append(unit, { kind: "command-uplink" })} />}
+          <div className={`kinetic-range-control ${!busy && !condenseLocked && remainingUap > 0 ? "is-available" : ""} ${rangeDownCount + rangeUpCount ? "is-staged" : ""}`} role="group" aria-label={`Range shift, projected range ${projectedRange}`} title={`Range shift · projected R${projectedRange}`}>
+            <span className="kinetic-action-icon" aria-hidden="true">{"\u2194"}</span><span className="kinetic-action-label">Range <small>R{projectedRange}</small></span><span className="kinetic-action-beacon" aria-hidden="true">{rangeDownCount + rangeUpCount || ""}</span>
+            <button type="button" aria-label="Decrease range" disabled={busy || condenseLocked || remainingUap === 0 || projectedRange <= (unitLegal?.range.minimum ?? 1)} onClick={() => append(unit, { kind: "range-shift", delta: -1 })}>−</button>
+            <button type="button" aria-label="Increase range" disabled={busy || condenseLocked || remainingUap === 0 || projectedRange >= (unitLegal?.range.maximum ?? 5)} onClick={() => append(unit, { kind: "range-shift", delta: 1 })}>+</button>
+          </div>
+          <button type="button" className="kinetic-clear" disabled={busy || plan.length === 0} onClick={() => clear(unit.unitId)}>Clear plan</button>
+        </div>
+      </>}
       {command && <div className="output-allocation"><div className="allocation-row"><div className="allocation-fields"><label><span className="sr-only">Volume for {unit.unitId}</span><input aria-label={`Volume for ${unit.unitId}`} type="number" min="1" max={maximum} value={allocation.volume} onChange={(event) => setAllocation(unit.unitId, { ...allocation, volume: Number(event.target.value) })} /></label><span>×</span><label><span className="sr-only">Density for {unit.unitId}</span><select aria-label={`Density for ${unit.unitId}`} value={allocation.densityPct} onChange={(event) => { const densityPct = Number(event.target.value); const cap = Math.min(allocationLegal.maximumVolume, allocationLegal.maximumVolumeByDensity[String(densityPct)] ?? 0); setAllocation(unit.unitId, { volume: Math.max(1, Math.min(allocation.volume, cap)), densityPct }); }}>{densityOptions.map((density) => <option key={density} value={density}>{density}%</option>)}</select></label></div><button disabled={busy || !active || unit.outputDecision !== "pending" || allocation.volume < 1 || allocation.volume > maximum || allocation.densityPct > allocationLegal.maximumDensityPct} className="battle-primary" onClick={() => submitCommand({ kind: "emit", playerId: PLAYER, unitId: unit.unitId, volume: allocation.volume, densityPct: allocation.densityPct })}>Emit</button><button disabled={busy || !active || unit.outputDecision !== "pending"} onClick={() => submitCommand({ kind: "hold", playerId: PLAYER, unitId: unit.unitId })}>Hold</button></div><p className="allocation-equation">{allocation.volume} × {allocation.densityPct} ≤ {unit.reactorRating * 100} · D×C = {percent(effectiveCalibration)}</p><strong className={`decision ${unit.outputDecision}`}>{unit.outputDecision}</strong></div>}
       {stage === "resolution" && <div className="fleet-resolution-state"><strong className={`decision ${unit.outputDecision}`}>{unit.outputDecision === "pending" ? "NO DECISION" : unit.outputDecision}</strong><span>{unit.outputDecision === "emitted" ? "Output entered Resolution" : unit.outputDecision === "held" ? "Output held this round" : "No output was committed"}</span></div>}
       {!kinetic && !command && stage !== "resolution" && <div className="fleet-inactive-caption">{view.projection.phase === "capacity" ? "OUTPUT ACTIVE AFTER CAPACITY" : "FLEET CONTROLS ACTIVE IN KINETIC OR COMMAND"}</div>}
@@ -781,8 +849,7 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
   const fleetView = surfaceView;
   const activeStage: Stage = resolutionPresentation ? "resolution" : currentStage(view);
   const selectedArtifact = selection?.kind === "artifact" ? surfaceView.projection.artifacts.find((artifact) => artifact.artifactId === selection.id) : undefined;
-  const selectedUnitId = selection?.kind === "unit" ? selection.id : null;
-  const plannedSteps = activeStage === "kinetic" && selectedUnitId ? plans[selectedUnitId] ?? [] : [];
+  const plannedPlans = activeStage === "kinetic" ? plans : {};
   const unitArtFor = (unitId: string): ArtCatalogEntry | undefined => {
     const unit = surfaceView.projection.units.find((candidate) => candidate.unitId === unitId); if (!unit) return undefined;
     const ordinal = surfaceView.projection.units.filter((candidate) => candidate.ownerPlayerId === unit.ownerPlayerId && candidate.chassis === unit.chassis).findIndex((candidate) => candidate.unitId === unitId);
@@ -813,7 +880,7 @@ export function BattleCommandApp({ friendMatchId }: { friendMatchId?: string } =
       <OperationRail view={surfaceView} active={activeStage} resolution={resolutionPresentation ?? undefined} onRules={() => setRulesOpen(true)} />
       <div className={`board-column command-deck-board phase-${activeStage}`}>
         <ArtifactTray view={surfaceView} selection={selection} onSelect={setSelection} boardView={boardView} onBoardView={changeBoardView} />
-        <div className={`battle-board-surface ${boardLocked ? "read-only" : ""}`}>{boardView === "perspective" ? <PerspectiveBoard view={surfaceView} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} plannedSteps={plannedSteps} readOnly={boardLocked} unitArt={(unitId) => unitArtFor(unitId)?.cardSrc} battlefieldArt={battlefieldArt} uiScale={UI_SCALE_FACTOR[uiScale]} /> : <Board view={surfaceView} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} plannedSteps={plannedSteps} readOnly={boardLocked} />}</div>
+        <div className={`battle-board-surface ${boardLocked ? "read-only" : ""}`}>{boardView === "perspective" ? <PerspectiveBoard view={surfaceView} selection={selection} onSelect={setSelection} target={target} onCell={handleCell} plannedPlans={plannedPlans} readOnly={boardLocked} unitArt={(unitId) => unitArtFor(unitId)?.cardSrc} battlefieldArt={battlefieldArt} uiScale={UI_SCALE_FACTOR[uiScale]} /> : <Board view={surfaceView} selection={selection} onSelect={setSelection} selectedCardId={selectedCardId} target={target} onCell={handleCell} plannedPlans={plannedPlans} readOnly={boardLocked} />}</div>
         <Armories view={surfaceView} active={!resolutionPresentation && surfaceView.projection.phase === "artillery"} selectedCardId={selectedCardId} onCard={(cardId) => { setSelectedCardId(cardId); setTarget(null); }} />
         <UnitRoster view={fleetView} stage={activeStage} selection={selection} plans={plans} planMode={planMode} setPlanMode={setPlanMode} append={append} clear={clear} allocations={allocations} setAllocation={(unitId, allocation) => setAllocations((current) => ({ ...current, [unitId]: allocation }))} submitCommand={(intent) => void submit({ phase: "command", intent })} busy={commandBusy || Boolean(resolutionPresentation)} onSelect={setSelection} unitArt={unitArtFor} inspector={<ArtifactPanel view={surfaceView} artifact={selectedArtifact} submit={(intent) => void submit({ phase: "command", intent })} busy={commandBusy} interactive={!resolutionPresentation && surfaceView.projection.phase === "command"} />} />
         <EventTicker view={view} />

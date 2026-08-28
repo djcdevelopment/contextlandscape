@@ -154,11 +154,11 @@ test("two isolated players lock hidden fleets and resolve a simultaneous phase f
     expect(await alphaPage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await alphaScoutPortrait.click();
     await alphaPage.getByRole("button", { name: "Condense output" }).click();
-    await expect(alphaScoutCard.getByText("condense-output")).toBeVisible();
+    await expect(alphaScoutCard.getByLabel("Staged for Kinetic").getByText("Condense output")).toBeVisible();
 
     await alphaPage.getByRole("button", { name: "Resolve Kinetic" }).click();
     await expect(alphaPage.getByText("Orders locked — waiting for your opponent")).toBeVisible();
-    await expect(alphaScoutCard.getByText("condense-output")).toBeVisible();
+    await expect(alphaScoutCard.getByLabel("Staged for Kinetic").getByText("Condense output")).toBeVisible();
     await expect(alphaScoutCard.getByRole("button", { name: "Condense output" })).toBeDisabled();
     await expect(alphaPage.getByLabel("Player-edge perspective battlefield")).toHaveAttribute("data-read-only", "true");
     await bravoPage.getByRole("button", { name: "Resolve Kinetic" }).click();

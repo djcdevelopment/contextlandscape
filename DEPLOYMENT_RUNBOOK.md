@@ -98,6 +98,13 @@ PostgreSQL by itself, create a custom-format `pg_dump`, verify that `pg_restore 
 and record its SHA-256. Do not start the new application until both database backups and the prior image
 are recorded.
 
+A healthy readiness probe is not an integrity check. Before planned host maintenance or promotion,
+request an explicit PostgreSQL `CHECKPOINT`, inspect the database log, and require the complete logical
+dump to succeed. A WAL-flush error, missing TOAST chunk, failed checkpoint, abnormal shutdown, or failed
+dump is a hard stop: preserve the stopped data directory before repair, salvage only with an auditable
+logical export, restore into a fresh cluster, compare every application-table count, produce a second
+verified dump, and require an exit-zero shutdown checkpoint before power loss.
+
 Start the pinned image without a build or pull:
 
 ```powershell

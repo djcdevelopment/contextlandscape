@@ -50,3 +50,39 @@ test("wide displays default to readable large type and preserve a chosen scale",
   await page.reload();
   await expect(page.locator("main.battle-shell")).toHaveAttribute("data-ui-scale", "standard");
 });
+
+test("a maximized 4K desktop at Windows scaling fits the standard Command Deck without page scrolling", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The wide desktop resize probe runs once in Chromium.");
+  await page.setViewportSize({ width: 2048, height: 900 });
+  await page.addInitScript(() => {
+    localStorage.clear();
+    localStorage.setItem("context-landscape.boardView", "perspective");
+    localStorage.setItem("context-landscape.uiScale", "standard");
+  });
+  await page.route("**/api/battle-command/matches**", async (route) => fulfill(route, battleViewFixture("kinetic"), route.request().method() === "POST" ? 201 : 200));
+  await page.route("**/api/art/catalog**", async (route) => fulfill(route, { schemaVersion: 1, catalogHash: `sha256:${"1".repeat(64)}`, censusReportHash: `sha256:${"2".repeat(64)}`, items: [], total: 0, offset: 0, limit: 10, nextOffset: null }));
+
+  await page.goto("/landscape/?view=battle");
+  await page.getByRole("button", { name: "Enter battle command" }).click();
+  await expect(page.getByLabel("Fleet command lane")).toBeVisible();
+
+  const geometry = await page.evaluate(() => ({
+    clientHeight: document.documentElement.clientHeight,
+    scrollHeight: document.documentElement.scrollHeight,
+    scrollWidth: document.documentElement.scrollWidth,
+    viewportWidth: window.innerWidth
+  }));
+  expect(geometry.scrollHeight).toBeLessThanOrEqual(geometry.clientHeight + 1);
+  expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+
+  const boardHeight = await page.locator(".command-deck-board .perspective-canvas-shell").evaluate((element) => element.getBoundingClientRect().height);
+  expect(boardHeight).toBeGreaterThanOrEqual(240);
+
+  await page.getByRole("button", { name: "Tactical 2D" }).click();
+  await expect(page.getByRole("grid", { name: "10 by 10 operational field" })).toBeVisible();
+  const tacticalGeometry = await page.evaluate(() => ({
+    clientHeight: document.documentElement.clientHeight,
+    scrollHeight: document.documentElement.scrollHeight
+  }));
+  expect(tacticalGeometry.scrollHeight).toBeLessThanOrEqual(tacticalGeometry.clientHeight + 1);
+});

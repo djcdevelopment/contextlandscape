@@ -225,9 +225,15 @@ describe("Battle Command v4 accessibility and interaction", () => {
     fireEvent.click(condense);
     fireEvent.click(condense);
     expect(screen.getByText(/Condense 2\/2/)).toBeInTheDocument();
-    expect(screen.getAllByText("condense-output")).toHaveLength(2);
+    expect(within(scoutCard).getAllByText("Condense output")).toHaveLength(3);
     const plannedScoutCard = screen.getByText(/Condense 2\/2/).closest("article")!;
-    expect(within(plannedScoutCard).queryByText("choose…")).not.toBeInTheDocument();
+    expect(within(plannedScoutCard).getByLabelText("Staged for Kinetic")).toBeInTheDocument();
+    expect(within(plannedScoutCard).queryByText("Action open")).not.toBeInTheDocument();
+    expect(within(plannedScoutCard).getByRole("button", { name: /Condense output\s*, staged 2 times/ })).toHaveClass("is-staged");
+    expect(linePortrait.closest("article")).toHaveClass("has-staged-plan");
+    expect(linePortrait.closest("article")).not.toHaveClass("selected");
+    expect(screen.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeInTheDocument();
+    expect(screen.getByRole("gridcell", { name: /friendly Line, staged for Kinetic/ })).toBeInTheDocument();
     expect(screen.getByLabelText("Phase actions")).toHaveTextContent("2 of 3 unit plans complete");
     expect(within(plannedScoutCard).getByRole("button", { name: "Move on grid" })).toBeDisabled();
   });

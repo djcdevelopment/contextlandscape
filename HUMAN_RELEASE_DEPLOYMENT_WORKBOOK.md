@@ -1,9 +1,13 @@
 # Human-release deployment workbook
 
-Use this workbook for the `p0-rd-20260820-r1` human release, or the first unused higher `rN` for the
-same date. It separates work Codex can perform from the few steps that require a person with Discord or
-browser access. The authoritative operational detail is in
+Use this workbook with the next unused `p0-rd-YYYYMMDD-rN` release ID. It separates work Codex can
+perform from the few steps that require a person with Discord or browser access. The authoritative
+operational detail is in
 [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md).
+
+The latest recorded execution was `p0-rd-20260820-r7` from application commit `cc7d516`; its evidence
+summary and post-maintenance restart path are in [docs/HANDOFF.md](docs/HANDOFF.md). That historical
+execution does not pre-check this reusable template, and real two-account acceptance remains pending.
 
 Do not fill secrets, real hosts, private addresses, cookies, database contents, or participant data into
 this tracked template. Copy the **Release evidence record** into
@@ -23,7 +27,7 @@ ignored.
 ## Release constants
 
 ```text
-Candidate release ID: p0-rd-20260820-r1 (increment only if that ID already exists)
+Candidate release ID: p0-rd-YYYYMMDD-rN (first unused ID for the release date)
 Expected census hash: sha256:928a78fd7f9a6adae62eead18553088aa4d360d338506bac0c73d529fd10369f
 Expected catalog hash: sha256:1abbb788c4e55a1d2eac95a8ddbcb28834f52a1fc30d22ead64a2baad6d2c0ae
 Expected catalog: 3,501 total; 0 skipped
@@ -35,7 +39,7 @@ Compose project: context-landscape-public
 Set values only in the local shell; keep real endpoints out of this file:
 
 ```powershell
-$ReleaseId = 'p0-rd-20260820-r1' # agent increments rN only if this is already used
+$ReleaseId = 'p0-rd-YYYYMMDD-rN' # replace with the first unused ID for the release date
 $ImageTag = "context-landscape:$ReleaseId"
 $ExpectedCatalogHash = 'sha256:1abbb788c4e55a1d2eac95a8ddbcb28834f52a1fc30d22ead64a2baad6d2c0ae'
 $Stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
