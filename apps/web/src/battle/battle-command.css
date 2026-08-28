@@ -1310,6 +1310,9 @@
   background:transparent;
   white-space:nowrap;
 }
+.battle-nav-primary,
+.battle-nav-scale { display:flex;align-items:center;gap:7px; }
+.mobile-nav-utilities { display:none; }
 .command-deck-header .battle-nav a,
 .battle-more summary { font-size:var(--battle-type-label); }
 .command-deck-header .battle-nav > button { min-height:32px;padding:6px 9px; }
@@ -1398,7 +1401,7 @@
 .next-phase-preview strong { color:#9eb1b9;font-size:var(--battle-type-label);line-height:1.4; }
 
 .board-column.command-deck-board {
-  --command-deck-board-size:clamp(360px,calc(100dvh - 640px),520px);
+  --command-deck-board-size:clamp(380px,calc(100dvh - 500px),520px);
   display:grid;
   min-width:0;
   gap:10px;
@@ -1453,11 +1456,29 @@
 .v4-armories.inactive header { margin-bottom:3px; }
 .v4-armories.inactive button { min-height:42px;padding:4px 6px; }
 .armory-inactive-caption { position:absolute;z-index:4;top:50%;left:50%;padding:5px 9px;border:1px solid #566875;color:#d4dfe2;background:rgba(7,14,20,.92);font:800 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;transform:translate(-50%,-50%); }
+.armory-summary {
+  display:flex;
+  min-height:40px;
+  align-items:center;
+  gap:16px;
+  padding:6px 10px;
+  overflow-x:auto;
+  border:1px solid var(--battle-line);
+  background:#071119;
+}
+.armory-summary.inactive { filter:none; }
+.armory-summary.inactive > div:not(.armory-inactive-caption) { display:flex;min-width:max-content;align-items:baseline;gap:8px;padding:0;opacity:1; }
+.armory-summary > div strong { color:#aebdc2;font-size:var(--battle-type-label);font-weight:650; }
+.armory-summary > span { min-width:max-content;color:#758b95;font:600 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.armory-summary > span b { color:#a6bbc3; }
+.armory-summary > span.friendly b { color:var(--battle-cyan); }
+.armory-summary > span.hostile b { color:var(--battle-red); }
 
 .mech-roster.fleet-strip { padding:0;overflow:visible;border:1px solid var(--battle-line); }
 .mech-roster.fleet-strip::before { display:none; }
 .fleet-strip .mech-roster-heading { min-height:44px;margin-bottom:0;padding:8px 11px; }
 .fleet-strip-deck { display:grid;min-width:0;grid-template-columns:minmax(0,1fr) 300px;gap:8px;padding:8px; }
+.fleet-command-stack { display:grid;min-width:0;grid-template-rows:max-content max-content;align-content:start;gap:7px; }
 .fleet-strip-scroll { min-width:0;overflow-x:auto;scrollbar-color:#35505e #071119; }
 .fleet-strip .mech-roster-cards { display:grid;width:100%;gap:8px; }
 .fleet-strip .v4-unit-card {
@@ -1467,6 +1488,31 @@
   border:1px solid #293f4c;
   background:#09131b;
 }
+.fleet-strip .compact-unit-card { min-height:76px;overflow:hidden; }
+.compact-unit-select {
+  display:grid;
+  width:100%;
+  min-height:48px;
+  grid-template-columns:42px minmax(0,1fr);
+  gap:7px;
+  align-items:stretch;
+  padding:4px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  text-align:left;
+}
+.compact-unit-select:hover:not(:disabled) { border:0;background:#10202a; }
+.compact-unit-select:focus-visible { outline:2px solid var(--battle-gold);outline-offset:-2px; }
+.compact-unit-portrait { position:relative;display:block;min-width:0;min-height:40px;overflow:hidden;border:1px solid #304955;background:#071118; }
+.compact-unit-portrait img,
+.compact-unit-portrait .unit-portrait-fallback { position:absolute;inset:0;width:100%;height:100%;object-fit:contain; }
+.compact-unit-portrait .unit-portrait-fallback b { font-size:var(--battle-type-control); }
+.compact-unit-select .fleet-card-summary { gap:2px; }
+.compact-unit-select .fleet-card-summary > span:first-child { display:flex;align-items:center;justify-content:space-between;gap:5px;color:inherit; }
+.compact-unit-select .fleet-card-summary > span:first-child > strong { color:var(--battle-gold);font:750 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.compact-phase-summary { display:flex;min-height:27px;align-items:center;justify-content:space-between;gap:6px;padding:4px 7px;border-top:1px solid #233844;color:#718893;font:750 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase; }
+.compact-phase-summary b { color:#9bb0b8; }
 .fleet-card-header { position:relative;display:grid;min-height:58px;grid-template-columns:58px minmax(0,1fr);gap:8px;margin-bottom:0;padding:7px;border-bottom:1px solid #263b48; }
 .fleet-card-header .unit-portrait-select { width:58px;min-width:58px;height:58px;min-height:58px;padding:0 !important;border:1px solid #304955 !important; }
 .fleet-card-header .unit-portrait-select > strong { padding:4px;font-size:var(--battle-type-micro); }
@@ -1490,13 +1536,20 @@
 .kinetic-plan-status > span { color:#6f8792;font:800 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.11em; }
 .kinetic-plan-status.staged > span { color:var(--battle-gold); }
 .kinetic-plan-status.planning > span { color:var(--battle-cyan); }
+.kinetic-plan-status.compact-plan-summary { min-height:27px;grid-template-columns:auto minmax(0,1fr);align-items:center;justify-items:start;gap:7px;margin:0;padding:3px 7px;border-bottom:0;text-align:left; }
+.compact-plan-summary > span { white-space:nowrap; }
+.fleet-strip .compact-plan-summary .ordered-plan { min-width:0;justify-content:flex-start;gap:6px;overflow:hidden; }
+.fleet-strip .compact-plan-summary .ordered-plan li { gap:3px;overflow:hidden;font-size:var(--battle-type-micro); }
+.fleet-strip .compact-plan-summary .ordered-plan li + li { padding-left:6px; }
+.fleet-strip .compact-plan-summary .ordered-plan li b { min-width:15px;height:15px; }
+.fleet-strip .compact-plan-summary .ordered-plan li span { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .fleet-strip .ordered-plan { display:flex;min-height:20px;justify-content:flex-end;gap:10px;margin:0;overflow-x:auto; }
 .fleet-strip .ordered-plan li { display:flex;min-width:max-content;min-height:20px;align-items:center;gap:5px;padding:0;border:0;color:#a7bac1;background:transparent;font-size:var(--battle-type-label); }
 .fleet-strip .ordered-plan li + li { padding-left:10px;border-left:1px solid #314956; }
 .fleet-strip .ordered-plan li b { display:grid;min-width:18px;height:18px;padding:0 3px;place-items:center;border:1px solid #665a36;border-radius:50%;color:var(--battle-gold);background:#17170f;font-size:var(--battle-type-micro); }
 .fleet-strip .ordered-plan li.placeholder { color:#6f8792;font-style:italic; }
 .fleet-strip .ordered-plan li.hold { border-style:none;color:#718893; }
-.fleet-strip .unit-actions { display:flex;gap:5px;overflow-x:auto;scrollbar-color:#35505e #071119; }
+.fleet-strip .unit-actions { display:flex;flex-wrap:nowrap;gap:5px;overflow-x:auto;scrollbar-color:#35505e #071119; }
 .fleet-strip .unit-actions button { min-height:48px;padding:7px 9px;font-size:var(--battle-type-control); }
 .kinetic-action { position:relative;display:grid;min-width:90px;flex:1 1 90px;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:7px;padding-right:29px !important;text-align:left; }
 .kinetic-action-icon { display:grid;width:30px;height:30px;place-items:center;border:1px solid #48606c;border-radius:50%;color:#bdd0d6;background:linear-gradient(145deg,#1a2b35,#071016);box-shadow:inset 2px 2px 3px rgba(255,255,255,.08),inset -2px -2px 3px rgba(0,0,0,.7);font:800 1.15rem/1 ui-monospace,SFMono-Regular,Consolas,monospace; }
@@ -1519,6 +1572,15 @@
 .kinetic-range-control.is-staged .kinetic-action-icon { color:var(--battle-gold);box-shadow:inset 3px 3px 5px rgba(0,0,0,.85);transform:translate(1px,1px); }
 .kinetic-range-control.is-staged .kinetic-action-beacon { background:var(--battle-gold);box-shadow:inset 1px 1px rgba(255,255,255,.35); }
 .fleet-strip .unit-actions .kinetic-clear { min-width:78px;min-height:48px;flex:0 0 78px;color:#91a4ad;background:transparent; }
+.selected-unit-command { display:grid;min-width:0;grid-template-rows:max-content max-content;align-content:start;border:1px solid #354a56;background:#0b171f; }
+.selected-unit-command > header { display:flex;min-height:34px;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0;padding:5px 8px;border-bottom:1px solid #2a414d; }
+.selected-unit-command > header > div { display:flex;align-items:center;gap:8px; }
+.selected-unit-command > header strong { color:#edf5f6;font-size:var(--battle-type-control); }
+.selected-unit-command > header > span { color:#8299a3;font:650 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
+.selected-unit-phase-content { min-width:0;padding:6px;animation:fleet-phase-in 160ms ease-out; }
+.selected-unit-phase-content > .kinetic-plan-status { min-height:32px;grid-template-columns:auto minmax(0,1fr);align-items:center;justify-items:start;gap:10px;margin:0 0 6px;padding:3px 7px;text-align:left; }
+.selected-unit-phase-content > .kinetic-plan-status .ordered-plan { min-width:0;justify-content:flex-start; }
+.selected-unit-actions .kinetic-action-label { overflow:visible;text-overflow:clip; }
 .fleet-phase-content { animation:fleet-phase-in 160ms ease-out; }
 .fleet-inactive-caption,
 .fleet-resolution-state { display:grid;min-height:56px;align-content:center;gap:4px;color:#728994;font:700 var(--battle-type-micro) ui-monospace,SFMono-Regular,Consolas,monospace; }
@@ -1530,6 +1592,8 @@
 .fleet-strip .output-allocation input,
 .fleet-strip .output-allocation select { width:100%;min-height:30px; }
 .fleet-strip .compact-inspector { width:auto;min-width:300px;min-height:168px;padding:10px;border:1px solid #354a56;background:#0c1820; }
+.fleet-strip .compact-inspector.is-collapsed { display:flex;min-height:40px;align-items:center;gap:8px;padding:7px 9px; }
+.compact-inspector.is-collapsed p { margin:0;white-space:nowrap; }
 .compact-inspector h2 { margin:5px 0;color:#edf5f6;font-size:var(--battle-type-section); }
 .compact-inspector p { margin:5px 0;color:#879ca6;font-size:var(--battle-type-label);line-height:1.4; }
 .compact-inspector button { min-height:32px;margin-top:8px;padding:5px 8px; }
@@ -1569,7 +1633,7 @@
 
 @media (min-width:1800px) {
   .battle-layout { grid-template-columns:210px minmax(0,1fr);max-width:min(96vw,2560px);gap:16px; }
-  .board-column.command-deck-board { --command-deck-board-size:clamp(280px,calc(100dvh - 760px),620px); }
+  .board-column.command-deck-board { --command-deck-board-size:clamp(380px,calc(100dvh - 500px),620px); }
   .command-deck-board .phase-dock { max-width:none; }
 }
 
@@ -1580,17 +1644,18 @@
   .battle-shell { padding-bottom:0; }
   .battle-layout { margin-top:2px; }
   .board-column.command-deck-board {
-    --command-deck-board-size:clamp(240px,calc(100dvh - 660px),320px);
+    --command-deck-board-size:clamp(340px,calc(100dvh - 560px),400px);
     gap:6px;
   }
-  .v4-armories.inactive > div { padding:3px 6px; }
-  .v4-armories.inactive header { margin-bottom:2px; }
-  .v4-armories.inactive button { min-height:34px; }
+  .fleet-strip .mech-roster-heading { min-height:38px;padding:5px 9px; }
+  .fleet-strip .mech-roster-heading > div { display:flex;min-width:0;align-items:baseline;gap:12px; }
+  .fleet-strip .mech-roster-heading small { margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+  .fleet-strip-deck { padding:6px; }
   .command-deck-board .event-ticker { min-height:36px; }
   .command-deck-board .event-ticker > span,
   .command-deck-board .event-ticker > div,
   .command-deck-board .event-ticker > p { padding:4px 8px; }
-  .command-deck-board .phase-dock { min-height:64px;padding:7px 11px; }
+  .command-deck-board .phase-dock { min-height:64px;padding:3px 11px; }
 }
 
 @media (max-width:1180px) {
@@ -1611,6 +1676,7 @@
   .command-deck-header { display:grid;margin:0 -16px;padding:10px 16px; }
   .command-deck-header .battle-nav { margin:0;border:0;overflow-x:auto; }
   .command-deck-header .battle-nav > a,
+  .command-deck-header .battle-nav-primary > a,
   .command-deck-header .battle-nav > button,
   .battle-more summary,
   .phase-guidance button,
@@ -1619,6 +1685,7 @@
   .fleet-strip .output-allocation select,
   .compact-inspector button { min-height:40px; }
   .command-deck-header .battle-nav > a,
+  .command-deck-header .battle-nav-primary > a,
   .battle-more summary { display:flex;align-items:center; }
   .battle-ui-scale button { min-width:40px; }
   .battle-shell .phase-info { width:40px;min-width:40px;height:40px;min-height:40px; }
@@ -1644,18 +1711,56 @@
 
 @media (max-width:580px) {
   .battle-shell { padding-right:8px;padding-left:8px;padding-bottom:20px; }
-  .command-deck-header { margin-right:-8px;margin-left:-8px;padding-right:8px;padding-left:8px; }
-  .command-deck-header { grid-template-columns:1fr; }
+  .command-deck-header { grid-template-columns:1fr;gap:5px;margin-right:-8px;margin-left:-8px;padding:6px 8px; }
+  .command-deck-brand .battle-kicker { display:none; }
+  .command-deck-brand h1 { max-width:none;margin:0;font-size:var(--battle-type-control); }
   .command-deck-header .phase-stepper,
   .command-deck-header .battle-nav { grid-column:1; }
-  .command-deck-header .battle-nav { justify-content:flex-start; }
-  .operation-rail { grid-template-columns:1fr; }
-  .operation-state { grid-row:auto; }
+  .command-deck-header .phase-stepper { grid-row:2; }
+  .command-deck-header .battle-nav { grid-row:3;justify-content:flex-start;gap:6px;overflow:visible; }
+  .command-deck-header .battle-nav-primary,
+  .command-deck-header .battle-nav-scale { display:none; }
+  .command-deck-header .battle-more { order:1; }
+  .command-deck-header .battle-nav > button { order:2; }
+  .mobile-nav-utilities { display:grid;gap:3px;margin-bottom:5px;padding-bottom:7px;border-bottom:1px solid var(--battle-line); }
+  .mobile-nav-utilities > a { display:flex;min-height:40px;align-items:center;box-sizing:border-box;padding:10px; }
+  .mobile-nav-utilities .battle-ui-scale { margin-top:3px; }
+  .battle-more > div { right:auto;left:0; }
+  .phase-stepper ol { gap:2px; }
+  .phase-stepper li { min-height:34px;padding:3px 6px; }
+  .battle-layout { gap:7px;margin-top:7px; }
+  .operation-rail { grid-template-columns:1fr 1fr;gap:6px; }
+  .operation-rail > section { padding:7px; }
+  .operation-state { display:grid;grid-column:1/-1;grid-row:1;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px; }
+  .operation-state header { display:grid;grid-column:1/-1;grid-template-columns:auto 1fr;align-items:center;gap:7px;margin-bottom:1px; }
+  .operation-state header > div { justify-content:flex-end; }
+  .operation-state header > div > strong { font-size:var(--battle-type-metric); }
+  .operation-state > div:not(.operation-pair),
+  .operation-pair > div { min-width:0;margin-top:0;padding:5px;border:1px solid #233845;background:#071118; }
+  .operation-pair { display:contents; }
+  .operation-state div > span { overflow:hidden;font-size:var(--battle-type-micro);text-overflow:ellipsis; }
+  .operation-state div > strong { font-size:var(--battle-type-control); }
+  .phase-guidance { grid-column:1;grid-row:2;gap:5px; }
+  .phase-guidance > p { display:none; }
+  .phase-guidance > div { padding:6px; }
+  .phase-guidance > div p { display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2; }
+  .next-phase-preview { grid-column:2;grid-row:2;align-content:start; }
+  .next-phase-preview strong { display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:4; }
+  .operation-legend { grid-column:1/-1;grid-row:3;grid-template-columns:repeat(4,1fr);padding:6px 8px !important; }
   .context-label { flex:1; }
   .context-tools { flex-basis:100%;justify-content:space-between;border-top:1px solid var(--battle-line);border-left:0; }
   .context-tools .base-rate { white-space:normal; }
   .v4-armories { grid-template-columns:1fr; }
   .v4-armories > div + div { border-top:1px solid var(--battle-line);border-left:0; }
+  .armory-summary { display:flex;min-height:38px;gap:12px;padding:5px 7px; }
+  .fleet-strip .mech-roster-heading { min-height:40px;padding:6px 8px; }
+  .fleet-strip-deck { gap:6px;padding:6px; }
+  .selected-unit-command > header { align-items:flex-start; }
+  .selected-unit-command > header > span { text-align:right; }
+  .selected-unit-phase-content > .kinetic-plan-status { grid-template-columns:1fr;gap:3px; }
+  .selected-unit-actions .kinetic-action { min-width:132px;flex:0 0 132px; }
+  .selected-unit-actions .kinetic-action-label { white-space:normal; }
+  .fleet-strip .compact-inspector { min-width:0; }
   .command-deck-board .phase-dock,
   .command-deck-board .artillery-dock,
   .command-deck-board .capacity-dock,

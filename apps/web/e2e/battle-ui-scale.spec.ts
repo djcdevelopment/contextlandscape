@@ -76,10 +76,12 @@ test("a maximized 4K desktop at Windows scaling fits the standard Command Deck w
   expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth + 1);
 
   const boardHeight = await page.locator(".command-deck-board .perspective-canvas-shell").evaluate((element) => element.getBoundingClientRect().height);
-  expect(boardHeight).toBeGreaterThanOrEqual(240);
+  expect(boardHeight).toBeGreaterThanOrEqual(340);
 
   await page.getByRole("button", { name: "Tactical 2D" }).click();
   await expect(page.getByRole("grid", { name: "10 by 10 operational field" })).toBeVisible();
+  const tacticalBoardHeight = await page.getByRole("grid", { name: "10 by 10 operational field" }).evaluate((element) => element.getBoundingClientRect().height);
+  expect(tacticalBoardHeight).toBeGreaterThanOrEqual(340);
   const tacticalGeometry = await page.evaluate(() => ({
     clientHeight: document.documentElement.clientHeight,
     scrollHeight: document.documentElement.scrollHeight

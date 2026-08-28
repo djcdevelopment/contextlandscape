@@ -30,7 +30,7 @@ async function fulfill(route: Route, body: unknown, status = 200): Promise<void>
   await route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
 }
 
-test("art picker keeps stable scrollable cards and pages through plain-language categories", async ({ page }) => {
+test("art picker keeps stable scrollable cards and pages through plain-language categories", async ({ page }, testInfo) => {
   const units = Array.from({ length: 85 }, (_, index) => unitAsset(index));
   const catalogRequests: Array<{ offset: number; query: string }> = [];
   await page.addInitScript(() => localStorage.clear());
@@ -64,6 +64,15 @@ test("art picker keeps stable scrollable cards and pages through plain-language 
   });
 
   await page.goto("/landscape/?view=hangar");
+  if (testInfo.project.name === "mobile") {
+    const commanderPortrait = page.getByRole("button", { name: "Choose commander portrait" });
+    const lineup = page.locator(".unit-lineup");
+    const controls = page.locator(".fleet-controls");
+    const [portraitBox, lineupBox, controlsBox] = await Promise.all([commanderPortrait.boundingBox(), lineup.boundingBox(), controls.boundingBox()]);
+    expect(portraitBox?.width).toBeGreaterThanOrEqual(100);
+    expect(controlsBox!.y).toBeGreaterThanOrEqual(lineupBox!.y + lineupBox!.height - 1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  }
   const paletteTrigger = page.getByRole("button", { name: "Fleet palette, Signal teal" });
   await expect(paletteTrigger).toHaveAttribute("aria-expanded", "false");
   await paletteTrigger.click();

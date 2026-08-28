@@ -4,7 +4,7 @@ Updated 2026-08-27 after the OMEN motherboard swap and recovery gates.
 
 ## Resume point
 
-- Source branch: `agent/battle-command-deck`
+- Source branch: `agent/ui-fresh-eyes-pass`
 - Deployed application source: `cc7d516` (`Eliminate short-wide page overflow`)
 - Current public release: `p0-rd-20260820-r7`
 - Immutable image: `context-landscape:p0-rd-20260820-r7`
@@ -22,8 +22,14 @@ Do not expect the `r7` image revision label to equal the later docs-only branch 
 GitHub PR [#7](https://github.com/djcdevelopment/contextlandscape/pull/7) merged the earlier Command
 Deck checkpoint at `1a6a9c0`. The subsequent planning-control commit `1cb825b`, deployed overflow fix
 `cc7d516`, preserved design bundle, and this handoff are covered by
-[PR #8](https://github.com/djcdevelopment/contextlandscape/pull/8). Its first post-recovery
-`verify-and-simulate` run passed. Do not assume PR #7 contains the deployed source.
+[PR #8](https://github.com/djcdevelopment/contextlandscape/pull/8), which merged after its
+`verify-and-simulate` checks passed. Do not assume PR #7 contains the deployed source.
+
+The current source branch is a fresh-eyes UI pass and has not been deployed. It repairs the mobile
+Hangar layout, replaces repeated per-card controls with a compact roster plus one focused unit command
+surface, collapses dormant armory/inspector space, enlarges the 2048×900 battlefield to 340px, and moves
+the 390×844 mobile battlefield into the first viewport. The operator intentionally parked further
+multiplayer acceptance work while this UI and human-playtest work proceeds; `r7` remains the runtime.
 
 ## What landed
 
@@ -152,8 +158,8 @@ the rollback procedure in [DEPLOYMENT_RUNBOOK.md](../DEPLOYMENT_RUNBOOK.md).
 - Automated source, container, catalog, OAuth-contract, ingress, and viewport gates: passed again after
   the maintenance boundary.
 - Single-account visual use: exercised during the R&D loop, but not recorded as a formal workbook gate.
-- Real two-account Discord friend acceptance and restart persistence: **PENDING**. Mocked two-browser
-  E2E coverage is green but does not replace this gate.
+- Real two-account Discord friend acceptance and restart persistence: **PENDING AND PARKED**. Mocked
+  two-browser E2E coverage is green but does not replace this gate.
 - Current operational classification: **LIVE CANARY**, not fully accepted.
 
 ## Known boundaries

@@ -85,8 +85,9 @@ describe("Battle Command v4 accessibility and interaction", () => {
     expect(screen.getAllByRole("gridcell")).toHaveLength(100);
     expect(screen.getByText("Register")).toBeInTheDocument();
     expect(screen.getByText("Kinetic", { selector: "strong" })).toBeInTheDocument();
-    expect(screen.getAllByText("Flare").length).toBeGreaterThan(1);
-    expect(screen.getAllByText("EMP").length).toBeGreaterThan(1);
+    const armory = screen.getByLabelText("Public ordered armories");
+    expect(within(armory).getByText("Available in Artillery")).toBeInTheDocument();
+    expect(within(armory).queryAllByRole("button")).toHaveLength(0);
     expect(screen.getByRole("button", { name: "Select Scout unit scout-1" }).querySelector(".unit-portrait-fallback")).toBeInTheDocument();
 
     const first = screen.getByRole("gridcell", { name: /^0,0/ });
@@ -117,9 +118,11 @@ describe("Battle Command v4 accessibility and interaction", () => {
       expect(screen.getByLabelText(label)).toBeInTheDocument();
     }
     const armory = screen.getByLabelText("Public ordered armories");
-    expect(within(armory).getByText("ACTIVE IN ARTILLERY")).toBeInTheDocument();
-    expect(within(armory).getAllByRole("button").every((button) => button.hasAttribute("disabled"))).toBe(true);
-    expect(within(screen.getByLabelText("Fleet command lane")).getAllByRole("button", { name: /Select .* unit/i })).toHaveLength(3);
+    expect(within(armory).getByText("Available in Artillery")).toBeInTheDocument();
+    expect(within(armory).queryAllByRole("button")).toHaveLength(0);
+    const fleet = screen.getByLabelText("Fleet command lane");
+    expect(within(fleet).getAllByRole("button", { name: /Select .* unit/i })).toHaveLength(3);
+    expect(within(fleet).getByLabelText("Selected unit command")).toBeInTheDocument();
   });
 
   it("supports a five-unit fleet lane and an expandable context inspector", async () => {
@@ -180,7 +183,7 @@ describe("Battle Command v4 accessibility and interaction", () => {
     expect(screen.getByRole("navigation", { name: "Five-stage phase stepper" }).querySelector('[aria-current="step"]')).toHaveTextContent("Kinetic");
     expect(screen.getByLabelText("Operation state")).toHaveTextContent("2/8");
     expect(within(screen.getByLabelText("Operation state")).getByText("Attention").parentElement).toHaveTextContent("7");
-    expect(screen.getByText("0 FROZEN", { exact: true })).toBeInTheDocument();
+    expect(screen.getAllByText(/0 FROZEN/).length).toBeGreaterThan(0);
   });
 
   it("submits selected weight-six fleets and builds an ordered two-step Condense plan", async () => {
@@ -205,9 +208,8 @@ describe("Battle Command v4 accessibility and interaction", () => {
 
     const scoutPortrait = screen.getByRole("button", { name: "Select Scout unit scout-1" });
     await waitFor(() => expect(scoutPortrait.querySelector("img")).toHaveAttribute("src", "/media/art/card/scout-0.webp"));
-    expect(scoutPortrait).toHaveAttribute("aria-pressed", "false");
+    expect(scoutPortrait).toHaveAttribute("aria-pressed", "true");
     const scoutCard = scoutPortrait.closest("article")!;
-    fireEvent.pointerDown(within(scoutCard).getByText(/Condense 0\/2/));
     expect(scoutCard).toHaveClass("selected");
     expect(scoutCard).toHaveAttribute("aria-current", "true");
     expect(scoutPortrait).toHaveAttribute("aria-pressed", "true");
@@ -225,17 +227,17 @@ describe("Battle Command v4 accessibility and interaction", () => {
     fireEvent.click(condense);
     fireEvent.click(condense);
     expect(screen.getByText(/Condense 2\/2/)).toBeInTheDocument();
-    expect(within(scoutCard).getAllByText("Condense output")).toHaveLength(3);
+    expect(within(scoutCard).getAllByText("Condense output")).toHaveLength(2);
     const plannedScoutCard = screen.getByText(/Condense 2\/2/).closest("article")!;
     expect(within(plannedScoutCard).getByLabelText("Staged for Kinetic")).toBeInTheDocument();
     expect(within(plannedScoutCard).queryByText("Action open")).not.toBeInTheDocument();
-    expect(within(plannedScoutCard).getByRole("button", { name: /Condense output\s*, staged 2 times/ })).toHaveClass("is-staged");
+    expect(within(screen.getByLabelText("Selected unit command")).getByRole("button", { name: /Condense output\s*, staged 2 times/ })).toHaveClass("is-staged");
     expect(linePortrait.closest("article")).toHaveClass("has-staged-plan");
     expect(linePortrait.closest("article")).not.toHaveClass("selected");
     expect(screen.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeInTheDocument();
     expect(screen.getByRole("gridcell", { name: /friendly Line, staged for Kinetic/ })).toBeInTheDocument();
     expect(screen.getByLabelText("Phase actions")).toHaveTextContent("2 of 3 unit plans complete");
-    expect(within(plannedScoutCard).getByRole("button", { name: "Move on grid" })).toBeDisabled();
+    expect(within(screen.getByLabelText("Selected unit command")).getByRole("button", { name: "Move on grid" })).toBeDisabled();
   });
 
   it("uses a focus-managed in-app risk dialog for projected detonations", async () => {

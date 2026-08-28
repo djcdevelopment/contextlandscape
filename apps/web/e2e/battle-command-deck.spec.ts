@@ -137,16 +137,17 @@ test("the permanent Command Deck remains usable without dock overlap or viewport
   for (const label of permanentLabels) await expect(page.getByLabel(label)).toBeVisible();
 
   const armory = page.getByLabel("Public ordered armories");
-  const armoryCaption = armory.getByText("ACTIVE IN ARTILLERY");
+  const armoryCaption = armory.getByText("Available in Artillery");
   await expect(armoryCaption).toBeVisible();
   expect(await armoryCaption.evaluate((element) => getComputedStyle(element).opacity)).toBe("1");
-  expect(await armory.getByRole("button").count()).toBeGreaterThan(0);
-  expect(await armory.getByRole("button").evaluateAll((buttons) => buttons.every((button) => (button as HTMLButtonElement).disabled))).toBe(true);
+  await expect(armory.getByRole("button")).toHaveCount(0);
 
   const fleet = page.getByLabel("Fleet command lane");
+  const selectedCommand = fleet.getByLabel("Selected unit command");
+  await expect(selectedCommand).toBeVisible();
   await expect(fleet.getByRole("button", { name: /Select .* unit/i })).toHaveCount(5);
   const cardWidths = await fleet.locator(".v4-unit-card").evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().width));
-  expect(Math.min(...cardWidths)).toBeGreaterThanOrEqual(200);
+  expect(Math.min(...cardWidths)).toBeGreaterThanOrEqual(170);
   const fleetScroller = fleet.locator(".fleet-strip-scroll");
   const fleetScroll = await fleetScroller.evaluate((element) => ({
     clientWidth: element.clientWidth,
@@ -160,14 +161,14 @@ test("the permanent Command Deck remains usable without dock overlap or viewport
     const linePortrait = fleet.getByRole("button", { name: "Select Line unit line-1" });
     const lineCard = linePortrait.locator("xpath=ancestor::article");
     await linePortrait.click();
-    const move = lineCard.getByRole("button", { name: "Move on grid", exact: true });
+    const move = selectedCommand.getByRole("button", { name: "Move on grid", exact: true });
     const moveBox = await move.boundingBox();
     expect(moveBox?.height).toBeGreaterThanOrEqual(48);
     expect(moveBox?.width).toBeGreaterThanOrEqual(100);
     await expect(move.locator(".kinetic-action-icon")).toBeVisible();
     await expect(move.locator(".kinetic-action-beacon")).toBeVisible();
-    await expect(lineCard.getByRole("group", { name: /Range shift/ }).locator(".kinetic-action-icon")).toHaveCount(1);
-    await expect(lineCard.getByRole("button", { name: "Clear plan" }).locator(".kinetic-action-icon")).toHaveCount(0);
+    await expect(selectedCommand.getByRole("group", { name: /Range shift/ }).locator(".kinetic-action-icon")).toHaveCount(1);
+    await expect(selectedCommand.getByRole("button", { name: "Clear plan" }).locator(".kinetic-action-icon")).toHaveCount(0);
     await move.click();
     await page.getByRole("gridcell", { name: /^0,2/ }).click();
     await fleet.getByRole("button", { name: "Select Scout unit scout-1" }).click();
@@ -175,7 +176,7 @@ test("the permanent Command Deck remains usable without dock overlap or viewport
     await expect(lineCard).toHaveClass(/has-staged-plan/);
     await expect(lineCard).toHaveAttribute("data-plan-state", "planning");
     await expect(lineCard.getByLabel("Planning for Kinetic")).toBeVisible();
-    await expect(lineCard.getByRole("button", { name: "Move on grid, staged 1 time" })).toHaveClass(/is-staged/);
+    await expect(selectedCommand).toContainText(/Scout scout-1/i);
     await expect(page.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeVisible();
     await page.getByRole("button", { name: "Perspective" }).click();
     await expect(page.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeAttached();
@@ -215,25 +216,40 @@ test("the permanent Command Deck remains usable without dock overlap or viewport
   expect(overflow.body).toBeLessThanOrEqual(overflow.viewport + 1);
   expect(overflow.root).toBeLessThanOrEqual(overflow.viewport + 1);
   if (testInfo.project.name === "mobile") {
-    expect(boardBox!.y).toBeLessThanOrEqual(viewport.height * 1.25);
+    expect(boardBox!.y).toBeLessThanOrEqual(720);
   }
   if (testInfo.project.name !== "desktop") {
-    for (const [name, control] of [
+    const touchControls: Array<[string, ReturnType<typeof page.getByRole>]> = [
       ["Phase help", page.getByRole("button", { name: "About Kinetic phase" })],
       ["Full rules", page.getByRole("button", { name: "Full rules" })],
-      ["Fleet Hangar", page.getByRole("link", { name: "Fleet Hangar" })],
       ["More", page.getByText("More", { exact: true })],
-      ["Decrease interface scale", page.getByRole("button", { name: "Decrease interface scale" })],
-      ["Increase interface scale", page.getByRole("button", { name: "Increase interface scale" })],
       ["New operation", page.getByRole("button", { name: "New operation" })],
-      ["Move on grid", fleet.getByRole("button", { name: "Move on grid" }).first()],
-      ["Clear", fleet.getByRole("button", { name: "Clear" }).first()],
+      ["Move on grid", selectedCommand.getByRole("button", { name: "Move on grid" })],
+      ["Clear", selectedCommand.getByRole("button", { name: "Clear" })],
       ["Resolve Kinetic", page.getByRole("button", { name: "Resolve Kinetic" })],
       ["Perspective", page.getByRole("button", { name: "Perspective" })],
       ["Tactical 2D", page.getByRole("button", { name: "Tactical 2D" })]
-    ]) {
+    ];
+    if (testInfo.project.name === "tablet") touchControls.push(
+      ["Fleet Hangar", page.getByRole("link", { name: "Fleet Hangar" }).first()],
+      ["Decrease interface scale", page.getByRole("button", { name: "Decrease interface scale" }).first()],
+      ["Increase interface scale", page.getByRole("button", { name: "Increase interface scale" }).first()]
+    );
+    for (const [name, control] of touchControls) {
       const box = await control.boundingBox();
       expect(box?.height, `${name} touch target`).toBeGreaterThanOrEqual(40);
+    }
+    if (testInfo.project.name === "mobile") {
+      await page.getByText("More", { exact: true }).click();
+      const menu = page.locator(".mobile-nav-utilities");
+      for (const [name, control] of [
+        ["Fleet Hangar", menu.getByRole("link", { name: "Fleet Hangar" })],
+        ["Decrease interface scale", menu.getByRole("button", { name: "Decrease interface scale" })],
+        ["Increase interface scale", menu.getByRole("button", { name: "Increase interface scale" })]
+      ] as const) {
+        const box = await control.boundingBox();
+        expect(box?.height, `${name} touch target`).toBeGreaterThanOrEqual(40);
+      }
     }
   }
 });

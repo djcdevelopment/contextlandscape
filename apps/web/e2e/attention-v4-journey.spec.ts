@@ -185,7 +185,12 @@ test("deterministic Battery, EMP, counterfire, reload, detonation, and terminal 
   await expect(page.locator(".fleet-card-summary > span").filter({ hasText: "0 FROZEN" }).first()).toBeVisible();
   await expect(page.getByText(/register \/ armory \/ reloaded/i)).toBeVisible();
   await expect(page.getByText(/artillery \/ counterfire \/ consumed/i)).toBeVisible();
-  await page.getByRole("link", { name: "Evidence atlas" }).click();
+  if (page.viewportSize()!.width <= 580) {
+    await page.getByText("More", { exact: true }).click();
+    await page.locator(".mobile-nav-utilities").getByRole("link", { name: "Evidence atlas" }).click();
+  } else {
+    await page.getByRole("link", { name: "Evidence atlas" }).first().click();
+  }
   await expect(page).toHaveURL(/\/landscape\/\?view=atlas$/);
   await expect(page.getByRole("heading", { name: "All-labs topography" })).toBeVisible();
 });
