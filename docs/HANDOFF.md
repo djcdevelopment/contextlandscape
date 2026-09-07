@@ -10,6 +10,8 @@ Latest playtest follow-ups: Output rules have separate mech entries; Move opens 
 
 Local verification for this checkpoint: the full production build, web typecheck, all 291 workspace tests, and 38 browser journeys passed (10 intentional viewport-specific skips). Additional engine and desktop/mobile browser probes checked artillery activation, counterfire guidance, and the Heavy's actual emitted-output receipt.
 
+The merge audit also required compatible `fast-uri` patches (3.1.7 and 4.1.4). The production dependency audit reports zero vulnerabilities, and all 31 server tests pass with those patches.
+
 After reboot, start Docker Desktop and run from the repository root:
 
 ```powershell
