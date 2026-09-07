@@ -385,6 +385,7 @@ availability; see the [current handoff](docs/HANDOFF.md) before restarting or pr
 
 - [Context Landscape R&D lab](R_AND_D_LAB.md)
 - [Battle Command Command Deck design handoff](design/design_handoff_battle_command_1c/README.md)
+- [Board ontology, reference study and illustrated design brief](design/board-design/README.md)
 - [Overnight experiment plan and outcome](OVERNIGHT_EXPERIMENT_PLAN.md)
 - [Synthetic-to-gameplay lab plan](GAMEPLAY_LAB_PLAN.md)
 - [Gameplay-lab implementation retrospective](GAMEPLAY_LAB_RETROSPECTIVE.md)

@@ -174,7 +174,7 @@ test("deterministic Battery, EMP, counterfire, reload, detonation, and terminal 
   await page.getByRole("button", { name: /battery-candidate/ }).click();
   await expect(page.getByRole("button", { name: /^Verify/ })).toContainText("0");
   await page.getByRole("button", { name: /^Verify/ }).click();
-  await expect(page.getByText("ACTIVE BATTERY").last()).toBeVisible();
+  await expect(page.getByText("ACTIVE BATTERY", { exact: true }).last()).toBeVisible();
 
   await page.getByRole("button", { name: "End Command" }).click();
   await expect(page.getByRole("dialog", { name: "End Command risk check" })).toContainText("doomed-context");
@@ -183,8 +183,8 @@ test("deterministic Battery, EMP, counterfire, reload, detonation, and terminal 
   await expect(page.getByText("Victory secured")).toBeVisible();
   await expect(page.getByLabel("Current phase guidance").getByText("1 committed · 1 detonated", { exact: true })).toBeVisible();
   await expect(page.locator(".fleet-card-summary > span").filter({ hasText: "0 FROZEN" }).first()).toBeVisible();
-  await expect(page.getByText(/register \/ armory \/ reloaded/i)).toBeVisible();
-  await expect(page.getByText(/artillery \/ counterfire \/ consumed/i)).toBeVisible();
+  await expect(page.getByText("Register armory reloaded", { exact: true })).toBeVisible();
+  await expect(page.getByText("Artillery counterfire consumed", { exact: true })).toBeVisible();
   if (page.viewportSize()!.width <= 580) {
     await page.getByText("More", { exact: true }).click();
     await page.locator(".mobile-nav-utilities").getByRole("link", { name: "Evidence atlas" }).click();
@@ -192,5 +192,5 @@ test("deterministic Battery, EMP, counterfire, reload, detonation, and terminal 
     await page.getByRole("link", { name: "Evidence atlas" }).first().click();
   }
   await expect(page).toHaveURL(/\/landscape\/\?view=atlas$/);
-  await expect(page.getByRole("heading", { name: "All-labs topography" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Evidence Atlas" })).toBeVisible();
 });

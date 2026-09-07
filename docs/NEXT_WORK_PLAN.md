@@ -1,5 +1,7 @@
 # Next-work plan
 
+2026-09-06 reboot checkpoint: the UI review and immediate playtest follow-ups are collected in PR #9. Resume with a human Command/artifact playtest using the local restart instructions in [HANDOFF.md](HANDOFF.md). Artillery remains gated by shared Capacity rank 3; this pass makes its activation and counterfire consequences visible.
+
 This is the ordered resume plan after the 2026-08-20 motherboard maintenance. The operational state and
 exact restart commands are in [HANDOFF.md](HANDOFF.md).
 
@@ -8,6 +10,15 @@ Current resume point: step 1 completed on 2026-08-27 and
 multiplayer acceptance gate is intentionally parked while the product returns to UI clarity and its
 first useful human playtest. The live `r7` canary is unchanged; the UI work below is source-only until a
 separate promotion decision.
+
+On 2026-09-06, the user directed a specific rules amendment: range changes already spend one action
+per step, so remove their additional calibration penalty (v4.3). A further clarification makes Smoke
+affect only mechs, leaving batteries active with their discounts and action support. Source now uses
+v4.4 for that change; saved operations with earlier rules follow the existing retirement path.
+The [board design package](../design/board-design/README.md) maps the current rules and illustrates
+Move/Range/Step-Up as competing uses of UAP and uninterrupted battery support inside Smoke.
+The recorded v4.2 studies remain the historical control;
+human comprehension and public promotion are still separate evidence.
 
 ## 1. Restore and prove the canary — COMPLETED 2026-08-27
 

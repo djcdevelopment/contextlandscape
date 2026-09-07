@@ -12,7 +12,8 @@ import {
   createAttentionV4CommanderCatalog
 } from "../packages/engine/dist/index.js";
 
-const reportPath = new URL("../data/experiments/attention-v4.2-paired-probe/report.json", import.meta.url);
+const rulesDirectory = ATTENTION_V4_RULESET_VERSION.replace("attention-economy-", "attention-");
+const reportPath = new URL(`../data/experiments/${rulesDirectory}-paired-probe/report.json`, import.meta.url);
 const report = JSON.parse(readFileSync(reportPath, "utf8"));
 const recordedHash = report.reportHash;
 delete report.reportHash;

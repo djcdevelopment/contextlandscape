@@ -36,4 +36,4 @@ for (const profile of catalog.profiles) {
   if (compiled.programHash !== catalog.compiledHashes[profile.ordinal]) fail(`profile ${profile.ordinal} hash attribution drifted`);
 }
 
-process.stdout.write(`attention-v4.2 compiler coverage: ${ATTENTION_V4_COMMANDER_PROFILE_COUNT}/${ATTENTION_V4_COMMANDER_PROFILE_COUNT} profiles, ${catalog.catalogHash}\n`);
+process.stdout.write(`attention-v4 compiler coverage: ${ATTENTION_V4_COMMANDER_PROFILE_COUNT}/${ATTENTION_V4_COMMANDER_PROFILE_COUNT} profiles, ${catalog.catalogHash}\n`);

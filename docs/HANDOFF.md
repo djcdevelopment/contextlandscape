@@ -1,6 +1,22 @@
 # Context Landscape handoff
 
-Updated 2026-08-27 after the OMEN motherboard swap and recovery gates.
+Updated 2026-09-06 for the UI review and reboot checkpoint. Public deployment details below were last recorded during the 2026-08-27 recovery.
+
+## 2026-09-06 reboot checkpoint
+
+The current source work is collected in [PR #9](https://github.com/djcdevelopment/contextlandscape/pull/9) on `agent/ui-fresh-eyes-pass`. It includes the v4.4 range/Smoke amendments, the [board design package](../design/board-design/README.md), and the [full UI review](UI_UX_REVIEW.md).
+
+Latest playtest follow-ups: Output rules have separate mech entries; Move opens Tactical 2D with outside coordinate axes; fleet cards have no duplicate action footer; artillery shows Capacity activation progress and counterfire consequences. Command distinguishes mech output decisions from pending artifacts, explains allocation/calibration, shows an emitted-output receipt from actual artifacts, and provides an Inspect output action. Heavy Uplink's calibration tradeoff is explicit.
+
+Local verification for this checkpoint: the full production build, web typecheck, all 291 workspace tests, and 38 browser journeys passed (10 intentional viewport-specific skips). Additional engine and desktop/mobile browser probes checked artillery activation, counterfire guidance, and the Heavy's actual emitted-output receipt.
+
+After reboot, start Docker Desktop and run from the repository root:
+
+```powershell
+docker compose -p context-landscape-dev -f infra/compose.dev.yml up -d
+```
+
+Local UI: `http://localhost:5173/landscape/`. API readiness: `http://localhost:9080/ready`. This work has not promoted a new public canary image. The next useful step is a human playtest of Command and artifact decisions.
 
 ## Resume point
 
@@ -164,8 +180,10 @@ the rollback procedure in [DEPLOYMENT_RUNBOOK.md](../DEPLOYMENT_RUNBOOK.md).
 
 ## Known boundaries
 
-- v4.2 is a playtest baseline, not a balance claim. Drift determines nearly every deterministic terminal
-  while Progress is effectively absent.
+- Recorded v4.2 studies are a historical baseline: Drift determines nearly every deterministic terminal
+  while Progress is effectively absent. Current source uses v4.4: action-paid range shifts preserve
+  calibration, and Smoke affects mechs while batteries keep working. These amendments do not establish
+  balance or change the deployed canary.
 - Resolution is a client-only review surface because the server applies Resolution and Register
   atomically. A reload immediately after transition can skip that interstitial without losing state.
 - Challenge acceptance writes the match and challenge in separate operations; a process crash between

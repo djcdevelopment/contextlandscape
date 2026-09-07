@@ -1,0 +1,126 @@
+{
+  "baseSourceCommit": "c714a1903da52c181820bc0f4004411c4d78055c",
+  "amendment": "2026-09-06: v4.3 action-only range cost; v4.4 Smoke affects mechs and preserves batteries",
+  "ruleset": "attention-economy-v4.4",
+  "rulesetHash": "sha256:aa4042f5eb5364dcc1a512d68ef7a13e8a0d9792612612c8b0bcf779302e19b8",
+  "fixtureScope": "composed in-memory boundary examples; no persistent matches",
+  "sources": {
+    "packages/contracts/src/attention-v4.ts": "sha256:def224247c4e89e6243093d70c571539bc5de4c8112c5b64a3d1d503aa68d58e",
+    "packages/engine/src/attention-v4.ts": "sha256:082cdeec6500650be6f768828a8bc08292165c1201f9f78e9e7468a0d35de685",
+    "apps/server/src/battle-command-core.ts": "sha256:40f4de78515731d026b3a1da710dec97091c46272080f5f656958ddcc0dbd515",
+    "apps/web/src/battle/BattleCommandApp.tsx": "sha256:61374f8c10bf580232783b6bb3b01ee3bd685db9c43aa703f910a8890a3d377a",
+    "apps/web/src/battle/PerspectiveBoard.tsx": "sha256:06d81ae831611e8b45e6e2f39c32555f28c9f03dcf40376e7bbe66402f3c60c8"
+  },
+  "checks": [
+    {
+      "id": "EX01",
+      "description": "K05 / S01: range costs one UAP per step and preserves calibration; Step-Up competes with Move",
+      "status": "passed"
+    },
+    {
+      "id": "EX02",
+      "description": "K02: all three Condense modes and density/volume caps",
+      "status": "passed"
+    },
+    {
+      "id": "EX03",
+      "description": "D01: reactor arithmetic and emission-time metrics",
+      "status": "passed"
+    },
+    {
+      "id": "EX04",
+      "description": "E03 / G02: same hidden draws, different calibration signal",
+      "status": "passed"
+    },
+    {
+      "id": "EX05",
+      "description": "D03 / S02: Verify rescues the hazard without accepting work or improving truth",
+      "status": "passed"
+    },
+    {
+      "id": "EX06",
+      "description": "D07: Focus is a guarantee, not verification or hazard rescue",
+      "status": "passed"
+    },
+    {
+      "id": "EX07",
+      "description": "T06: battery eligibility uses source calibration, not effective D×C",
+      "status": "passed"
+    },
+    {
+      "id": "EX08",
+      "description": "T06: no self-discount; multiple fields and Overclock floor at zero",
+      "status": "passed"
+    },
+    {
+      "id": "EX09",
+      "description": "G03: enemy battery discounts artifacts but does not assist friendly mech UAP",
+      "status": "passed"
+    },
+    {
+      "id": "EX10",
+      "description": "T01: frozen UAP overrides a same-owner battery bonus",
+      "status": "passed"
+    },
+    {
+      "id": "EX11",
+      "description": "A02 / S03: Smoke changes mechs, preserving batteries and artifact birth metrics",
+      "status": "passed"
+    },
+    {
+      "id": "EX12",
+      "description": "A02 / T01: Smoke expiry restores mech calibration; battery assistance continues throughout",
+      "status": "passed"
+    },
+    {
+      "id": "EX13",
+      "description": "T01/T07: exact aging threshold, stable work and newborn immunity",
+      "status": "passed"
+    },
+    {
+      "id": "EX14",
+      "description": "K/T07: fourth successful bilateral action overloads local traffic",
+      "status": "passed"
+    },
+    {
+      "id": "EX15",
+      "description": "C01/T01/G06: pay now, future award, actual state overrides contradictory rejection event",
+      "status": "passed"
+    },
+    {
+      "id": "EX16",
+      "description": "A05/T03: new same-salvo Chaff can invalidate preview, consuming card/cooldown",
+      "status": "passed"
+    },
+    {
+      "id": "EX17",
+      "description": "A04: HE resolves hidden outcomes once, leaves verified work, adds no freeze",
+      "status": "passed"
+    },
+    {
+      "id": "EX18",
+      "description": "D04/T08/S04: Verify before battery commitment; support ends before Resolution",
+      "status": "passed"
+    },
+    {
+      "id": "EX19",
+      "description": "T09: individual Drift defeat precedes its objective victory",
+      "status": "passed"
+    },
+    {
+      "id": "EX20",
+      "description": "E09: old objective eligibility persists after the front moves",
+      "status": "passed"
+    },
+    {
+      "id": "EX21",
+      "description": "Projection boundary: hidden truth and private streams stay private",
+      "status": "passed"
+    },
+    {
+      "id": "EX22",
+      "description": "Documentation covers every discriminated player intent in current contracts",
+      "status": "passed"
+    }
+  ]
+}

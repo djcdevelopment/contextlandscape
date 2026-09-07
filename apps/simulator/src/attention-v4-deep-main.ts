@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ATTENTION_V4_RULESET_VERSION } from "@landscape/contracts";
 import type { AttentionV4PressureSample } from "@landscape/engine";
 import {
   ATTENTION_V4_DEEP_WORLD_LANES,
@@ -77,7 +78,7 @@ const selfPlayEdges = allEdges.length - nonSelfEdges;
 const formula = `${nonSelfEdges.toLocaleString("en-US")} pairs x 2 seats x ${pressures.length} pressures x ${worldLanes.length} worlds` +
   (selfPlayEdges ? ` + ${selfPlayEdges.toLocaleString("en-US")} self-play pairs x ${pressures.length} pressures x ${worldLanes.length} worlds` : "");
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const defaultDirectory = study === "regular-topology" ? "attention-v4.2-regular-topology" : "attention-v4.2-fleet-matrix";
+const defaultDirectory = ATTENTION_V4_RULESET_VERSION.replace("attention-economy-", "attention-") + "-" + study;
 const output = resolve(argument("out") ?? join(repositoryRoot, "data", "experiments", defaultDirectory, "report.json"));
 const deepDesign = attentionV4DeepDesign(study, allEdges);
 

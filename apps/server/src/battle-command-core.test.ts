@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BattleCommandV3ViewSchema } from "@landscape/contracts";
+import { BattleCommandV3ViewSchema, type AttentionV4KineticAction } from "@landscape/contracts";
 import {
   createBattleCommandMatch,
   isRetiredBattleCommandMatch,
@@ -7,7 +7,7 @@ import {
   type StoredBattleCommandMatch
 } from "./battle-command-core.js";
 
-function humanPlans(stored: StoredBattleCommandMatch, actions: Record<string, never[]> = {}) {
+function humanPlans(stored: StoredBattleCommandMatch, actions: Record<string, AttentionV4KineticAction[]> = {}) {
   return (stored.state.schemaVersion === 3 ? stored.state.units : [])
     .filter((unit) => unit.ownerPlayerId === "alpha")
     .map((unit) => ({ unitId: unit.unitId, actions: actions[unit.unitId] ?? [] }));
@@ -29,18 +29,18 @@ describe("attention-economy-v4 battle command core", () => {
       schemaVersion: 3,
       modelVersion: "duel-capacity-v3-experimental",
       stateSchemaVersion: 3,
-      rulesetVersion: "attention-economy-v4.2",
-      resolverVersion: "attention-v4.2-resolver-1"
+      rulesetVersion: "attention-economy-v4.4",
+      resolverVersion: "attention-v4.4-resolver-1"
     });
     expect(created.view.projection.phase).toBe("kinetic");
     expect(created.stored.metadata).toMatchObject({
       modelVersion: "duel-capacity-v3-experimental",
       stateSchemaVersion: 3,
-      resolverVersion: "attention-v4.2-resolver-1",
-      rulesetVersion: "attention-economy-v4.2",
+      resolverVersion: "attention-v4.4-resolver-1",
+      rulesetVersion: "attention-economy-v4.4",
       rulesetHash: created.view.rulesetHash,
       compiledCommanderHashes: created.view.compiledCommanderHashes,
-      conformanceReportHash: "sha256:ba5147dc0e9865e44978654ac84aa29c4cfa2992fe3dcacc2465097b340a287f"
+      conformanceReportHash: "sha256:8ecb2fcc6c7a3292943e64582a30d98cbfdb1dea4a1de79b922401cf48d62b43"
     });
     expect(created.view.rules.artillery.shells).toEqual(["flare", "smoke", "emp", "he", "chaff"]);
     expect(created.view.projection.players[0].armory.cards.map((card) => card.shell)).toEqual(["flare", "smoke", "emp", "he", "chaff"]);
@@ -83,6 +83,24 @@ describe("attention-economy-v4 battle command core", () => {
     });
     expect(afterHuman.view.legal.activeCommanderId).toBe("alpha");
     expect(afterHuman.view.events.some((item) => item.eventType === "attention.v4.output.emitted" && item.actorId?.startsWith("bravo:") === true)).toBe(true);
+  });
+
+  it("projects action-paid range changes without reducing the next output's calibration", () => {
+    let current = createBattleCommandMatch("battle-range-cost", 24);
+    current = submitBattleCommand(current.stored, { phase: "kinetic", plans: humanPlans(current.stored, {
+      "alpha:line-1": [{ kind: "move", destination: { x: 0, y: 2 } }, { kind: "range-shift", delta: 1 }],
+      "alpha:heavy-1": [{ kind: "range-shift", delta: 1 }]
+    }) });
+    expect(current.view.projection.units.find((unit) => unit.unitId === "alpha:line-1")).toMatchObject({ activeRange: 4, calibration: 0.6, uap: { spent: 2 } });
+    expect(current.view.projection.units.find((unit) => unit.unitId === "alpha:heavy-1")).toMatchObject({ activeRange: 5, calibration: 0.9, uap: { spent: 1 } });
+    current = submitBattleCommand(current.stored, { phase: "artillery", cardId: null });
+    current = submitBattleCommand(current.stored, { phase: "capacity", claim: false });
+    current = submitBattleCommand(current.stored, { phase: "command", intent: {
+      kind: "emit", playerId: "alpha", unitId: "alpha:line-1", volume: 1, densityPct: 80
+    } });
+    expect(current.view.projection.artifacts.find((artifact) => artifact.sourceUnitId === "alpha:line-1")).toMatchObject({
+      densityPct: 80, sourceCalibration: 0.6, effectiveCalibration: 0.48
+    });
   });
 
   it("requires a complete explicit human kinetic plan", () => {
@@ -152,5 +170,18 @@ describe("attention-economy-v4 battle command core", () => {
       unit.uap.effective = 2;
     }
     expect(isRetiredBattleCommandMatch(mismatchedFleet)).toBe(true);
+  });
+
+  it.each([
+    { rulesetVersion: "attention-economy-v4.2", resolverVersion: "attention-v4.2-resolver-1", rulesetHash: "sha256:654edb095f10854ae029ee90d06803c71fb819571483d5f39068f3693c199b19" },
+    { rulesetVersion: "attention-economy-v4.3", resolverVersion: "attention-v4.3-resolver-1", rulesetHash: "sha256:7a3450785ad82444afeaca8d26e89c7d710fb4358e05a4d1c8dfb01b99ca11fc" }
+  ])("retires $rulesetVersion operations instead of silently changing their range or Smoke rules", (identity) => {
+    const created = createBattleCommandMatch("battle-retired-range-penalty", 21);
+    expect(isRetiredBattleCommandMatch(created.stored)).toBe(false);
+    const retired = structuredClone(created.stored);
+    Object.assign(retired.state, identity);
+    Object.assign(retired.metadata!, identity);
+    expect(isRetiredBattleCommandMatch(retired)).toBe(true);
+    expect(() => submitBattleCommand(retired, { phase: "capacity", claim: false })).toThrow("battle_ruleset_retired");
   });
 });

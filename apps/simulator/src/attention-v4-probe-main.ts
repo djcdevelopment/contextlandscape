@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ATTENTION_V4_RULESET_VERSION } from "@landscape/contracts";
 import {
   createAttentionV4ProbeContrasts,
   mergeAttentionV4PairedProbeReports,
@@ -22,7 +23,8 @@ const quiet = process.argv.includes("--quiet");
 const workers = Number(argument("workers") ?? "1");
 const shard = argument("shard")?.split("/").map(Number) ?? null;
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const output = resolve(argument("out") ?? join(repositoryRoot, "data", "experiments", "attention-v4.2-paired-probe", "report.json"));
+const rulesDirectory = ATTENTION_V4_RULESET_VERSION.replace("attention-economy-", "attention-");
+const output = resolve(argument("out") ?? join(repositoryRoot, "data", "experiments", rulesDirectory + "-paired-probe", "report.json"));
 if (!Number.isInteger(workers) || workers < 1 || workers > 24) throw new Error("workers must be an integer from 1 through 24");
 if (shard && (shard.length !== 2 || !Number.isInteger(shard[0]) || !Number.isInteger(shard[1]) || shard[0] < 0 || shard[0] >= shard[1])) {
   throw new Error("shard must use zero-based INDEX/COUNT syntax");
@@ -43,7 +45,7 @@ if (workers > 1 && !shard) {
   const temporary = await mkdtemp(join(tmpdir(), "attention-v4-probe-"));
   try {
     const paths = Array.from({ length: workers }, (_, index) => join(temporary, `shard-${index}.json`));
-    process.stdout.write(`attention-v4.2 paired probe: ${workers} deterministic workers, ${27 * 2 * 4 * seeds * 2} matches\n`);
+    process.stdout.write(`${rulesDirectory} paired probe: ${workers} deterministic workers, ${27 * 2 * 4 * seeds * 2} matches\n`);
     await Promise.all(paths.map((path, index) => runChild(index, workers, path)));
     const reports = await Promise.all(paths.map(async (path) => JSON.parse(await readFile(path, "utf8")) as AttentionV4PairedProbeReport));
     report = mergeAttentionV4PairedProbeReports(reports);

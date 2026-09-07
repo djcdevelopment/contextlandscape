@@ -51,6 +51,42 @@ test("wide displays default to readable large type and preserve a chosen scale",
   await expect(page.locator("main.battle-shell")).toHaveAttribute("data-ui-scale", "standard");
 });
 
+test("desktop height accounts for interface scale and editable staged actions in both board views", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The viewport and scale matrix runs once in Chromium.");
+  await page.route("**/api/battle-command/matches**", async (route) => fulfill(route, battleViewFixture("kinetic"), route.request().method() === "POST" ? 201 : 200));
+  await page.route("**/api/art/catalog**", async (route) => fulfill(route, { items: [] }));
+  await page.goto("/landscape/");
+  for (const viewport of [{ width: 2048, height: 900 }, { width: 1920, height: 1080 }]) {
+    await page.setViewportSize(viewport);
+    for (const scale of ["compact", "standard", "large", "xlarge"]) {
+      await page.evaluate((scale) => {
+        localStorage.clear();
+        localStorage.setItem("context-landscape.uiScale", scale);
+      }, scale);
+      await page.reload();
+      await page.getByRole("button", { name: "Enter battle command" }).click();
+      const selected = page.getByLabel("Selected unit command");
+      for (const mode of ["Perspective", "Tactical 2D"]) {
+        await page.getByRole("button", { name: mode, exact: true }).click();
+        const clear = selected.getByRole("button", { name: "Clear plan" });
+        if (await clear.isEnabled()) await clear.click();
+        for (const steps of [0, 1, 2]) {
+          if (steps) await selected.getByRole("button", { name: /^Condense output/ }).click();
+          const geometry = await page.evaluate(() => {
+            const column = document.querySelector(".board-column")!;
+            const dock = document.querySelector(".phase-dock")!.getBoundingClientRect();
+            return { height: document.documentElement.scrollHeight, width: document.documentElement.scrollWidth, columnHeight: column.clientHeight, columnScroll: column.scrollHeight, dockBottom: dock.bottom };
+          });
+          expect(geometry.height, `${viewport.width}×${viewport.height} / ${scale} / ${mode} / ${steps} steps`).toBeLessThanOrEqual(viewport.height + 1);
+          expect(geometry.width).toBeLessThanOrEqual(viewport.width + 1);
+          expect(geometry.columnScroll).toBeLessThanOrEqual(geometry.columnHeight + 1);
+          expect(geometry.dockBottom).toBeLessThanOrEqual(viewport.height + 1);
+        }
+      }
+    }
+  }
+});
+
 test("a maximized 4K desktop at Windows scaling fits the standard Command Deck without page scrolling", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The wide desktop resize probe runs once in Chromium.");
   await page.setViewportSize({ width: 2048, height: 900 });
