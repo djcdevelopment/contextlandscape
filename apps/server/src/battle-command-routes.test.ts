@@ -39,7 +39,7 @@ describe("attention-v4 Battle Command HTTP routes", () => {
     });
     expect(created.statusCode).toBe(201);
     const view = created.json();
-    expect(view).toMatchObject({ schemaVersion: 3, revision: 0, rulesetVersion: "attention-economy-v4.2", stateSchemaVersion: 3 });
+    expect(view).toMatchObject({ schemaVersion: 3, revision: 0, rulesetVersion: "attention-economy-v4.4", stateSchemaVersion: 3 });
     expect(view.projection.units.filter((unit: { ownerPlayerId: string }) => unit.ownerPlayerId === "alpha")).toHaveLength(5);
     expect(view.projection.units.filter((unit: { ownerPlayerId: string }) => unit.ownerPlayerId === "bravo")).toHaveLength(4);
     const id = view.projection.matchId as string;

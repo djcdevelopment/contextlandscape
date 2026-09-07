@@ -12,6 +12,9 @@ import { CommanderView } from "./commander/CommanderView.js";
 import { LabAtlasView } from "./atlas/LabAtlasView.js";
 import { EvidenceLandscapeView } from "./atlas/EvidenceLandscapeView.js";
 import "./style.css";
+import "./ui/theme.css";
+import { AppNavigation } from "./ui/AppNavigation.js";
+import { isLegacyRoute } from "./navigation.js";
 
 const BattleCommandApp = lazy(async () => ({ default: (await import("./battle/BattleCommandApp.js")).BattleCommandApp }));
 const HumanReleaseApp = lazy(async () => ({ default: (await import("./human/HumanReleaseApp.js")).HumanReleaseApp }));
@@ -361,15 +364,14 @@ function App() {
   }, [match, selectedCell]);
   const selectedScenario = scenarios.find((scenario) => scenario.scenarioId === match?.scenarioId);
 
-  return <main>
+  return <main className="legacy-shell">
     <header>
       <div>
         <p className="eyebrow">CONTEXT LANDSCAPE · {labSession ? "GAMEPLAY LAB" : "SCENARIO"}</p>
         <h1>{labSession?.title ?? selectedScenario?.title ?? "Context Landscape"}</h1>
         <p className="lede">{selectedScenario?.missionObjective ?? "Move the integration objective with the least commander energy."}</p>
       </div>
-      <div className="match-controls">
-        <button onClick={() => { window.location.search = "?view=atlas"; }} disabled={busy}>Research atlas</button>
+      <div className="legacy-header-controls"><AppNavigation /><div className="match-controls">
         <button className="lab-entry" onClick={() => setLabCatalogOpen((open) => !open)} disabled={busy}>
           {labCatalogOpen ? "Close labs" : "Gameplay labs"}
         </button>
@@ -383,7 +385,7 @@ function App() {
           <button onClick={() => void createChallenge()} disabled={busy}>Create challenge</button>
           <button onClick={() => void newMatch()} disabled={busy}>New match</button>
         </>}
-      </div>
+      </div></div>
     </header>
 
     {error && <div className="error">{error}</div>}
@@ -768,8 +770,10 @@ function SelectionInspector({ cell, entity, selectedUnit }: { cell: SelectedCell
   };
 
   return <div className="card selection-card">
-    <div className="card-title"><span>Selection</span><span className="selection-kind">json</span></div>
-    <pre className="selection-json">{selection ? JSON.stringify(selection, null, 2) : "null"}</pre>
+    <div className="card-title"><span>Selection</span><span className="selection-kind">{selection?.kind.replaceAll("_", " ") ?? "none"}</span></div>
+    <p className="selection-summary">{entity ? `${entity.chassis} ${entity.unitId} at ${cell?.x}, ${cell?.y}` : cell ? `Terrain at ${cell.x}, ${cell.y}` : "Select a cell on the board."}</p>
+    {entity && <dl><dt>Heat</dt><dd>{entity.heat}</dd><dt>Dispersion</dt><dd>{entity.dispersion}</dd><dt>Orders</dt><dd>{selection?.command_target ? "Ready" : "Inspect only"}</dd></dl>}
+    <details className="ui-disclosure"><summary>Raw selection data</summary><pre className="selection-json">{selection ? JSON.stringify(selection, null, 2) : "null"}</pre></details>
   </div>;
 }
 
@@ -812,15 +816,13 @@ const requestedSearch = new URLSearchParams(window.location.search);
 const requestedView = requestedSearch.get("view");
 const requestedLandscape = requestedSearch.get("landscape");
 const requestedFriendBattle = requestedSearch.get("friendBattle");
-const requestedLegacy = requestedView === "legacy"
-  || requestedSearch.has("labSession")
-  || requestedSearch.has("labs");
+const requestedLegacy = isLegacyRoute(requestedSearch);
 createRoot(document.getElementById("root")!).render(
-  <Suspense fallback={<main className="route-loading" role="status">Opening Context Landscape…</main>}>{requestedView === "hangar" || requestedSearch.has("challenge") ? <HumanReleaseApp />
+  <Suspense fallback={<main className="route-loading" role="status">Opening Context Landscape…</main>}>{requestedLegacy ? <App /> : requestedView === "hangar" || requestedSearch.has("challenge") ? <HumanReleaseApp />
     : requestedFriendBattle ? <BattleCommandApp friendMatchId={requestedFriendBattle} />
     : requestedView === "commander" ? <CommanderView /> : requestedView === "atlas"
     ? requestedLandscape === "commander" || requestedLandscape === "artillery" || requestedLandscape === "desperation"
       ? <EvidenceLandscapeView mode={requestedLandscape} />
       : <LabAtlasView />
-    : requestedLegacy ? <App /> : <BattleCommandApp />}</Suspense>
+    : <BattleCommandApp />}</Suspense>
 );

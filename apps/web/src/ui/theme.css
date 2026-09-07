@@ -1,0 +1,247 @@
+/* Shared presentation tokens. Game ownership and quantitative chart palettes remain separate. */
+@font-face { font-family: Inter; src: url('./fonts/InterVariable.woff2') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
+:root { --ui-factor:1; --ui-copy:#dbe8ee; --ui-secondary:#a6b8c4; --ui-muted:#8da3b1; --ui-action:#66e4d4; --ui-pending:#efc96c; --ui-danger:#ff786f; --ui-bg:#050a0f; --ui-panel:#0b141d; --ui-line:#2c414e; font-family:Inter,system-ui,sans-serif; font-size:calc(100% * var(--ui-factor)); color:var(--ui-copy); background:var(--ui-bg); font-synthesis:none; font-variant-numeric:tabular-nums; }
+:root[data-ui-scale=compact] { --ui-factor:.9; }
+:root[data-ui-scale=large] { --ui-factor:1.15; }
+:root[data-ui-scale=xlarge] { --ui-factor:1.3; }
+body { line-height:1.5; }
+button,input,select,textarea { font-family:inherit; font-variant-numeric:tabular-nums; }
+button,a,input,select,textarea,summary,[tabindex] { scroll-margin:12px; }
+:focus-visible { outline:2px solid var(--ui-action); outline-offset:3px; }
+:root body button { font-weight:600; letter-spacing:0; }
+:root body :is(main,.ui-dialog) :is(h1,h2,h3) { font-family:Inter,system-ui,sans-serif; font-weight:700; letter-spacing:-.02em; line-height:1.2; }
+:root body main h1 { font-size:1.75rem; }
+:root body main h2 { font-size:1.25rem; }
+:root body main p { color:var(--ui-secondary); }
+.app-navigation { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:8px; font-size:.875rem; }
+.app-navigation a,.app-views summary { display:inline-flex; align-items:center; min-height:40px; padding:7px 10px; border:1px solid var(--ui-line); border-radius:4px; color:var(--ui-copy); text-decoration:none; cursor:pointer; }
+.app-navigation a:hover,.app-views summary:hover { border-color:var(--ui-action); }
+.app-views { position:relative; }
+.app-views>div { position:absolute; right:0; top:100%; z-index:30; display:grid; min-width:220px; padding:8px; background:var(--ui-panel); border:1px solid var(--ui-line); box-shadow:0 12px 32px #0009; }
+.app-views>div a { border:0; }
+:root body .battle-ui-scale { display:inline-flex; align-items:center; gap:8px; padding:3px; margin:0; border:1px solid var(--ui-line); border-radius:4px; white-space:nowrap; }
+:root body .battle-ui-scale button { min-width:36px; min-height:36px; padding:4px; font-size:.875rem; }
+:root body .battle-ui-scale span { min-width:3em; color:var(--ui-secondary); font-size:.75rem; text-align:center; }
+.ui-modal-overlay { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:20px; background:#000b; backdrop-filter:blur(4px); }
+.ui-dialog { display:flex; flex-direction:column; width:min(760px,100%); max-height:calc(100dvh - 40px); min-height:0; border:1px solid #45606e; background:var(--ui-panel); color:var(--ui-copy); box-shadow:0 24px 80px #0009; }
+.ui-dialog>header { flex:none; align-items:center; margin:0; padding:18px; border-bottom:1px solid var(--ui-line); }
+.ui-dialog h2 { margin:0; font-size:1.25rem; }
+.ui-dialog-body { min-height:0; overflow:auto; padding:18px; }
+.ui-dialog-body p { color:var(--ui-secondary); }
+.ui-dialog-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; flex:none; padding:16px 18px; border-top:1px solid var(--ui-line); }
+.ui-dialog .battle-primary,.ui-primary { background:var(--ui-action); color:#071615; border-color:var(--ui-action); }
+.ui-dialog .delete-account { color:var(--ui-danger); border-color:var(--ui-danger); }
+.ui-read-error { padding:16px; border:1px solid var(--ui-danger); background:var(--ui-panel); }
+.ui-read-error p { margin:0 0 12px; }
+.ui-disclosure { margin-block:12px; font-size:.75rem; color:var(--ui-muted); }
+.ui-disclosure summary { cursor:pointer; }
+.ui-disclosure code { overflow-wrap:anywhere; }
+
+/* Battle hierarchy and resource visibility. */
+:root body :is(.battle-shell,.briefing-shell) { --battle-copy:var(--ui-copy); --battle-muted:var(--ui-secondary); --battle-type-micro:.75rem; --battle-type-label:.75rem; --battle-type-control:1rem; --battle-type-body:1rem; --battle-type-section:1.25rem; --battle-type-metric:1.25rem; --battle-type-title:1.75rem; --battle-control-height:38px; font-size:1rem; }
+:root body :is(.battle-shell,.briefing-shell) button { font-size:.875rem; font-weight:600; }
+:root body .battle-shell :is(.battle-kicker,.mech-roster-heading span,.context-label>span,.operation-state>header>span,.phase-guidance>span,.next-phase-preview>span,.event-ticker>span) { color:var(--ui-muted); font-size:.75rem; font-weight:600; letter-spacing:.055em; }
+:root body .battle-shell :is(.phase-guidance p,.next-phase-preview strong,.compact-inspector p) { font-size:.875rem; line-height:1.5; font-weight:400; }
+:root body .battle-shell :is(.fleet-card-summary small,.fleet-card-summary span,.unit-capability,.unit-stats,.kinetic-plan-status,.ordered-plan,.mech-roster-heading small,.armory-heading,.compact-armory,.phase-dock small) { color:var(--ui-secondary); font-size:.875rem; font-weight:400; }
+:root body .battle-shell :is(.fleet-card-summary strong,.compact-unit-select strong,.kinetic-action-label) { color:var(--ui-copy); font-size:1rem; font-weight:600; }
+:root body .battle-shell :is(.unit-calibration,.unit-calibration b,.unit-calibration strong) { color:var(--ui-copy); font-size:1rem; font-weight:600; }
+:root body .battle-shell .unit-selection-indicator { background:var(--ui-action); }
+:root body .battle-shell .v4-unit-card.selected { box-shadow:inset 3px 0 var(--ui-action); }
+:root body .battle-shell .selected-unit-actions button { font-size:1rem; }
+:root body .battle-shell .operation-state :is(strong,.operation-pair strong) { font-size:1.25rem; }
+:root body .battle-shell .operation-state .caution strong { color:var(--ui-pending); }
+:root body .battle-shell .operation-state .caution i b { background:var(--ui-pending); }
+:root body .battle-shell .phase-dock>div:first-child>strong { font-size:1.125rem; font-weight:600; }
+:root body .battle-shell .phase-dock>div:first-child>small { font-size:.875rem; color:var(--ui-secondary); }
+:root body .battle-shell .phase-dock>div { min-width:0; }
+:root body .battle-shell .capacity-dock>div:not(.capacity-track) { display:grid; gap:4px; }
+:root body .battle-shell .perspective-help { font-size:.75rem; font-weight:400; }
+:root body .battle-shell .artifact-piece { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; min-width:160px; min-height:68px; padding:6px 10px; }
+:root body .battle-shell .artifact-piece>strong { font-size:1rem; font-weight:600; }
+:root body .battle-shell .artifact-piece>small { color:var(--ui-secondary); font-size:.75rem; white-space:nowrap; }
+:root body .battle-shell .artifact-metrics strong { font-size:1.125rem; font-weight:600; }
+:root body .battle-shell .artifact-metrics span { color:var(--ui-secondary); font-size:.75rem; font-weight:600; }
+:root body .battle-shell .inspector-expansion { max-height:350px; overflow:auto; overscroll-behavior:contain; }
+:root body .battle-shell .inspector-expansion header { margin:0 0 12px; }
+:root body .battle-shell .inspector-expansion h2 { font-size:1rem; }
+:root body .battle-shell .artifact-actions { flex-wrap:wrap; }
+:root body .battle-shell .output-allocation label { display:grid; gap:4px; color:var(--ui-secondary); font-size:.75rem; }
+:root body .battle-shell .output-allocation label span { position:static; width:auto; height:auto; clip:auto; overflow:visible; }
+:root body .battle-shell .output-allocation :is(input,select) { font-size:1rem; }
+:root body .battle-shell .allocation-formula { font-size:.875rem; color:var(--ui-secondary); }
+:root body .battle-shell .battle-workspace { position:relative; display:flex; flex-direction:column; gap:6px; min-width:0; }
+:root body .battle-shell .battle-workspace>* { flex:none; min-width:0; }
+:root body .briefing-shell .briefing-copy h1 { font-size:clamp(2rem,4vw,3rem); }
+:root body .briefing-shell .briefing-copy { margin-bottom:32px; }
+:root body .briefing-shell .briefing-copy>p { font-size:1rem; max-width:65ch; }
+:root body .briefing-shell .briefing-rule :is(p,strong),:root body .briefing-shell .briefing-unit p { font-size:1rem; }
+:root body .battle-help-tooltip { max-width:min(430px,calc(100vw - 24px)); font:400 1rem/1.5 Inter,system-ui,sans-serif; color:var(--ui-copy); }
+:root body .battle-help-tooltip p { color:var(--ui-secondary); }
+:root body .battle-help-tooltip :is(strong,th) { font-weight:600; }
+@media(min-width:1181px) {
+  :root body .battle-shell { height:100dvh; min-width:0; overflow:hidden; }
+  :root body .battle-shell .battle-layout { min-height:0; overflow:hidden; grid-template-columns:230px minmax(0,1fr); }
+  :root body .battle-shell .board-column.command-deck-board { overflow:hidden; gap:6px; }
+  :root body .battle-shell .battle-workspace { flex:1 1 0; min-height:0; overflow:auto; overscroll-behavior:contain; }
+  :root body .battle-shell .battle-workspace .battle-board-surface { flex:1 0 342px; min-height:342px; max-height:620px; }
+  :root body .battle-shell .command-deck-board>.phase-dock { flex:none; position:static; width:100%; margin:0; padding:10px 12px; }
+}
+
+/* Hangar identity is cosmetic; status and controls keep their shared colors. */
+:root body .hangar-shell { font-size:1rem; }
+:root body .hangar-shell .hangar-primary { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:9px 14px; border:1px solid var(--ui-action); border-radius:4px; background:var(--ui-action); color:#071615; font-weight:600; text-decoration:none; }
+:root body .hangar-shell .hangar-header nav a { display:inline-flex; }
+:root body .hangar-shell .hangar-header { flex-wrap:wrap; padding-block:12px; }
+:root body .hangar-shell :is(.hangar-kicker,.catalog-provenance,.fleet-library header span,.challenge-banner span,.share-card span) { font-size:.75rem; font-weight:600; letter-spacing:.055em; color:var(--ui-muted); }
+:root body .hangar-shell :is(small,.identity-choice,.add-unit span,.weight-meter span) { color:var(--ui-secondary); font-size:.875rem; }
+:root body .hangar-shell .commander-card input { font:600 1.75rem Inter,system-ui,sans-serif; }
+:root body .hangar-shell .weight-meter.legal i { background:var(--ui-action); }
+:root body .hangar-shell .fleet-library button.active { border-color:var(--ui-action); }
+:root body .hangar-shell .art-filters button[aria-pressed=true] { background:var(--ui-action); border-color:var(--ui-action); font-weight:600; }
+:root body .hangar-shell .art-grid button.selected { outline-color:var(--ui-action); }
+.fleet-save-status { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:10px 14px; border-top:1px solid var(--ui-line); color:var(--ui-secondary); font-size:.875rem; }
+.fleet-save-status.dirty strong { color:var(--ui-pending); }
+.fleet-save-status strong { color:var(--ui-copy); font-weight:600; }
+.share-card code { user-select:all; overflow-wrap:anywhere; }
+.copy-feedback { color:var(--ui-secondary); font-size:.875rem; }
+.art-grid button { position:relative; }
+:root body .hangar-signin h1 { font-size:2rem; }
+:root body .hangar-signin section { width:min(720px,100%); }
+.hangar-signin .app-navigation { justify-content:flex-start; margin-bottom:24px; }
+
+/* Research uses the same readable chrome while preserving chart semantics. */
+:root body .atlas-shell { --atlas-muted:var(--ui-secondary); --atlas-ink:var(--ui-copy); }
+:root body .atlas-shell :is(.atlas-eyebrow,.atlas-kicker,.evidence-kicker) { color:var(--ui-muted); font-size:.75rem; letter-spacing:.055em; font-weight:600; }
+:root body .atlas-shell :is(.atlas-inspector dl,.evidence-inspector dl,.causal-card dl,.atlas-mini-bars,.evidence-controls label,.evidence-nav a,.evidence-table table,.evidence-table summary,.method-box,.trace-boundary,.atlas-method-note,.hero-unit,.terrain-legend,.desperation-legend,.board-heading) { font-size:.875rem; color:var(--ui-secondary); }
+:root body .atlas-shell :is(dt,.source-note,.atlas-no-landscape,.atlas-provenance,.source-note code,.atlas-provenance code,.atlas-mini-bars output) { font-size:.75rem; color:var(--ui-muted); }
+:root body .atlas-shell :is(.evidence-controls select,.evidence-controls button,.atlas-toolbar button) { font-size:1rem; }
+:root body .atlas-shell .evidence-controls { flex-wrap:wrap; }
+:root body .atlas-shell .evidence-definition { font-size:.875rem; color:var(--ui-secondary); }
+:root body .atlas-shell .terrain-legend { margin:8px 16px 16px; flex-wrap:wrap; }
+:root body .atlas-shell .atlas-scale { position:static; justify-content:flex-end; margin:8px; font-size:.75rem; }
+.chart-readable-labels { display:flex; flex-wrap:wrap; gap:8px 18px; padding:12px 16px; color:var(--ui-secondary); font-size:.875rem; }
+:root body .atlas-shell .evidence-inspector { min-width:0; }
+:root body .atlas-shell :is(.hero-number,.atlas-summary strong) { color:var(--ui-copy); font-weight:700; }
+:root body .atlas-shell .terrain-panel { overflow:auto; }
+:root body .atlas-shell .terrain-panel svg { min-width:740px; }
+:root body .atlas-shell .desperation-grid { min-width:650px; }
+:root body .atlas-shell .desperation-cell :is(span,strong) { font-size:.75rem; color:var(--ui-copy); }
+
+/* Commander and legacy tools. */
+:root body .commander-shell :is(.commander-metrics strong,.metric-value) { font-size:1.25rem; }
+:root body .commander-shell :is(.commander-kicker,.commander-card-title,.commander-metrics span,.layer-rail) { font-size:.75rem; color:var(--ui-muted); }
+:root body .commander-shell :is(.navigator-field,.inspector-dl,.control-help,.commander-source,.space-description,.commander-legend) { font-size:.875rem; color:var(--ui-secondary); }
+:root body .commander-shell :is(select,input,button) { font-size:.875rem; }
+.commander-header-tools { display:grid; gap:10px; justify-items:end; }
+:root body .legacy-shell :is(.card-subtitle,.actions button small,.lab-card p,.lab-review-form label,.orders-target,.legend,.trial-progress span) { color:var(--ui-secondary); font-size:.875rem; line-height:1.5; }
+:root body .legacy-shell :is(.eyebrow,.lab-kicker,.selection-kind,.console-title,.lab-meta) { color:var(--ui-muted); font-size:.75rem; letter-spacing:.055em; }
+:root body .legacy-shell .actions button span { font-size:1rem; font-weight:600; }
+:root body .legacy-shell :is(.metric span,dt,.console-data,.console-empty) { color:var(--ui-secondary); }
+.legacy-header-controls { display:grid; gap:12px; justify-items:end; }
+.selection-summary { color:var(--ui-secondary); font-size:1rem; }
+:root body .legacy-shell .selection-json { font-size:.75rem; }
+@media(max-width:900px) {
+  .app-navigation { justify-content:flex-start; }
+  .app-views>div { right:auto; left:0; }
+  :root body .hangar-shell .hangar-header nav { flex-wrap:wrap; }
+  :root body .hangar-shell .challenge-fleet-reveal { flex-direction:column; min-width:0; }
+  :root body .hangar-shell .challenge-fleet-reveal article { min-width:0; width:100%; }
+  :root body .hangar-shell .commander-card { flex-wrap:wrap; }
+  :root body .hangar-shell .commander-card>div { flex:1; min-width:160px; }
+  :root body .hangar-shell .hangar-signin section { padding:24px; }
+  .commander-header-tools,.legacy-header-controls { justify-items:start; }
+  :root body .atlas-shell .terrain-panel svg { min-height:560px; }
+  .ui-modal-overlay { padding:12px; }
+  .ui-dialog { max-height:calc(100dvh - 24px); }
+}
+@media(prefers-reduced-motion:reduce) { :root body *, :root body *::before, :root body *::after { scroll-behavior:auto; } }
+
+:root body .battle-shell .kinetic-action-beacon { width:10px; height:10px; background:#546a73; border-color:#738b96; box-shadow:none; }
+:root body .battle-shell .is-staged .kinetic-action-beacon { width:20px; height:20px; background:var(--ui-pending); border-color:var(--ui-pending); color:#17170f; font:600 .75rem/1 Inter,system-ui,sans-serif; }
+:root body .battle-shell .allocation-equation { font-size:.875rem; font-weight:400; line-height:1.5; color:var(--ui-secondary); }
+:root body .battle-shell .compact-unit-select .unit-cal { color:var(--ui-copy); font-size:1rem; }
+.hangar-header-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:12px; }
+.hangar-overlay.hangar-shell { min-height:0; padding:24px; background:#000c; }
+.art-loading { margin:0; padding:6px 16px; font-size:.875rem; }
+:root body .commander-shell { --commander-muted:var(--ui-secondary); }
+:root body .commander-shell .commander-data-status { align-items:baseline; font-size:.875rem; }
+:root body .commander-shell .commander-data-status details { min-width:0; }
+:root body .commander-shell .commander-data-status summary { cursor:pointer; }
+@media(max-width:900px) {
+  .hangar-header-actions { justify-content:flex-start; }
+  .hangar-overlay.hangar-shell { padding:0; }
+  :root body .commander-shell .commander-header { display:flex; flex-wrap:wrap; }
+  :root body .legacy-shell .match-controls { flex-wrap:wrap; }
+}
+
+/* Compact tactical chrome shares the body face; code and coordinates retain monospace. */
+:root body .battle-shell :is(.battle-kicker,.context-label>span,.operation-state>header>span,.phase-guidance>span,.next-phase-preview>span,.mech-roster-heading span,.armory-summary>span,.event-ticker>span,.kinetic-plan-status>span,.context-tools .base-rate,.artifact-piece>span,.artifact-piece>strong,.artifact-piece>small,.allocation-equation) { font-family:Inter,system-ui,sans-serif; letter-spacing:.02em; }
+:root body .battle-shell .command-deck-header h1 { font-size:1.25rem; }
+:root body .battle-shell .compact-unit-select .fleet-card-summary>span:first-child>strong { font:600 1rem/1.3 Inter,system-ui,sans-serif; color:var(--ui-copy); white-space:nowrap; }
+:root body .battle-shell .fleet-card-summary b { font-weight:600; }
+:root body .battle-shell .fleet-card-summary b small { font-size:.75rem; font-weight:400; }
+:root body .battle-shell .fleet-card-summary>small { white-space:normal; overflow:visible; }
+:root body .battle-shell .context-bar .artifact-piece { height:auto; min-height:98px; gap:3px; }
+:root body .battle-shell .context-bar .artifact-piece::after { display:none; }
+:root body .battle-shell .artifact-piece>strong { color:var(--ui-copy); }
+:root body .battle-shell .artifact-pieces>p { font-size:.875rem; }
+:root body .battle-shell .fleet-strip .compact-inspector.is-collapsed { display:grid; align-content:start; }
+:root body .battle-shell .compact-inspector.is-collapsed p { white-space:normal; }
+:root body .battle-shell .mech-roster-heading>div { display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 12px; }
+:root body .battle-shell .mech-roster-heading small { white-space:normal; }
+:root body .battle-shell .artifact-actions { display:flex; gap:8px; }
+.artifact-action-help { flex:1 1 120px; }
+:root body .battle-shell .artifact-action-help>button { width:100%; min-height:40px; }
+:root body .battle-shell .artifact-explanation { font-size:.875rem; color:var(--ui-secondary); }
+:root body .battle-shell .projected-drift { display:block; margin-top:8px; font-size:.875rem; color:var(--ui-pending); }
+:root body .battle-shell .projected-drift.defeat { color:var(--ui-danger); }
+:root body .battle-shell .terminal-comparison { display:flex; flex-wrap:wrap; gap:8px 24px; color:var(--ui-secondary); font-size:.875rem; }
+:root body .battle-shell .terminal-comparison strong { color:var(--ui-copy); font-weight:600; }
+:root body .battle-shell .terminal { display:flex; flex-wrap:wrap; align-items:center; }
+:root body .battle-shell .terminal>button { margin-left:auto; }
+
+:root body :is(.battle-shell,.briefing-shell) { --battle-cyan:var(--ui-action); --battle-gold:var(--ui-pending); --battle-red:var(--ui-danger); }
+:root body .battle-shell .artifact-metrics strong { color:var(--ui-copy); }
+:root body .battle-shell .inspector-expansion>header>strong { color:var(--ui-secondary); font:600 1rem Inter,system-ui,sans-serif; }
+:root body .atlas-shell .evidence-nav a.active { color:#071615; background:var(--ui-action); font-weight:600; }
+:root body .atlas-shell :is(.evidence-kicker,.atlas-kicker,.atlas-eyebrow,.terrain-legend,.atlas-scale) { font-family:Inter,system-ui,sans-serif; }
+:root body .atlas-shell .hero-number { font-size:1.75rem; }
+:root body .atlas-shell .terrain-legend b { color:var(--ui-secondary); }
+
+:root body .battle-shell .phase-guidance>p { font-size:1rem; }
+:root body .battle-shell .phase-dock button { font-size:1rem; }
+:root body button:disabled { cursor:not-allowed; }
+:root body .battle-shell .phase-stepper li.current { border-color:var(--ui-action); background:#102c2d; box-shadow:inset 0 -2px var(--ui-action); }
+:root body .battle-shell .phase-stepper li.current :is(strong,.phase-chip-prefix,.phase-info) { color:var(--ui-copy); }
+:root body .battle-shell .kinetic-action.active:not(.is-staged) { border-color:var(--ui-action); color:var(--ui-copy); background:#193037; }
+
+:root body .hangar-shell .art-picker h2 { font:700 1.25rem/1.2 Inter,system-ui,sans-serif; }
+:root body .hangar-shell :is(.hangar-kicker,.challenge-banner span,.share-card span,.fleet-library header span,.operation-library>span,.art-picker header span,.art-pagination span) { font-family:Inter,system-ui,sans-serif; letter-spacing:.04em; font-size:.75rem; }
+:root body .hangar-shell .commander-card small { letter-spacing:.02em; }
+:root body .legacy-shell .actions button small { font-weight:400; }
+@media(max-width:900px) {
+  :root body .hangar-shell .challenge-fleet-reveal { grid-template-columns:minmax(0,1fr); }
+  :root body .hangar-shell .challenge-banner>div { min-width:0; }
+  :root body .hangar-shell .challenge-fleet-reveal article>div { min-width:0; overflow-wrap:anywhere; }
+}
+
+@media(max-width:900px) {
+  :root body .battle-ui-scale button { min-height:40px; min-width:40px; }
+  :root body .atlas-shell .atlas-map-frame { min-height:0; }
+  :root body .atlas-shell .atlas-map-frame svg { height:auto; min-height:0; max-height:none; }
+}
+
+:root body .battle-shell .phase-stepper li.upcoming { color:var(--ui-muted); }
+:root body .battle-shell .phase-stepper li.upcoming strong { color:var(--ui-muted); }
+:root body .commander-shell .commander-legend>small { color:var(--ui-secondary); font-size:.875rem; }
+
+:root body .hangar-shell .fleet-library>div>button>span { color:var(--ui-secondary); font-size:.875rem; font-weight:400; }
+
+.briefing-navigation { display:flex; width:100%; align-items:center; flex-wrap:wrap; gap:12px; padding:12px 28px; margin:0; border-bottom:1px solid var(--ui-line); background:#071017dd; }
+.briefing-navigation>strong { margin-right:auto; font-size:.875rem; font-weight:600; }
+:root body .battle-shell .artifact-action-help>button { font-size:1rem; }
+
+:root body .atlas-shell :is(.segmented,.atlas-toolbar) button.active { color:#071615; background:var(--ui-action); }
+:root body :is(.battle-shell,.briefing-shell,.ui-dialog) button.battle-primary:hover:not(:disabled) { color:#071615; background:#8aece0; border-color:#8aece0; }
+
+.ui-disclosure code { font-size:1em; color:var(--ui-secondary); }

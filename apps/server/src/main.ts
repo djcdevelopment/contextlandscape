@@ -1015,7 +1015,7 @@ app.post<{ Body: { scenarioId?: string; creatorId?: string } }>("/api/challenges
   const state = createMatchState(challenge.matchId, challenge.creatorId, scenario.seed, scenario.scenarioId);
   await saveMatch(challenge.matchId, { state, events: [] });
   await saveChallenge(challenge);
-  return reply.code(201).send({ challenge, joinPath: `/landscape/?challenge=${challenge.challengeId}` });
+  return reply.code(201).send({ challenge, joinPath: `/landscape/?view=legacy&challenge=${challenge.challengeId}` });
 });
 
 app.get<{ Params: { id: string } }>("/api/challenges/:id", async (request, reply) => {

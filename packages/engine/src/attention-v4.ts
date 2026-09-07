@@ -255,13 +255,6 @@ function roundRecord(state: AttentionV4MatchState): AttentionV4RoundRecord {
   return record;
 }
 
-function refreshBatterySuppression(state: AttentionV4MatchState): void {
-  const smokes = activeCommandZones(state, "smoke");
-  for (const artifact of state.artifacts) {
-    artifact.battery.suppressed = artifact.battery.active && smokes.some((smoke) => insideZone(artifact.position, smoke.center));
-  }
-}
-
 function recomputeQueuedUplinks(state: AttentionV4MatchState): void {
   for (const player of state.players) {
     player.queuedUplinkBonus = state.units.some((unit) =>
@@ -272,10 +265,7 @@ function recomputeQueuedUplinks(state: AttentionV4MatchState): void {
 
 function applyActiveSmoke(state: AttentionV4MatchState, events: AttentionV4EventEnvelope[]): void {
   const smokes = activeCommandZones(state, "smoke");
-  if (smokes.length === 0) {
-    refreshBatterySuppression(state);
-    return;
-  }
+  if (smokes.length === 0) return;
   const caught = state.units.filter((unit) => smokes.some((smoke) => insideZone(unit.position, smoke.center)));
   for (const unit of caught) {
     unit.calibration = 0.2;
@@ -293,7 +283,6 @@ function applyActiveSmoke(state: AttentionV4MatchState, events: AttentionV4Event
     }
   }
   recomputeQueuedUplinks(state);
-  refreshBatterySuppression(state);
   if (caught.length > 0) {
     events.push(event(state, "attention.v4.smoke.reset", null, { unitIds: caught.map((unit) => unit.unitId).sort() }));
   }
@@ -356,7 +345,6 @@ function performRegister(state: AttentionV4MatchState, initial: boolean): Attent
     ? zone.activeThroughArtilleryRound >= state.round
     : zone.activeThroughCommandRound >= state.round
   );
-  refreshBatterySuppression(state);
   const agedArtifactIds: string[] = [];
   for (const artifact of state.artifacts) {
     artifact.localTraffic = 0;
@@ -747,10 +735,10 @@ export function resolveAttentionV4Kinetic(match: AttentionV4Match, planInputs: A
       unit.calibration = defaultAttentionV4Rules.allocation.scoutCondense[plan.condenseSteps].calibration;
     } else if (unit.chassis === "line") {
       unit.condenseSteps = 0;
-      unit.calibration = plan.stepUp ? 0.85 : plan.rangeChanged ? 0.2 : 0.6;
+      unit.calibration = plan.stepUp ? 0.85 : chassisRules.line.calibration;
     } else {
       unit.condenseSteps = 0;
-      unit.calibration = plan.uplink || plan.rangeChanged ? 0.2 : 0.9;
+      unit.calibration = plan.uplink ? 0.2 : chassisRules.heavy.calibration;
     }
     unit.uplinkQueued = unit.chassis === "heavy" && plan.uplink;
     for (const scoutUnitId of plan.scans) {
@@ -1124,7 +1112,6 @@ function activateBatteryIfEligible(state: AttentionV4MatchState, artifact: Atten
   if (!batteryEligible(artifact) || artifact.battery.active) return;
   artifact.battery.active = true;
   artifact.battery.activatedRound = state.round;
-  refreshBatterySuppression(state);
   roundRecord(state).batteryFields.push({
     kind: "activation",
     artifactId: artifact.artifactId,
@@ -1538,7 +1525,6 @@ export function applyAttentionV4Command(match: AttentionV4Match, inputIntent: At
       events.push(event(state, "attention.v4.artifact.seized", player.playerId, { artifactId: artifact.artifactId, cost }));
     }
   }
-  refreshBatterySuppression(state);
   advanceCommandCadence(state, player.playerId);
   return { match: parsedMatch(state, match.rules), events };
 }
@@ -1581,10 +1567,8 @@ function previewForCard(
     ? []
     : state.artifacts.filter((artifact) => artifact.resolution === "pending" && !artifact.verified && insideZone(artifact.position, center))
       .map((artifact) => artifact.artifactId).sort();
-  const affectedBatteryIds = blocked || card.shell !== "smoke"
-    ? []
-    : state.artifacts.filter((artifact) => artifact.battery.active && insideZone(artifact.position, center))
-      .map((artifact) => artifact.artifactId).sort();
+  // Smoke affects mechs only; no current shell affects active Batteries directly.
+  const affectedBatteryIds: string[] = [];
   return { cardId: card.cardId, center, blockedByScreenIds, affectedUnitIds, affectedArtifactIds, affectedBatteryIds };
 }
 
