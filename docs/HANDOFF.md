@@ -18,7 +18,7 @@ After reboot, start Docker Desktop and run from the repository root:
 docker compose -p context-landscape-dev -f infra/compose.dev.yml up -d
 ```
 
-Local UI: `http://localhost:5173/landscape/`. API readiness: `http://localhost:9080/ready`. This work has not promoted a new public canary image. The next useful step is a human playtest of Command and artifact decisions.
+Local UI: `http://localhost:5173/landscape/`. API readiness: `http://localhost:9080/health/ready`. This work has not promoted a new public canary image. The next useful step is a human playtest of Command and artifact decisions.
 
 ## Resume point
 
