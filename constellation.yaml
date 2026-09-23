@@ -1,0 +1,53 @@
+# Context Landscape Constellation Manifest
+#
+# Standalone AI-orchestration autobattler, deterministic simulation platform,
+# and systems-engineering game.
+
+schema_version: 1
+
+archetype: engineering-only
+topology: centered
+conformance: canonical
+
+intent: "Game I built - standalone AI-orchestration autobattler and deterministic simulation platform"
+
+constellation:
+  name: contextlandscape
+  description: "AI-orchestration autobattler, deterministic simulation platform, and systems game"
+  root_path: C:\work\contextlandscape
+  pm_workspace: docs/
+
+identity:
+  github_org: djcdevelopment
+
+telemetry:
+  otel_collector_endpoint: "http://localhost:4317"
+  otel_protocol: grpc
+  service_name_prefix: contextlandscape
+
+repos:
+  - name: contextlandscape
+    kind: git
+    role: "AI-orchestration autobattler, deterministic simulation platform, and systems-engineering game"
+    producer_type: engine
+    github: djcdevelopment/contextlandscape
+    visibility: private
+    local_path: C:\work\contextlandscape
+    primary: true
+    lifecycle: active
+    surfaces:
+      - name: playable-game
+        kind: web-app
+        lifecycle: active
+      - name: doctrine-simulator
+        kind: cli
+        lifecycle: active
+
+contracts:
+  - name: autobattler-simulation-boundary
+    producer_repo: contextlandscape
+    consumer_repos:
+      - contextlandscape
+    contract_doc: docs/IMPLEMENTED.md
+    stability: stable
+    scope: intra-repo

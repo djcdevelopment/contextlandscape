@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ATTENTION_V4_RULESET_VERSION } from "@landscape/contracts";
 import type { AttentionV4PressureSample } from "@landscape/engine";
 import {
   ATTENTION_V4_EXPANDED_TOPOLOGY_OFFSETS,
@@ -67,7 +68,8 @@ const shard = argument("shard")?.split("/").map(Number) ?? null;
 const write = !process.argv.includes("--no-write");
 const quiet = process.argv.includes("--quiet");
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const defaultOutputDirectory = expandedTopology ? "attention-v4.2-expanded-topology" : "attention-v4.2-descriptive-landscape";
+const rulesDirectory = ATTENTION_V4_RULESET_VERSION.replace("attention-economy-", "attention-");
+const defaultOutputDirectory = rulesDirectory + (expandedTopology ? "-expanded-topology" : "-descriptive-landscape");
 const output = resolve(argument("out") ?? join(repositoryRoot, "data", "experiments", defaultOutputDirectory, "report.json"));
 
 if (workers < 1 || workers > 24) throw new Error("workers must be an integer from 1 through 24");

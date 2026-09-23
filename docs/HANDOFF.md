@@ -1,10 +1,28 @@
 # Context Landscape handoff
 
-Updated 2026-08-27 after the OMEN motherboard swap and recovery gates.
+Updated 2026-09-06 for the UI review and reboot checkpoint. Public deployment details below were last recorded during the 2026-08-27 recovery.
+
+## 2026-09-06 reboot checkpoint
+
+The current source work is collected in [PR #9](https://github.com/djcdevelopment/contextlandscape/pull/9) on `agent/ui-fresh-eyes-pass`. It includes the v4.4 range/Smoke amendments, the [board design package](../design/board-design/README.md), and the [full UI review](UI_UX_REVIEW.md).
+
+Latest playtest follow-ups: Output rules have separate mech entries; Move opens Tactical 2D with outside coordinate axes; fleet cards have no duplicate action footer; artillery shows Capacity activation progress and counterfire consequences. Command distinguishes mech output decisions from pending artifacts, explains allocation/calibration, shows an emitted-output receipt from actual artifacts, and provides an Inspect output action. Heavy Uplink's calibration tradeoff is explicit.
+
+Local verification for this checkpoint: the full production build, web typecheck, all 291 workspace tests, and 38 browser journeys passed (10 intentional viewport-specific skips). Additional engine and desktop/mobile browser probes checked artillery activation, counterfire guidance, and the Heavy's actual emitted-output receipt.
+
+The merge audit also required compatible `fast-uri` patches (3.1.7 and 4.1.4). The production dependency audit reports zero vulnerabilities, and all 31 server tests pass with those patches.
+
+After reboot, start Docker Desktop and run from the repository root:
+
+```powershell
+docker compose -p context-landscape-dev -f infra/compose.dev.yml up -d
+```
+
+Local UI: `http://localhost:5173/landscape/`. API readiness: `http://localhost:9080/health/ready`. This work has not promoted a new public canary image. The next useful step is a human playtest of Command and artifact decisions.
 
 ## Resume point
 
-- Source branch: `agent/battle-command-deck`
+- Source branch: `agent/ui-fresh-eyes-pass`
 - Deployed application source: `cc7d516` (`Eliminate short-wide page overflow`)
 - Current public release: `p0-rd-20260820-r7`
 - Immutable image: `context-landscape:p0-rd-20260820-r7`
@@ -22,8 +40,14 @@ Do not expect the `r7` image revision label to equal the later docs-only branch 
 GitHub PR [#7](https://github.com/djcdevelopment/contextlandscape/pull/7) merged the earlier Command
 Deck checkpoint at `1a6a9c0`. The subsequent planning-control commit `1cb825b`, deployed overflow fix
 `cc7d516`, preserved design bundle, and this handoff are covered by
-[PR #8](https://github.com/djcdevelopment/contextlandscape/pull/8). Its first post-recovery
-`verify-and-simulate` run passed. Do not assume PR #7 contains the deployed source.
+[PR #8](https://github.com/djcdevelopment/contextlandscape/pull/8), which merged after its
+`verify-and-simulate` checks passed. Do not assume PR #7 contains the deployed source.
+
+The current source branch is a fresh-eyes UI pass and has not been deployed. It repairs the mobile
+Hangar layout, replaces repeated per-card controls with a compact roster plus one focused unit command
+surface, collapses dormant armory/inspector space, enlarges the 2048×900 battlefield to 340px, and moves
+the 390×844 mobile battlefield into the first viewport. The operator intentionally parked further
+multiplayer acceptance work while this UI and human-playtest work proceeds; `r7` remains the runtime.
 
 ## What landed
 
@@ -152,14 +176,16 @@ the rollback procedure in [DEPLOYMENT_RUNBOOK.md](../DEPLOYMENT_RUNBOOK.md).
 - Automated source, container, catalog, OAuth-contract, ingress, and viewport gates: passed again after
   the maintenance boundary.
 - Single-account visual use: exercised during the R&D loop, but not recorded as a formal workbook gate.
-- Real two-account Discord friend acceptance and restart persistence: **PENDING**. Mocked two-browser
-  E2E coverage is green but does not replace this gate.
+- Real two-account Discord friend acceptance and restart persistence: **PENDING AND PARKED**. Mocked
+  two-browser E2E coverage is green but does not replace this gate.
 - Current operational classification: **LIVE CANARY**, not fully accepted.
 
 ## Known boundaries
 
-- v4.2 is a playtest baseline, not a balance claim. Drift determines nearly every deterministic terminal
-  while Progress is effectively absent.
+- Recorded v4.2 studies are a historical baseline: Drift determines nearly every deterministic terminal
+  while Progress is effectively absent. Current source uses v4.4: action-paid range shifts preserve
+  calibration, and Smoke affects mechs while batteries keep working. These amendments do not establish
+  balance or change the deployed canary.
 - Resolution is a client-only review surface because the server applies Resolution and Register
   atomically. A reload immediately after transition can skip that interstitial without losing state.
 - Challenge acceptance writes the match and challenge in separate operations; a process crash between

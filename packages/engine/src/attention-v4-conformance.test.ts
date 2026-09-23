@@ -116,7 +116,7 @@ describe("attention-v4 conformance edges", () => {
     expect(emitted).toHaveLength(2);
   });
 
-  it("applies Smoke to both fleets, cancels scans/uplinks, and suppresses Batteries for both output windows", () => {
+  it("applies Smoke to both fleets and cancels scans/uplinks while preserving Batteries through both windows", () => {
     let match = artilleryReady("v4-smoke-spatial", 102);
     match = mutable(match, (state) => {
       const alphaLine = state.units.find((unit) => unit.unitId === "alpha:line-1")!;
@@ -139,6 +139,19 @@ describe("attention-v4 conformance edges", () => {
         verified: true,
         position: { x: 4, y: 4 },
         battery: { active: true, activatedRound: 1, suppressed: false }
+      }), artifact(match, {
+        artifactId: "hostile-smoke-battery",
+        ownerPlayerId: "bravo",
+        sourceUnitId: bravoHeavy.unitId,
+        sourceChassis: "heavy",
+        verified: true,
+        position: { x: 5, y: 5 },
+        battery: { active: true, activatedRound: 1, suppressed: false }
+      }), artifact(match, {
+        artifactId: "discount-target",
+        ownerPlayerId: "alpha",
+        sourceUnitId: alphaLine.unitId,
+        sourceChassis: "line"
       }));
       state.supportReservations.push({
         reservationId: "scan-smoke",
@@ -151,6 +164,15 @@ describe("attention-v4 conformance edges", () => {
       });
     });
     const smoke = card(match, "alpha", "smoke");
+    const artifactsBefore = structuredClone(match.state.artifacts);
+    const preview = legalAttentionV4Actions(match, "alpha").artilleryPreviews.find((item) =>
+      item.cardId === smoke.cardId && item.center.x === 4 && item.center.y === 4
+    );
+    expect(preview).toMatchObject({
+      affectedUnitIds: ["alpha:line-1", "alpha:scout-1", "bravo:heavy-1"],
+      affectedArtifactIds: [],
+      affectedBatteryIds: []
+    });
     match = resolveAttentionV4Artillery(match, [
       { kind: "fire", playerId: "alpha", cardId: smoke.cardId, center: { x: 4, y: 4 } },
       { kind: "pass", playerId: "bravo" }
@@ -160,8 +182,54 @@ describe("attention-v4 conformance edges", () => {
     expect(match.state.units.find((unit) => unit.unitId === "bravo:heavy-1")?.uplinkQueued).toBe(false);
     expect(match.state.players[1].queuedUplinkBonus).toBe(0);
     expect(match.state.supportReservations[0].cancelled).toBe(true);
-    expect(match.state.artifacts[0].battery.suppressed).toBe(true);
+    expect(match.state.artifacts).toEqual(artifactsBefore);
     expect(match.state.zones.find((zone) => zone.kind === "smoke")).toMatchObject({ activeThroughCommandRound: 2 });
+    const target = legalAttentionV4Actions(forceResolution(match), "alpha").artifacts.find((item) => item.artifactId === "discount-target")!;
+    expect(target.verify.cost).toMatchObject({ batteryDiscount: 1, total: 0 });
+    expect(target.seize.cost).toMatchObject({ batteryDiscount: 1, total: 1 });
+
+    for (const round of [2, 3]) {
+      match = resolveAttentionV4Round(forceResolution(match)).match;
+      expect(match.state.round).toBe(round);
+      expect(match.state.units.find((unit) => unit.unitId === "alpha:line-1")).toMatchObject({
+        calibration: round === 2 ? 0.2 : 0.6,
+        uap: { batteryBonus: 1, effective: 3 }
+      });
+      expect(match.state.units.find((unit) => unit.unitId === "bravo:heavy-1")).toMatchObject({
+        calibration: round === 2 ? 0.2 : 0.9,
+        uap: { batteryBonus: 1, effective: 2 }
+      });
+      expect(match.state.artifacts.filter((item) => item.battery.active).every((item) => !item.battery.suppressed)).toBe(true);
+    }
+    expect(match.state.zones.some((zone) => zone.kind === "smoke")).toBe(false);
+  });
+
+  it("activates an eligible Battery inside Smoke using its unchanged generation calibration", () => {
+    let match = artilleryReady("v4-smoke-battery-activation", 110);
+    match = mutable(match, (state) => {
+      state.units.find((unit) => unit.unitId === "alpha:line-1")!.position = { x: 4, y: 4 };
+      state.artifacts.push(
+        artifact(match, { artifactId: "new-battery", ownerPlayerId: "alpha", sourceUnitId: "alpha:line-1", sourceChassis: "line" }),
+        artifact(match, { artifactId: "nearby-work", ownerPlayerId: "alpha", sourceUnitId: "alpha:line-1", sourceChassis: "line", position: { x: 5, y: 4 } })
+      );
+    });
+    match = resolveAttentionV4Artillery(match, [
+      { kind: "fire", playerId: "alpha", cardId: card(match, "alpha", "smoke").cardId, center: { x: 4, y: 4 } },
+      { kind: "pass", playerId: "bravo" }
+    ]).match;
+    const transition = applyAttentionV4Command(forceResolution(match), { kind: "verify", playerId: "alpha", artifactId: "new-battery" });
+    match = transition.match;
+    expect(match.state.units.find((unit) => unit.unitId === "alpha:line-1")?.calibration).toBe(0.2);
+    expect(match.state.artifacts.find((item) => item.artifactId === "new-battery")).toMatchObject({
+      sourceCalibration: 0.85, effectiveCalibration: 0.68, verified: true,
+      battery: { active: true, activatedRound: 1, suppressed: false }
+    });
+    expect(transition.events).toEqual(expect.arrayContaining([
+      expect.objectContaining({ eventType: "attention.v4.battery.activated", data: expect.objectContaining({ suppressed: false }) })
+    ]));
+    const target = legalAttentionV4Actions(forceResolution(match), "alpha").artifacts.find((item) => item.artifactId === "nearby-work")!;
+    expect(target.verify.cost).toMatchObject({ batteryDiscount: 1, total: 0, batteryArtifactId: "new-battery" });
+    expect(target.seize.cost).toMatchObject({ batteryDiscount: 1, total: 1, batteryArtifactId: "new-battery" });
   });
 
   it("EMP catches friendly and hostile units, forces zero next-Kinetic UAP, but does not stop generation", () => {

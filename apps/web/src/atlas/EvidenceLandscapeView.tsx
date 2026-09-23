@@ -1,3 +1,5 @@
+import { AppNavigation } from "../ui/AppNavigation.js";
+import { ReadError } from "../ui/ReadError.js";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { appHref } from "../navigation.js";
 import "./evidence-landscapes.css";
@@ -79,7 +81,7 @@ async function fetchCompressedJson<T>(path: string): Promise<T> {
 
 function LandscapeNav({ mode }: { mode: Mode }) {
   return <nav className="evidence-nav" aria-label="Landscape mode">
-    <a href={appHref("view=atlas")}>Research atlas</a>
+    <a href={appHref("view=atlas")}>Evidence Atlas</a>
     <a className={mode === "commander" ? "active" : ""} href={appHref("view=atlas&landscape=commander")}>Commander Field</a>
     <a className={mode === "artillery" ? "active" : ""} href={appHref("view=atlas&landscape=artillery")}>Artillery Relief</a>
     <a className={mode === "desperation" ? "active" : ""} href={appHref("view=atlas&landscape=desperation")}>Desperation Theatre</a>
@@ -104,8 +106,8 @@ function CommanderField({ data }: { data: Landscapes["commander"] }) {
       <span className="evidence-definition">Height = uses per commander appearance · color = {outcomeLabels[color].toLowerCase()}</span>
     </section>
     <section className="evidence-layout">
-      <div className="terrain-panel commander-terrain">
-        <svg viewBox="0 0 900 900" role="img" aria-label={`Commander ability terrain by ${commanderLabels[metric] ?? metric}`}>
+      <div className="terrain-panel commander-terrain" tabIndex={0} aria-label="Commander chart, scroll for full detail"><div className="chart-readable-labels"><span>Horizontal: composition then movement doctrine</span><span>Vertical: triage then capacity doctrine</span></div>
+        <svg viewBox="0 0 900 900" role="group" aria-label={`Commander ability terrain by ${commanderLabels[metric] ?? metric}`}>
           <rect width="900" height="900" fill="#06101a" />
           <g transform="translate(58 58)">
             {rendered && <image href="/atlas/commander-field-relief-v1.png" x="0" y="0" width="780" height="780" preserveAspectRatio="none" opacity="0.52" />}
@@ -113,7 +115,13 @@ function CommanderField({ data }: { data: Landscapes["commander"] }) {
               const elevation = (cell.abilities[metric] ?? 0) / maximum;
               const outcome = (Number(cell.outcomes[color] ?? 0) - outcomeMin) / Math.max(1e-9, outcomeMax - outcomeMin);
               const select = () => { setSelectedId(cell.id); updateQuery({ cell: cell.id }); };
-              return <rect key={cell.id} x={cell.x * 9.75} y={cell.y * 9.75} width="9.2" height="9.2" rx="1" fill={colorAt(elevation)} stroke={outcome > .72 ? "#ffda75" : outcome < .28 ? "#da7185" : "transparent"} strokeWidth={cell.id === selectedId ? 2.2 : .7} onClick={select} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") select(); }} role="button" tabIndex={0} aria-label={`${cell.id}, ${format(cell.abilities[metric] ?? 0, 4)} ${commanderLabels[metric] ?? metric}`} className="terrain-cell"><title>{cell.id} · {format(cell.abilities[metric] ?? 0, 4)} {commanderLabels[metric] ?? metric}</title></rect>;
+              return <rect key={cell.id} x={cell.x * 9.75} y={cell.y * 9.75} width="9.2" height="9.2" rx="1" fill={colorAt(elevation)} stroke={outcome > .72 ? "#ffda75" : outcome < .28 ? "#da7185" : "transparent"} strokeWidth={cell.id === selectedId ? 2.2 : .7} onClick={select} onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") { event.preventDefault(); select(); }
+                const delta: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+                const move = delta[event.key]; if (!move) return; event.preventDefault();
+                const next = data.cells.find((item) => item.x === cell.x + move[0] && item.y === cell.y + move[1]);
+                if (next) { setSelectedId(next.id); updateQuery({ cell: next.id }); const svg = event.currentTarget.ownerSVGElement; requestAnimationFrame(() => svg?.querySelector<SVGElement>(`[data-cell-id="${CSS.escape(next.id)}"]`)?.focus()); }
+              }} role="button" tabIndex={cell.id === selectedId ? 0 : -1} data-cell-id={cell.id} aria-label={`${cell.id}, ${format(cell.abilities[metric] ?? 0, 4)} ${commanderLabels[metric] ?? metric}`} className="terrain-cell"><title>{cell.id} · {format(cell.abilities[metric] ?? 0, 4)} {commanderLabels[metric] ?? metric}</title></rect>;
             })}
             {Array.from({ length: 7 }, (_, index) => <line key={`v${index}`} x1={(index + 1) * 97.5} x2={(index + 1) * 97.5} y1="0" y2="780" className="minor-boundary" />)}
             {Array.from({ length: 9 }, (_, index) => <line key={`V${index}`} x1={(index + 1) * 78} x2={(index + 1) * 78} y1="0" y2="780" className="major-boundary" />)}
@@ -126,11 +134,11 @@ function CommanderField({ data }: { data: Landscapes["commander"] }) {
         <div className="terrain-legend"><span>low use</span><i /><span>high use</span><b>amber edge = high outcome · rose edge = low outcome</b></div>
       </div>
       <aside className="evidence-inspector">
-        <p className="evidence-kicker">COMMANDER · {selected.id}</p><h2>{commanderLabels[metric] ?? metric}</h2>
+        <p className="evidence-kicker">SELECTED COMMANDER</p><h2>{commanderLabels[metric] ?? metric}</h2>
         <strong className="hero-number">{format(selected.abilities[metric] ?? 0, 4)}</strong><span className="hero-unit">uses per appearance</span>
         <dl>{Object.entries(selected.modules).map(([key, value]) => <Fragment key={key}><dt>{key}</dt><dd>{value}</dd></Fragment>)}</dl>
-        <div className="outcome-strip">{Object.entries(outcomeLabels).map(([id, label]) => <span key={id}><small>{label}</small><strong>{format(Number(selected.outcomes[id]), 4)}</strong></span>)}</div>
-        <p className="source-note">Source: <code>{data.sourcePath}</code></p>
+        <div className="outcome-strip">{Object.entries(outcomeLabels).map(([id, label]) => <span key={id}><small>{label}</small><strong>{id === "winRate" ? `${format(Number(selected.outcomes[id]) * 100, 2)}%` : format(Number(selected.outcomes[id]), 4)}</strong></span>)}</div>
+        <details className="ui-disclosure"><summary>Source and provenance</summary><code>{selected.id}</code><br /><code>{data.sourcePath}</code></details>
       </aside>
     </section>
     <details className="evidence-table"><summary>Exact commander values</summary><div><table><thead><tr><th>Commander</th><th>Composition</th><th>Movement</th><th>Triage</th><th>Capacity</th><th>{commanderLabels[metric] ?? metric}</th><th>{outcomeLabels[color]}</th></tr></thead><tbody>{data.cells.map((cell) => <tr key={cell.id}><td>{cell.id}</td><td>{cell.modules.composition}</td><td>{cell.modules.movement}</td><td>{cell.modules.triage}</td><td>{cell.modules.capacity}</td><td>{format(cell.abilities[metric] ?? 0, 6)}</td><td>{format(Number(cell.outcomes[color]), 6)}</td></tr>)}</tbody></table></div></details>
@@ -160,8 +168,8 @@ function ArtilleryRelief({ data }: { data: Landscapes["artillery"] }) {
       <span className="evidence-definition">Height = normalized usage · color = selected mechanism/risk rate</span>
     </section>
     <section className="evidence-layout">
-      <div className="terrain-panel artillery-terrain">
-        <svg viewBox="0 0 980 610" role="img" aria-label="Artillery package and supply relief">
+      <div className="terrain-panel artillery-terrain" tabIndex={0} aria-label="Artillery chart, scroll for full detail"><div className="chart-readable-labels"><span>Columns: {data.axes.package.join(" / ")}</span><span>Rows: {data.axes.supply.join(" / ")}</span></div>
+        <svg viewBox="0 0 980 610" role="group" aria-label="Artillery package and supply relief">
           <defs><radialGradient id="hill" cx="42%" cy="35%"><stop offset="0" stopColor="#fff3ba"/><stop offset=".4" stopColor="#75aa76"/><stop offset="1" stopColor="#0c394b"/></radialGradient></defs>
           <rect width="980" height="610" fill="#06101a" />
           {data.cells.map((cell) => {
@@ -170,7 +178,7 @@ function ArtilleryRelief({ data }: { data: Landscapes["artillery"] }) {
             const cx = 150 + cell.x * 225, cy = 180 + cell.y * 245;
             const radius = 28 + elevation * 72;
             const select = () => { setSelectedId(cell.id); updateQuery({ cell: cell.id }); };
-            return <g key={cell.id} className="artillery-hill" onClick={select} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") select(); }} role="button" tabIndex={0} aria-label={`${cell.package} ${cell.supply}, ${format(cell.metrics[metric], 3)} ${artilleryLabels[metric]}`}>
+            return <g key={cell.id} className="artillery-hill" onClick={select} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); select(); } }} role="button" tabIndex={0} aria-label={`${cell.package} ${cell.supply}, ${format(cell.metrics[metric], 3)} ${artilleryLabels[metric]}`}>
               {Array.from({ length: 4 }, (_, ring) => <ellipse key={ring} cx={cx} cy={cy + ring * 3} rx={radius * (1 - ring * .17)} ry={radius * .54 * (1 - ring * .17)} fill={ring === 0 ? "url(#hill)" : "none"} stroke={`rgb(${Math.round(210 + danger * 41)} ${Math.round(232 - danger * 119)} ${Math.round(200 - danger * 65)})`} strokeOpacity={.25 + ring * .16} strokeWidth={cell.id === selectedId && ring === 0 ? 4 : 1.4} />)}
               <text x={cx} y={cy + radius * .75 + 25} textAnchor="middle" className="hill-value">{format(cell.metrics[metric], 2)}</text>
             </g>;
@@ -186,7 +194,7 @@ function ArtilleryRelief({ data }: { data: Landscapes["artillery"] }) {
         {causal && <div className="causal-card"><strong>{causal.doctrine}</strong><span>treatment − pass control</span><dl><dt>Score effect</dt><dd>{format(causal.score.mean, 4)} [{format(causal.score.ci95[0], 4)}, {format(causal.score.ci95[1], 4)}]</dd><dt>Progress effect</dt><dd>{format(causal.progress.mean, 4)} [{format(causal.progress.ci95[0], 4)}, {format(causal.progress.ci95[1], 4)}]</dd><dt>Drift effect</dt><dd>{format(causal.drift.mean, 4)} [{format(causal.drift.ci95[0], 4)}, {format(causal.drift.ci95[1], 4)}]</dd></dl></div>}
         <div className="causal-card"><strong>{scenarioEffect.level}</strong><span>flare-solo reload increment</span><dl><dt>Score effect</dt><dd>{format(scenarioEffect.mean, 4)} [{format(scenarioEffect.ci95[0], 4)}, {format(scenarioEffect.ci95[1], 4)}]</dd><dt>Matched cells</dt><dd>{format(scenarioEffect.n, 0)}</dd></dl></div>
         <div className="method-box"><strong>Estimand</strong><p>{data.inference.estimand}</p><small>{data.inference.caveat}</small></div>
-        <p className="source-note">Source: <code>{data.sourcePath}</code></p>
+        <details className="ui-disclosure"><summary>Source and provenance</summary><code>{data.sourcePath}</code></details>
       </aside>
     </section>
     <details className="evidence-table"><summary>Exact artillery values</summary><div><table><thead><tr><th>Package</th><th>Supply</th>{metrics.map((id) => <th key={id}>{artilleryLabels[id] ?? id}</th>)}</tr></thead><tbody>{data.cells.map((cell) => <tr key={cell.id}><td>{cell.package}</td><td>{cell.supply}</td>{metrics.map((id) => <td key={id}>{format(cell.metrics[id], 6)}</td>)}</tr>)}</tbody></table></div></details>
@@ -257,9 +265,9 @@ function DesperationTheatre({ data }: { data: Landscapes["desperation"] }) {
           <h2>{traceEntry ? `${traceEntry.decision} · ${traceEntry.reasonCode}` : "No decision recorded this round"}</h2>
           <strong className="hero-number">{String(exemplar.outcome.won ? "WIN" : "LOSS")}</strong><span className="hero-unit">{String(exemplar.outcome.terminalReason)} terminal</span>
           <dl><dt>Action round</dt><dd>{exemplar.round}</dd><dt>Progress gap</dt><dd>{exemplar.baseline.progressGap}</dd><dt>Final progress</dt><dd>{String(exemplar.outcome.finalProgress)}</dd><dt>Final drift</dt><dd>{String(exemplar.outcome.finalDrift)}</dd><dt>Target</dt><dd>{traceEntry?.center ? `${traceEntry.center.x},${traceEntry.center.y}` : "pass / none"}</dd></dl>
-          <p className="trace-boundary">This is the recorded artillery-decision trace, not a reconstructed full unit replay.</p><code className="run-id">{exemplar.runId}</code>
+          <p className="trace-boundary">This is the recorded artillery-decision trace, not a reconstructed full unit replay.</p>
         </> : <h2>This exemplar is unavailable for the selected cohort.</h2>}
-        <p className="source-note">Source: <code>{data.sourcePath}</code></p>
+        <details className="ui-disclosure"><summary>Source and provenance</summary>{view === "exemplar" && exemplar && <p>Run ID: <code>{exemplar.runId}</code></p>}<code>{data.sourcePath}</code></details>
       </aside>
     </section>
     <details className="evidence-table"><summary>Exact round and coordinate values</summary><div><table><thead><tr><th>Cohort</th><th>Round</th><th>Coordinate</th><th>Actions</th><th>Wins</th><th>Immediate drift defeats</th><th>Affected artifacts</th><th>Affected units</th></tr></thead><tbody>{Object.entries(data.cohorts).flatMap(([cohortId, value]) => Object.entries(value.coordinates).flatMap(([coordinate, rounds]) => Object.entries(rounds).filter(([, row]) => row.actions > 0).map(([roundId, row]) => <tr key={`${cohortId}-${coordinate}-${roundId}`}><td>{cohortId}</td><td>{roundId}</td><td>{coordinate}</td><td>{row.actions}</td><td>{row.wins}</td><td>{row.immediateDriftDefeats}</td><td>{row.affectedArtifacts}</td><td>{row.affectedUnits}</td></tr>)))}</tbody></table></div></details>
@@ -269,16 +277,17 @@ function DesperationTheatre({ data }: { data: Landscapes["desperation"] }) {
 export function EvidenceLandscapeView({ mode }: { mode: Mode }) {
   const [data, setData] = useState<Landscapes | null>(null);
   const [error, setError] = useState("");
-  useEffect(() => { void fetchCompressedJson<Landscapes>("/atlas/lab-landscapes-v1.json.gz").then(setData).catch((caught) => setError(String(caught))); }, []);
+  const [retry, setRetry] = useState(0);
+  useEffect(() => { setError(""); void fetchCompressedJson<Landscapes>("/atlas/lab-landscapes-v1.json.gz").then(setData).catch((caught) => setError(String(caught))); }, [retry]);
   const titles: Record<Mode, [string, string]> = {
     commander: ["Commander Field", "Watch 6,400 doctrines express abilities across the corrected causal screen."],
     artillery: ["Artillery Relief", "Read shell usage, supply, downstream mechanisms, and risk as distinct terrain layers."],
     desperation: ["Desperation Theatre", "Watch HE, Smoke, and passive decisions accumulate over real rounds and coordinates."]
   };
   return <main className="atlas-shell evidence-shell">
-    <header className="atlas-header"><div><p className="atlas-eyebrow">CONTEXT LANDSCAPE · EVIDENCE CARTOGRAPHY</p><h1>{titles[mode][0]}</h1><p className="atlas-lede">{titles[mode][1]}</p></div><a className="return-field" href={appHref()}>Return to field lab</a></header>
+    <header className="atlas-header"><div><p className="atlas-eyebrow">CONTEXT LANDSCAPE · EVIDENCE CARTOGRAPHY</p><h1>{titles[mode][0]}</h1><p className="atlas-lede">{titles[mode][1]}</p></div><AppNavigation /></header>
     <LandscapeNav mode={mode} />
-    {error ? <div className="atlas-error">Could not load landscape evidence: {error}</div> : !data ? <div className="atlas-loading">Resolving terrain from evidence…</div> : mode === "commander" ? <CommanderField data={data.commander} /> : mode === "artillery" ? <ArtilleryRelief data={data.artillery} /> : <DesperationTheatre data={data.desperation} />}
-    {data && <footer className="atlas-provenance"><span>Generated {new Date(data.generatedAt).toLocaleString()}</span><code>{data.landscapeHash}</code></footer>}
+    {error ? <ReadError message="Landscape evidence could not be loaded." onRetry={() => setRetry((value) => value + 1)} /> : !data ? <div className="atlas-loading" role="status">Resolving terrain from evidence…</div> : mode === "commander" ? <CommanderField data={data.commander} /> : mode === "artillery" ? <ArtilleryRelief data={data.artillery} /> : <DesperationTheatre data={data.desperation} />}
+    {data && <details className="ui-disclosure"><summary>Evidence provenance</summary><footer className="atlas-provenance"><span>Generated {new Date(data.generatedAt).toLocaleString()}</span><code>{data.landscapeHash}</code></footer></details>}
   </main>;
 }

@@ -11,8 +11,8 @@ import {
  * incompatible rewrite.
  */
 export const ATTENTION_V4_MODEL_VERSION = "duel-capacity-v3-experimental" as const;
-export const ATTENTION_V4_RULESET_VERSION = "attention-economy-v4.2" as const;
-export const ATTENTION_V4_RESOLVER_VERSION = "attention-v4.2-resolver-1" as const;
+export const ATTENTION_V4_RULESET_VERSION = "attention-economy-v4.4" as const;
+export const ATTENTION_V4_RESOLVER_VERSION = "attention-v4.4-resolver-1" as const;
 export const ATTENTION_V4_STATE_SCHEMA_VERSION = 3 as const;
 export const ATTENTION_V4_VIEW_SCHEMA_VERSION = 3 as const;
 export const ATTENTION_V4_COMMANDER_COMPILER_VERSION = "attention-v4.2-commander-compiler-1" as const;
@@ -216,7 +216,7 @@ export const AttentionV4ArtifactStateSchema = z.object({
   battery: z.object({
     active: z.boolean(),
     activatedRound: z.number().int().positive().nullable(),
-    suppressed: z.boolean()
+    suppressed: z.boolean() // Retained schema field; Smoke no longer suppresses Batteries.
   }).strict()
 }).strict();
 export type AttentionV4ArtifactState = z.infer<typeof AttentionV4ArtifactStateSchema>;

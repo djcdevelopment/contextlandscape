@@ -1,0 +1,46 @@
+[
+  {
+    "name": "hangar-signin",
+    "violations": []
+  },
+  {
+    "name": "legacy-scenario",
+    "violations": []
+  },
+  {
+    "name": "commander",
+    "violations": []
+  },
+  {
+    "name": "atlas",
+    "violations": []
+  },
+  {
+    "name": "artillery-relief",
+    "violations": []
+  },
+  {
+    "name": "desperation",
+    "violations": []
+  },
+  {
+    "name": "kinetic",
+    "violations": []
+  },
+  {
+    "name": "command",
+    "violations": []
+  },
+  {
+    "name": "hangar-ready",
+    "violations": []
+  },
+  {
+    "name": "hangar-delete",
+    "violations": []
+  },
+  {
+    "name": "desperation-exemplar",
+    "violations": []
+  }
+]

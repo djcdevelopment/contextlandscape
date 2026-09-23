@@ -37,8 +37,8 @@ export function battleViewFixture(phase: AttentionV4Phase = "kinetic", options: 
     agedArtifactIds: [], artilleryUnlocked: phase === "artillery"
   };
   const projection = {
-    schemaVersion: 3 as const, modelVersion: "duel-capacity-v3-experimental" as const, rulesetVersion: "attention-economy-v4.2" as const,
-    rulesetHash: hash, resolverVersion: "attention-v4.2-resolver-1" as const, compiledCommanderHashes: [hash, hash] as [string, string],
+    schemaVersion: 3 as const, modelVersion: "duel-capacity-v3-experimental" as const, rulesetVersion: "attention-economy-v4.4" as const,
+    rulesetHash: hash, resolverVersion: "attention-v4.4-resolver-1" as const, compiledCommanderHashes: [hash, hash] as [string, string],
     matchId: "fixture-battle", scenarioId: "mirrored-fronts-v4", scenarioVersion: 4, round: terminal ? 8 : 1, phase,
     status: terminal ? "complete" as const : "active" as const, winnerPlayerId: terminal ? "alpha" : null,
     terminalReason: terminal ? "round-limit" as const : null, eventSequence: 3,
@@ -59,10 +59,10 @@ export function battleViewFixture(phase: AttentionV4Phase = "kinetic", options: 
   };
   return {
     schemaVersion: 3, revision: 0, modelVersion: "duel-capacity-v3-experimental", stateSchemaVersion: 3,
-    rulesetVersion: "attention-economy-v4.2", rulesetHash: hash, resolverVersion: "attention-v4.2-resolver-1", compiledCommanderHashes: [hash, hash],
+    rulesetVersion: "attention-economy-v4.4", rulesetHash: hash, resolverVersion: "attention-v4.4-resolver-1", compiledCommanderHashes: [hash, hash],
     projection: projection as unknown as BattleCommandV3View["projection"], events: [],
     rules: {
-      rulesetVersion: "attention-economy-v4.2", rulesetHash: hash, resolverVersion: "attention-v4.2-resolver-1", scenarioLabel: "The Contested Context", opponentLabel: "Threshold Doctrine",
+      rulesetVersion: "attention-economy-v4.4", rulesetHash: hash, resolverVersion: "attention-v4.4-resolver-1", scenarioLabel: "The Contested Context", opponentLabel: "Threshold Doctrine",
       board: { width: 10, height: 10, distanceMetric: "chebyshev", exclusiveOccupancy: true }, roundLimit: 8, attentionPerRound: 3, objectiveTarget: 12, driftLimit: 4, soundnessRate: 0.7, verifyCost: 1, chassis,
       fleet: { weight: 6, chassisWeights: { scout: 1, line: 2, heavy: 3 }, minimumUnits: 3, maximumUnits: 5, maximumHeavies: 1, maximumScouts: 4 },
       range: { minimum: 1, maximum: 5, spawnMinimum: 1 }, trafficLimit: 3,

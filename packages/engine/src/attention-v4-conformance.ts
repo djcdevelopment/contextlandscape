@@ -3,7 +3,7 @@
  * activation gate. CI independently recomputes the report digest and checks
  * its resolver, ruleset, compiler, and commander-catalog attribution.
  */
-export const ATTENTION_V4_CONFORMANCE_REPORT_HASH = "sha256:ba5147dc0e9865e44978654ac84aa29c4cfa2992fe3dcacc2465097b340a287f" as const;
+export const ATTENTION_V4_CONFORMANCE_REPORT_HASH = "sha256:8ecb2fcc6c7a3292943e64582a30d98cbfdb1dea4a1de79b922401cf48d62b43" as const;
 export const ATTENTION_V4_CANONICAL_MATCH_COUNT = 27_648 as const;
 
 export function assertAttentionV4Activated(): void {

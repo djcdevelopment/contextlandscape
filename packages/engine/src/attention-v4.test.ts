@@ -49,13 +49,13 @@ function mutable(match: AttentionV4Match, change: (state: AttentionV4Match["stat
 }
 
 describe("attention-economy-v4 standalone reducer", () => {
-  it("identifies the schema-v3 v4.2 ruleset without changing the external model id", () => {
+  it("identifies the schema-v3 v4.4 ruleset without changing the external model id", () => {
     const started = startAttentionV4Match({ matchId: "v4-identity", seed: 7 });
     expect(started.match.state).toMatchObject({
       schemaVersion: 3,
       modelVersion: "duel-capacity-v3-experimental",
-      rulesetVersion: "attention-economy-v4.2",
-      resolverVersion: "attention-v4.2-resolver-1",
+      rulesetVersion: "attention-economy-v4.4",
+      resolverVersion: "attention-v4.4-resolver-1",
       rulesetHash: ATTENTION_V4_RULESET_HASH,
       phase: "kinetic"
     });
@@ -132,6 +132,90 @@ describe("attention-economy-v4 standalone reducer", () => {
       kind: "emit", playerId: "alpha", unitId: "alpha:scout-1", volume: 4, densityPct: 100
     });
     expect(rejected.events[0]).toMatchObject({ eventType: "attention.v4.command.rejected", data: { reason: "condense-volume-cap" } });
+  });
+
+  it.each([
+    { chassis: "scout", range: 2, calibration: 0.2 },
+    { chassis: "line", range: 3, calibration: 0.6 },
+    { chassis: "heavy", range: 4, calibration: 0.9 }
+  ] as const)("charges one action per range step without reducing $chassis calibration or emitted quality", ({ chassis, range, calibration }) => {
+    for (const delta of [-1, 1] as const) {
+      const unitId = `alpha:${chassis}-1`;
+      const match = toCommand(130, [false, false], { [unitId]: [{ kind: "range-shift", delta }] });
+      expect(match.state.units.find((unit) => unit.unitId === unitId)).toMatchObject({
+        activeRange: range + delta, calibration, rangeChanged: true, uap: { spent: 1 }
+      });
+      const emitted = applyAttentionV4Command(match, { kind: "emit", playerId: "alpha", unitId, volume: 1, densityPct: 20 }).match;
+      const artifact = emitted.state.artifacts.find((item) => item.sourceUnitId === unitId)!;
+      expect(artifact).toMatchObject({
+        sourceCalibration: calibration, effectiveCalibration: Math.round(calibration * 0.2 * 10_000) / 10_000
+      });
+      const unit = emitted.state.units.find((item) => item.unitId === unitId)!;
+      const distance = Math.max(Math.abs(artifact.position.x-unit.position.x), Math.abs(artifact.position.y-unit.position.y));
+      expect(distance).toBeGreaterThanOrEqual(1);
+      expect(distance).toBeLessThanOrEqual(range + delta);
+    }
+  });
+
+  it("allows Line movement, Step-Up and range choices in any order within the action budget", () => {
+    type Action = Parameters<typeof resolveAttentionV4Kinetic>[1][number]["actions"][number];
+    const move: Action = { kind: "move", destination: { x: 0, y: 2 } };
+    const step: Action = { kind: "step-up" };
+    const range: Action = { kind: "range-shift", delta: 1 };
+    const pairs = [
+      [move, range], [range, move], [step, range], [range, step], [move, step], [step, move],
+      [range, range], [range, { kind: "range-shift", delta: -1 } as Action]
+    ];
+    for (const actions of pairs) {
+      const before = createAttentionV4Match({ matchId: "v4-line-action-choice", seed: 131 });
+      const after = resolveAttentionV4Kinetic(before, plans(before, { "alpha:line-1": actions }));
+      expect(after.events.some((event) => event.eventType === "attention.v4.kinetic.plan.rejected")).toBe(false);
+      expect(after.match.state.units.find((unit) => unit.unitId === "alpha:line-1")).toMatchObject({
+        activeRange: 3 + actions.reduce((sum, action) => sum + (action.kind === "range-shift" ? action.delta : 0), 0),
+        calibration: actions.includes(step) ? 0.85 : 0.6,
+        position: actions.includes(move) ? move.destination : { x: 1, y: 2 },
+        uap: { spent: 2 }
+      });
+    }
+    const triples = [[move, step, range], [move, range, step], [step, move, range], [step, range, move], [range, move, step], [range, step, move]];
+    for (const actions of triples) {
+      const before = createAttentionV4Match({ matchId: "v4-line-battery-action-choice", seed: 132 });
+      const tooMany = resolveAttentionV4Kinetic(before, plans(before, { "alpha:line-1": actions }));
+      expect(tooMany.events.find((event) => event.actorId === "alpha:line-1")).toMatchObject({ data: { reason: "uap-budget" } });
+      const supported = mutable(before, (state) => {
+        const line = state.units.find((unit) => unit.unitId === "alpha:line-1")!;
+        line.uap.batteryBonus = 1; line.uap.effective = 3;
+      });
+      const after = resolveAttentionV4Kinetic(supported, plans(supported, { "alpha:line-1": actions })).match;
+      expect(after.state.units.find((unit) => unit.unitId === "alpha:line-1")).toMatchObject({
+        activeRange: 4, calibration: 0.85, position: { x: 0, y: 2 }, uap: { spent: 3 }
+      });
+    }
+  });
+
+  it("keeps range bounds, Scout Condense, Heavy Uplink and Smoke effects independent of range cost", () => {
+    const before = createAttentionV4Match({ matchId: "v4-range-other-effects", seed: 133 });
+    const outOfRange = mutable(before, (state) => { state.units.find((unit) => unit.unitId === "alpha:line-1")!.activeRange = 5; });
+    const rejected = resolveAttentionV4Kinetic(outOfRange, plans(outOfRange, { "alpha:line-1": [{ kind: "range-shift", delta: 1 }] }));
+    expect(rejected.events.find((event) => event.actorId === "alpha:line-1")).toMatchObject({ data: { reason: "range-limit" } });
+    const prepared = mutable(before, (state) => {
+      const heavy = state.units.find((unit) => unit.unitId === "alpha:heavy-1")!;
+      heavy.uap.batteryBonus = 1; heavy.uap.effective = 2;
+      state.zones.push({ zoneId: "range-smoke", kind: "smoke", ownerPlayerId: "bravo", center: { x: 1, y: 2 }, createdRound: 1, activeThroughCommandRound: 2 });
+    });
+    const result = resolveAttentionV4Kinetic(prepared, plans(prepared, {
+      "alpha:scout-1": [{ kind: "move", destination: { x: 0, y: 0 } }, { kind: "range-shift", delta: 1 }, { kind: "condense-output" }],
+      "alpha:line-1": [{ kind: "range-shift", delta: 1 }, { kind: "step-up" }],
+      "bravo:heavy-1": [{ kind: "range-shift", delta: 1 }]
+    })).match;
+    expect(result.state.units.find((unit) => unit.unitId === "alpha:scout-1")).toMatchObject({ activeRange: 3, calibration: 0.65, condenseSteps: 1 });
+    expect(result.state.units.find((unit) => unit.unitId === "alpha:line-1")).toMatchObject({ activeRange: 4, calibration: 0.2 });
+    expect(result.state.units.find((unit) => unit.unitId === "bravo:heavy-1")).toMatchObject({ activeRange: 5, calibration: 0.9 });
+    const unsmoked = mutable(prepared, (state) => { state.zones = []; });
+    const uplink = resolveAttentionV4Kinetic(unsmoked, plans(unsmoked, {
+      "alpha:heavy-1": [{ kind: "range-shift", delta: 1 }, { kind: "command-uplink" }]
+    })).match;
+    expect(uplink.state.units.find((unit) => unit.unitId === "alpha:heavy-1")).toMatchObject({ activeRange: 5, calibration: 0.2, uplinkQueued: true });
   });
 
   it("trades ordered Scout actions for authoritative output condensation", () => {

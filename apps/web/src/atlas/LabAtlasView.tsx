@@ -1,3 +1,5 @@
+import { AppNavigation } from "../ui/AppNavigation.js";
+import { ReadError } from "../ui/ReadError.js";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent } from "react";
 import { appHref } from "../navigation.js";
 import "./lab-atlas.css";
@@ -66,6 +68,8 @@ export function LabAtlasView() {
   const [atlas, setAtlas] = useState<Atlas | null>(null);
   const [landscapeCatalog, setLandscapeCatalog] = useState<LandscapeCatalogEntry[]>([]);
   const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const [catalogError, setCatalogError] = useState(false);
   const [metric, setMetric] = useState<MetricId>("runVolume");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -73,6 +77,7 @@ export function LabAtlasView() {
   const drag = useRef<{ pointerId: number; x: number; y: number; panX: number; panY: number } | null>(null);
 
   useEffect(() => {
+    setError(""); setCatalogError(false);
     void fetch("/atlas/lab-topography-v1.json")
       .then((response) => {
         if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
@@ -91,8 +96,8 @@ export function LabAtlasView() {
         return new Response(decompressed).json() as Promise<{ catalog: LandscapeCatalogEntry[] }>;
       })
       .then((payload) => setLandscapeCatalog(payload.catalog))
-      .catch(() => undefined);
-  }, []);
+      .catch(() => setCatalogError(true));
+  }, [retry]);
 
   const selected = atlas?.nodes.find((node) => node.id === selectedId) ?? null;
   const selectedLandscape = selected ? landscapeCatalog.find((entry) => entry.id === selected.id) : undefined;
@@ -146,29 +151,31 @@ export function LabAtlasView() {
     adjustZoom(zoom * (event.deltaY < 0 ? 1.14 : 0.88));
   }
 
-  if (error) return <main className="atlas-shell"><div className="atlas-error">Could not load the atlas: {error}</div></main>;
-  if (!atlas || !field) return <main className="atlas-shell"><div className="atlas-loading">Surveying the research landscape…</div></main>;
+  if (error) return <main className="atlas-shell"><AppNavigation /><h1>Evidence Atlas</h1><ReadError message="The research atlas could not be loaded." onRetry={() => setRetry((value) => value + 1)} /></main>;
+  if (atlas && !field) return <main className="atlas-shell"><AppNavigation /><ReadError message="This atlas has no field for the selected metric." onRetry={() => setRetry((value) => value + 1)} /></main>;
+  if (!atlas || !field) return <main className="atlas-shell"><AppNavigation /><p role="status">Surveying the research landscape…</p></main>;
 
   const viewBox = `${pan.x} ${pan.y} ${viewport.width / zoom} ${viewport.height / zoom}`;
   const cellWidth = map.width / field.columns;
   const cellHeight = map.height / field.rows;
 
   return <main className="atlas-shell">
+    {catalogError && <ReadError message="The landscape catalog could not be loaded. The atlas map is still available." onRetry={() => setRetry((value) => value + 1)} />}
     <header className="atlas-header">
       <div>
         <p className="atlas-eyebrow">CONTEXT LANDSCAPE · EVIDENCE CARTOGRAPHY</p>
-        <h1>All-labs topography</h1>
+        <h1>Evidence Atlas</h1>
         <p className="atlas-lede">An inspectable terrain model of research scale, evidence depth, and artifact coverage.</p>
       </div>
       <div className="atlas-summary" aria-label="Atlas totals">
         <span><strong>{atlas.totals.labs}</strong> labs</span>
         <span><strong>{formatInteger(atlas.totals.recordedRuns)}</strong> recorded runs</span>
-        <a href={appHref()}>Return to field lab</a>
+        <AppNavigation />
       </div>
     </header>
 
     <nav className="evidence-nav" aria-label="Landscape mode">
-      <a className="active" href={appHref("view=atlas")}>Research atlas</a>
+      <a className="active" href={appHref("view=atlas")}>Evidence Atlas</a>
       <a href={appHref("view=atlas&landscape=commander")}>Commander Field</a>
       <a href={appHref("view=atlas&landscape=artillery")}>Artillery Relief</a>
       <a href={appHref("view=atlas&landscape=desperation")}>Desperation Theatre</a>
@@ -189,11 +196,11 @@ export function LabAtlasView() {
     </section>
 
     <section className="atlas-layout">
-      <div className="atlas-map-frame">
+      <div className="atlas-map-frame"><div className="chart-readable-labels" aria-label="Map categories">{atlas.familyOrder.map((family) => <span key={family}>{family}</span>)}</div>
         <svg
           className="atlas-map"
           viewBox={viewBox}
-          role="img"
+          role="group"
           aria-label={`All-labs terrain by ${atlas.metrics[metric].label}`}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -224,15 +231,15 @@ export function LabAtlasView() {
               const value = node.metrics[metric];
               const selectedNode = node.id === selectedId;
               const radius = value === null ? 4.2 : 4.5 + value * 7;
-              return <g key={node.id} data-atlas-node className={`atlas-node ${selectedNode ? "selected" : ""}`} transform={`translate(${map.x + node.x * map.width} ${map.y + node.y * map.height})`} onClick={() => setSelectedId(node.id)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setSelectedId(node.id); }} aria-label={`${node.id}, ${metricValue(node, metric)}`}>
+              return <g key={node.id} data-atlas-node className={`atlas-node ${selectedNode ? "selected" : ""}`} transform={`translate(${map.x + node.x * map.width} ${map.y + node.y * map.height})`} onClick={() => setSelectedId(node.id)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedId(node.id); } }} aria-label={`${node.id}, ${metricValue(node, metric)}`}>
                 {selectedNode && <circle r={radius + 8} className="atlas-node-pulse" />}
                 <circle r={radius} fill={value === null ? atlas.style.unknown : "#fff0b0"} className={value === null ? "unknown" : "known"} />
               </g>;
             })}
           </g>
-          <text x={map.x} y={724} className="atlas-footnote">Drag to pan · wheel or controls to zoom · select a survey marker for provenance</text>
+
         </svg>
-        <div className="atlas-scale" aria-label="Elevation scale">
+        <p className="chart-readable-labels">Drag to pan; use the zoom controls or wheel. Select a marker to inspect its evidence.</p><div className="atlas-scale" aria-label="Elevation scale">
           <span>low</span><i style={{ background: `linear-gradient(90deg, ${atlas.style.palette.join(",")})` }} /><span>high</span>
         </div>
       </div>
@@ -262,6 +269,6 @@ export function LabAtlasView() {
         </div>
       </aside>
     </section>
-    <footer className="atlas-provenance"><span>Generated {new Date(atlas.generatedAt).toLocaleString()}</span><code>{atlas.atlasHash}</code></footer>
+    <details className="ui-disclosure"><summary>Evidence provenance</summary><footer className="atlas-provenance"><span>Generated {new Date(atlas.generatedAt).toLocaleString()}</span><code>{atlas.atlasHash}</code></footer></details>
   </main>;
 }

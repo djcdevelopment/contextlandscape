@@ -5,7 +5,7 @@ contains. This file is the boundary between the two. If a feature is not listed 
 it does not exist in code — do not build on it, and do not describe it as working.
 
 Last verified against legacy engine `0.3.0` and Battle Command ruleset
-`attention-economy-v4.2`. This file describes repository behavior, not the health or acceptance state of
+`attention-economy-v4.4`. This file describes repository behavior, not the health or acceptance state of
 any live deployment.
 
 ## Real
@@ -24,7 +24,7 @@ any live deployment.
 - Fog of war reduced to one rule: `knownCells` starts as three cells and `scout` appends three more,
   which is what makes the single enemy unit visible.
 
-### Battle Command v4.2 (`packages/engine/src/attention-v4.ts`)
+### Battle Command v4.4 (`packages/engine/src/attention-v4.ts`)
 
 - A separate deterministic two-player reducer is exposed through the Fastify API and the default
   browser battlefield. Automatic Register and Resolution surround simultaneous Kinetic, Artillery,
@@ -34,25 +34,46 @@ any live deployment.
   retired extreme fleets in the UI, API, compiler, and restored state.
 - Spatial movement, output allocation, persistent artifacts, Context Limits, Batteries, artillery,
   attention triage, Progress, Drift, and deterministic legal-action projections are implemented.
-  Incompatible pre-v4.2 operations return `410 battle_ruleset_retired` instead of being reinterpreted.
+  Incompatible earlier operations return `410 battle_ruleset_retired` instead of being reinterpreted.
+- Range shifts cost one UAP per ±1 step within range 1–5 and preserve calibration. A Line may combine
+  Move, Step-Up and Range in any order within its budget: normally any two; all three with a third UAP.
+  Step-Up raises Line calibration to 85%. Heavy Uplink, Scout Condense and Smoke retain their separate
+  effects. This v4.3 change replaces the v4.2 range-calibration penalty at the user's direction.
+- Smoke affects only mechs: caught calibration becomes 20%, Condense resets, and current Support Scan
+  reservations and queued Uplinks cancel. Batteries retain their Verify/Seize discounts and next-Register
+  UAP, including when activated inside Smoke. The v4.4 identity distinguishes this amendment from saved
+  operations whose Smoke suppressed batteries; previews and reference copy follow the revised rule.
 - Solo operations use a compiled deterministic doctrine. Authenticated friend operations use
   viewer-relative projections, buffer each simultaneous submission, alternate Command by seat, persist
   revisions, and notify the other browser through a revision event stream.
-- The browser uses a phase-led Command Deck: a five-stage stepper, permanent operation rail, persistent
-  context and armory regions, portrait-linked board/fleet selection, an in-flow action dock, and four
-  user-controlled interface scales. Kinetic orders remain visible on every planned unit card and board
-  token after focus changes; available actions use icon/beacon affordances and staged actions retain a
-  dashed locked treatment.
+- The browser uses a phase-led Command Deck: a five-stage stepper, operation rail, persistent context,
+  compact unit roster, one focused unit command surface, an in-flow action dock, and four user-controlled
+  interface scales. Inactive armories and the empty inspector collapse to summaries. Kinetic orders
+  remain visible on every compact unit card and board token after focus changes; available actions use
+  icon/beacon affordances and staged actions retain a dashed treatment.
+- General UAP help appears on the underlined term in the side navigation's Kinetic guidance. Unit cards
+  show remaining/total points without opening help, and the redundant selected-unit heading is removed.
+  Battery UAP, Condense, Range, Step-Up and Scan also have underlined help on hover or keyboard focus. Condense shows
+  the rules-supplied output/density caps and calibration for each step, with an immediate staged preview.
+  Range shows spawn-cell counts from the staged position, the current/staged range and reserved points,
+  and the unchanged calibration from range shifts. Step-Up compares base/prepared calibration and D×C,
+  including the separate battery requirements. Scan explains its target reach, staged reservation limit,
+  future artifact attachment, separate Verify cost and Smoke cancellation. Disabled actions retain help.
+  Each staged action has an X and a refund tooltip. Removing a prerequisite also removes later moves,
+  range shifts or scans that become invalid; independent actions remain. Remaining UAP updates locally,
+  and cancellation is disabled during submission and while friend orders are locked.
 - Resolution is an explicit client presentation assembled from the completed-round view and atomic
   server recap. It is read-only and keyboard-focused on Continue; because Register and Resolution are
-  atomic in the v4.2 contract, reconnecting after that transition may skip the presentation and show the
+  atomic in the current contract, reconnecting after that transition may skip the presentation and show the
   next authoritative Kinetic view directly.
-- Desktop short-wide sizing is based on actual viewport height rather than board width. The production
-  layout is regression-tested without document overflow at a 2048×900 CSS viewport in both Perspective
-  and Tactical modes; tablet and mobile layouts use contained scroll regions and in-flow controls.
-- The v4.2 ruleset is frozen as the human-playtest baseline, not declared balanced. Deterministic
-  controller evidence is still dominated by Drift terminals while the Progress route is effectively
-  absent.
+- Desktop sizing gives the board the viewport space left by the actual controls, accounting for text
+  scale and staged previews. Both board modes are checked without page or command-column overflow at
+  2048×900 and 1920×1080 across all four scales and zero, one or two Condense steps. Very short desktop
+  windows can scroll the command column. At 390×844 the mobile board begins by 720px, with contained
+  scroll regions and in-flow controls below it.
+- The recorded v4.2 studies remain a historical control: Drift dominated their outcomes while Progress
+  was effectively absent. They do not establish balance for the range and Smoke amendments through v4.4. New reports
+  write to a directory named for their ruleset; archived study checks retain their original identities.
 
 ### Human release (`apps/server/src/human-release.ts` and `apps/web/src/human`)
 
@@ -73,7 +94,7 @@ any live deployment.
 
 ### Attempt-bank command pilot (`packages/engine/src/command.ts`)
 
-This earlier independent reducer does not touch the seven-verb game or Battle Command v4.2 and remains
+This earlier independent reducer does not touch the seven-verb game or Battle Command v4.4 and remains
 simulator-only.
 
 - Each mech emits artifacts per round according to its `throughput`. The commander's attention
@@ -151,7 +172,7 @@ implemented**:
 
 | Thing | Status |
 | --- | --- |
-| Movement in the legacy scenarios | `unit.x` / `unit.y` are set once and never change. Battle Command v4.2 has its own spatial Kinetic movement. |
+| Movement in the legacy scenarios | `unit.x` / `unit.y` are set once and never change. Battle Command v4.4 has its own spatial Kinetic movement. |
 | Damage, HP, armor, destruction | None. `unit.active` is never set to `false`. |
 | Enemy AI in the legacy scenarios | `siege-01` is a static prop and `enemyDoctrine` is prose. Battle Command solo play has a deterministic compiled doctrine. |
 | Customizable weapons, mounts, loadouts, tools | There is no player equipment system. Battle Command's artillery shell cards and fleet chassis are fixed rules content, not loadouts. |

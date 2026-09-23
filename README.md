@@ -64,6 +64,7 @@ Known boundaries:
 - legacy scenario composition needs mechanically distinct loadouts, initiative interactions, or multi-order slots before another large campaign on that ruleset;
 - the first 9,216,000-run v2 shape screen remains integrity-only evidence because commander modules were not compiled into match behavior; the [corrected campaign](plan/attention-v2-corrected-shape-screen.md) subsequently passed its 32,768-run differential probe, 256,000-run bounded audit, and all 9,216,000 enriched screen records. Its [causal assessment](data/lab/attention-v2-corrected-shape-screen-analysis/ASSESSMENT.md) advances rows 22, 8, 25, 1, 29, and 15 only to a 251,904-match multi-sample refinement—not final promotion;
 - Public matchmaking, ranked play, and durable progression remain future product work; Discord identity and private friend challenges are now implemented.
+- Further multiplayer acceptance and expansion are intentionally parked while UI clarity and the first observed human playtest take priority.
 
 ## Quick start
 
@@ -384,6 +385,7 @@ availability; see the [current handoff](docs/HANDOFF.md) before restarting or pr
 
 - [Context Landscape R&D lab](R_AND_D_LAB.md)
 - [Battle Command Command Deck design handoff](design/design_handoff_battle_command_1c/README.md)
+- [Board ontology, reference study and illustrated design brief](design/board-design/README.md)
 - [Overnight experiment plan and outcome](OVERNIGHT_EXPERIMENT_PLAN.md)
 - [Synthetic-to-gameplay lab plan](GAMEPLAY_LAB_PLAN.md)
 - [Gameplay-lab implementation retrospective](GAMEPLAY_LAB_RETROSPECTIVE.md)

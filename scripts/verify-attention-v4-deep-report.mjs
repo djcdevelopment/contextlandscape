@@ -1,14 +1,6 @@
 import { readFileSync } from "node:fs";
-import {
-  ATTENTION_V4_COMMANDER_COMPILER_VERSION,
-  ATTENTION_V4_RESOLVER_VERSION,
-  ATTENTION_V4_RULESET_VERSION
-} from "../packages/contracts/dist/index.js";
-import {
-  ATTENTION_V4_RULESET_HASH,
-  attentionV4ContentHash,
-  createAttentionV4CommanderCatalog
-} from "../packages/engine/dist/index.js";
+import { attentionV4ContentHash } from "../packages/engine/dist/index.js";
+import { assertAttentionV42EvidenceIdentity } from "./attention-v4.2-evidence.mjs";
 
 const configurations = {
   regular: {
@@ -62,10 +54,7 @@ if (report.schemaVersion !== 2 || report.studyId !== configuration.studyId || re
   fail("evidence classification or schema drifted");
 }
 if (report.modelVersion !== "duel-capacity-v3-experimental") fail("external model id changed");
-if (report.rulesetVersion !== ATTENTION_V4_RULESET_VERSION || report.rulesetHash !== ATTENTION_V4_RULESET_HASH) fail("ruleset attribution drifted");
-if (report.resolverVersion !== ATTENTION_V4_RESOLVER_VERSION) fail("resolver attribution drifted");
-if (report.compilerVersion !== ATTENTION_V4_COMMANDER_COMPILER_VERSION) fail("compiler attribution drifted");
-if (report.commanderCatalogHash !== createAttentionV4CommanderCatalog().catalogHash) fail("commander catalog attribution drifted");
+assertAttentionV42EvidenceIdentity(report, fail);
 
 const design = report.design;
 const deep = design.deep;

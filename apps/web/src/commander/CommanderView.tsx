@@ -1,3 +1,4 @@
+import { AppNavigation } from "../ui/AppNavigation.js";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { loadBattleFixture, loadStrategicFixture } from "./api.js";
 import { BattleVolumeCanvas } from "./BattleVolumeCanvas.js";
@@ -461,7 +462,7 @@ export function CommanderView() {
     <header className="commander-header">
       <div>
         <p className="eyebrow">CONTEXT LANDSCAPE · COMMANDER VIEW</p>
-        <h1>{battle ? battle.battle.label : theater.label}</h1>
+        <h1>{battle ? battle.battle.label : "Commander Projection"}</h1>
         <p className="commander-subtitle">{battle ? "32 × 32 × 32 operational battle volume" : "Sparse physical theater · 6,400 × 6,400 strategic cells"}</p>
       </div>
       <div className="space-switch" aria-label="Commander spaces">
@@ -470,7 +471,7 @@ export function CommanderView() {
           Doctrine atlas <small>future</small>
         </button>
       </div>
-      <div className="commander-build" title={dataError ?? undefined}><span>{dataSourceLabel}</span><code>rev {theater.revision}</code></div>
+      <AppNavigation />
     </header>
 
     <nav className="commander-breadcrumbs" aria-label="Location">
@@ -481,7 +482,7 @@ export function CommanderView() {
     </nav>
 
     <div className={`commander-data-status ${dataSource}`} role="status" aria-live="polite" aria-atomic="true">
-      <strong>{dataSourceLabel}</strong><span>{dataStatusMessage}</span>
+      <strong>Prototype · {dataSourceLabel.toLowerCase()}</strong><details><summary>Projection details</summary><p>{dataStatusMessage}</p><code>{theater.revision}</code></details>
     </div>
 
     <section className="commander-metrics" aria-label="Commander status">

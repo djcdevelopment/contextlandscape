@@ -11,7 +11,7 @@ import {
   BattleCommandV2SubmissionSchema
 } from "./attention-v4.js";
 
-describe("attention-v4.2 schema-v3 contracts", () => {
+describe("attention-v4.4 schema-v3 contracts", () => {
   it("accepts the five capped weight-six fleets and rejects one-dimensional extremes", () => {
     const fleets = [
       ["line", "scout", "scout", "scout", "scout"],

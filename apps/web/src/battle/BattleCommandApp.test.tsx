@@ -85,8 +85,9 @@ describe("Battle Command v4 accessibility and interaction", () => {
     expect(screen.getAllByRole("gridcell")).toHaveLength(100);
     expect(screen.getByText("Register")).toBeInTheDocument();
     expect(screen.getByText("Kinetic", { selector: "strong" })).toBeInTheDocument();
-    expect(screen.getAllByText("Flare").length).toBeGreaterThan(1);
-    expect(screen.getAllByText("EMP").length).toBeGreaterThan(1);
+    const armory = screen.getByLabelText("Public ordered armories");
+    expect(within(armory).getByText("Locked · Capacity 0/3")).toBeInTheDocument();
+    expect(within(armory).queryAllByRole("button")).toHaveLength(0);
     expect(screen.getByRole("button", { name: "Select Scout unit scout-1" }).querySelector(".unit-portrait-fallback")).toBeInTheDocument();
 
     const first = screen.getByRole("gridcell", { name: /^0,0/ });
@@ -117,9 +118,11 @@ describe("Battle Command v4 accessibility and interaction", () => {
       expect(screen.getByLabelText(label)).toBeInTheDocument();
     }
     const armory = screen.getByLabelText("Public ordered armories");
-    expect(within(armory).getByText("ACTIVE IN ARTILLERY")).toBeInTheDocument();
-    expect(within(armory).getAllByRole("button").every((button) => button.hasAttribute("disabled"))).toBe(true);
-    expect(within(screen.getByLabelText("Fleet command lane")).getAllByRole("button", { name: /Select .* unit/i })).toHaveLength(3);
+    expect(within(armory).getByText("Locked · Capacity 0/3")).toBeInTheDocument();
+    expect(within(armory).queryAllByRole("button")).toHaveLength(0);
+    const fleet = screen.getByLabelText("Fleet command lane");
+    expect(within(fleet).getAllByRole("button", { name: /Select .* unit/i })).toHaveLength(3);
+    expect(within(fleet).getByLabelText("Selected unit command")).toBeInTheDocument();
   });
 
   it("supports a five-unit fleet lane and an expandable context inspector", async () => {
@@ -180,7 +183,7 @@ describe("Battle Command v4 accessibility and interaction", () => {
     expect(screen.getByRole("navigation", { name: "Five-stage phase stepper" }).querySelector('[aria-current="step"]')).toHaveTextContent("Kinetic");
     expect(screen.getByLabelText("Operation state")).toHaveTextContent("2/8");
     expect(within(screen.getByLabelText("Operation state")).getByText("Attention").parentElement).toHaveTextContent("7");
-    expect(screen.getByText("0 FROZEN", { exact: true })).toBeInTheDocument();
+    expect(screen.getAllByText(/0 FROZEN/).length).toBeGreaterThan(0);
   });
 
   it("submits selected weight-six fleets and builds an ordered two-step Condense plan", async () => {
@@ -205,9 +208,8 @@ describe("Battle Command v4 accessibility and interaction", () => {
 
     const scoutPortrait = screen.getByRole("button", { name: "Select Scout unit scout-1" });
     await waitFor(() => expect(scoutPortrait.querySelector("img")).toHaveAttribute("src", "/media/art/card/scout-0.webp"));
-    expect(scoutPortrait).toHaveAttribute("aria-pressed", "false");
+    expect(scoutPortrait).toHaveAttribute("aria-pressed", "true");
     const scoutCard = scoutPortrait.closest("article")!;
-    fireEvent.pointerDown(within(scoutCard).getByText(/Condense 0\/2/));
     expect(scoutCard).toHaveClass("selected");
     expect(scoutCard).toHaveAttribute("aria-current", "true");
     expect(scoutPortrait).toHaveAttribute("aria-pressed", "true");
@@ -225,17 +227,126 @@ describe("Battle Command v4 accessibility and interaction", () => {
     fireEvent.click(condense);
     fireEvent.click(condense);
     expect(screen.getByText(/Condense 2\/2/)).toBeInTheDocument();
-    expect(within(scoutCard).getAllByText("Condense output")).toHaveLength(3);
-    const plannedScoutCard = screen.getByText(/Condense 2\/2/).closest("article")!;
-    expect(within(plannedScoutCard).getByLabelText("Staged for Kinetic")).toBeInTheDocument();
-    expect(within(plannedScoutCard).queryByText("Action open")).not.toBeInTheDocument();
-    expect(within(plannedScoutCard).getByRole("button", { name: /Condense output\s*, staged 2 times/ })).toHaveClass("is-staged");
+    const stagedPlan = within(screen.getByLabelText("Selected unit command")).getByLabelText("Staged for Kinetic");
+    expect(within(stagedPlan).getAllByText("Condense output")).toHaveLength(2);
+    expect(scoutCard).toHaveAttribute("data-plan-state", "staged");
+    expect(within(stagedPlan).queryByText("Action open")).not.toBeInTheDocument();
+    expect(within(screen.getByLabelText("Selected unit command")).getByRole("button", { name: /Condense output\s*, staged 2 times/ })).toHaveClass("is-staged");
     expect(linePortrait.closest("article")).toHaveClass("has-staged-plan");
     expect(linePortrait.closest("article")).not.toHaveClass("selected");
     expect(screen.getByRole("gridcell", { name: /LN1:1 staged move/ })).toBeInTheDocument();
     expect(screen.getByRole("gridcell", { name: /friendly Line, staged for Kinetic/ })).toBeInTheDocument();
-    expect(screen.getByLabelText("Phase actions")).toHaveTextContent("2 of 3 unit plans complete");
-    expect(within(plannedScoutCard).getByRole("button", { name: "Move on grid" })).toBeDisabled();
+    expect(screen.getByLabelText("Phase actions")).toHaveTextContent("3 ordered actions · 1 holding");
+    expect(within(screen.getByLabelText("Selected unit command")).getByRole("button", { name: "Move on grid" })).toBeDisabled();
+  });
+
+  it("keeps UAP help in phase guidance and explains range and Condense while refunding staged actions", async () => {
+    const fetcher = vi.fn().mockResolvedValue(response(battleViewFixture("kinetic"), 201));
+    vi.stubGlobal("fetch", fetcher);
+    render(<BattleCommandApp />);
+    fireEvent.click(screen.getByRole("button", { name: "Enter battle command" }));
+    const selected = await screen.findByLabelText("Selected unit command");
+    const battery = screen.getByRole("button", { name: "Battery UAP" });
+    expect(battery).toHaveClass("help-term");
+    fireEvent.focus(battery);
+    const batteryTip = document.getElementById(battery.getAttribute("aria-describedby")!)!;
+    expect(batteryTip).toBeVisible();
+    expect(batteryTip).toHaveTextContent(/3×3 field \+1 UAP at Register/);
+    expect(batteryTip).toHaveTextContent(/Smoke leaves battery support active/);
+    fireEvent.keyDown(battery, { key: "Escape" });
+    expect(batteryTip).not.toBeVisible();
+
+    const uap = within(screen.getByLabelText("Current phase guidance")).getByRole("button", { name: "UAP" });
+    fireEvent.focus(uap);
+    const uapTip = document.getElementById(uap.getAttribute("aria-describedby")!)!;
+    expect(uapTip).toBeVisible();
+    expect(uapTip).toHaveTextContent("UAP = Unit Action Points");
+    fireEvent.keyDown(uap, { key: "Escape" });
+    const scout = screen.getByRole("button", { name: "Select Scout unit scout-1" });
+    fireEvent.mouseEnter(scout);
+    fireEvent.click(scout);
+    expect(uapTip).not.toBeVisible();
+    expect(scout).toHaveTextContent("3/3 UAP");
+
+    const range = within(selected).getByRole("button", { name: "Range" });
+    fireEvent.focus(range);
+    const rangeTip = document.getElementById(range.getAttribute("aria-describedby")!)!;
+    expect(rangeTip).toHaveTextContent("1 UAP per step");
+    expect(rangeTip).toHaveTextContent("Range shifts preserve calibration");
+    fireEvent.click(within(selected).getByRole("button", { name: "Increase range" }));
+    expect(rangeTip).toHaveTextContent("Current R2 → staged R3 · 1 UAP reserved for range");
+    expect(rangeTip.querySelector('[aria-current="true"]')).toHaveTextContent("R3");
+    expect(scout).toHaveTextContent("2/3 UAP");
+    fireEvent.click(within(selected).getByRole("button", { name: "Cancel Range up, action 1 for scout-1" }));
+    expect(rangeTip).toHaveTextContent("Current R2 → staged R2 · 0 UAP reserved for range");
+    expect(scout).toHaveTextContent("3/3 UAP");
+
+    const condense = within(selected).getByRole("button", { name: "Condense output" });
+    fireEvent.click(condense);
+    const condenseTip = document.getElementById(condense.getAttribute("aria-describedby")!)!;
+    expect(condenseTip).toHaveTextContent(/1 UAP per step/);
+    expect(condenseTip).toHaveTextContent(/1 step is staged/);
+    expect(within(selected).getByRole("status")).toHaveTextContent(/up to 2 artifacts · 60% density cap · 65% calibration/);
+    expect(scout).toHaveTextContent("2/3 UAP");
+    fireEvent.click(condense);
+    expect(within(selected).getByRole("status")).toHaveTextContent(/up to 1 artifact · 90% density cap · 85% calibration/);
+    expect(scout).toHaveTextContent("1/3 UAP");
+
+    const cancelFirst = within(selected).getByRole("button", { name: "Cancel Condense output, action 1 for scout-1" });
+    fireEvent.focus(cancelFirst);
+    expect(document.getElementById(cancelFirst.getAttribute("aria-describedby")!)).toHaveTextContent(/X to cancel and restore 1 UAP/);
+    fireEvent.click(cancelFirst);
+    expect(within(selected).getByRole("status")).toHaveTextContent(/up to 2 artifacts · 60% density cap · 65% calibration/);
+    expect(scout).toHaveTextContent("2/3 UAP");
+    expect(within(selected).getAllByRole("button", { name: /^Cancel Condense/ })).toHaveLength(1);
+    fireEvent.click(within(selected).getByRole("button", { name: /^Cancel Condense/ }));
+    expect(within(selected).queryByRole("status")).not.toBeInTheDocument();
+    expect(scout).toHaveTextContent("3/3 UAP");
+    expect(within(selected).getByRole("button", { name: "Move on grid" })).toBeEnabled();
+    expect(fetcher.mock.calls.filter(([path]) => String(path).endsWith("/actions"))).toHaveLength(0);
+  });
+
+  it("identifies dependent cancellations, keeps independent orders, and prevents editing during submission", async () => {
+    const initial = battleViewFixture("kinetic");
+    const line = initial.projection.units.find((unit) => unit.unitId === "alpha:line-1")!;
+    line.uap.batteryBonus = 1;
+    line.uap.effective = 3;
+    Object.assign(initial.legal.kinetic.find((unit) => unit.unitId === line.unitId)!, { batteryBonus: 1, effectiveUap: 3 });
+    let finishSubmission!: (value: Response) => void;
+    const fetcher = vi.fn((path: string) => path.endsWith("/actions")
+      ? new Promise<Response>((resolve) => { finishSubmission = resolve; })
+      : Promise.resolve(response(initial, 201)));
+    vi.stubGlobal("fetch", fetcher);
+    render(<BattleCommandApp />);
+    fireEvent.click(screen.getByRole("button", { name: "Enter battle command" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Select Line unit line-1" }));
+    const selected = screen.getByLabelText("Selected unit command");
+    fireEvent.click(screen.getByRole("gridcell", { name: /^0,3/ }));
+    fireEvent.click(screen.getByRole("gridcell", { name: /^0,4/ }));
+    fireEvent.click(within(selected).getByRole("button", { name: "Step-Up" }));
+    const cancelFirst = within(selected).getByRole("button", { name: "Cancel Move to 0,3, action 1 for line-1" });
+    fireEvent.focus(cancelFirst);
+    const tip = document.getElementById(cancelFirst.getAttribute("aria-describedby")!)!;
+    expect(tip).toHaveTextContent("restore 2 UAP");
+    expect(tip).toHaveTextContent("dependent step 2 (Move to 0,4)");
+    fireEvent.click(cancelFirst);
+    expect(screen.getByRole("button", { name: "Select Line unit line-1" })).toHaveTextContent("2/3 UAP");
+    expect(within(selected).getAllByRole("button", { name: /^Cancel/ })).toHaveLength(1);
+    expect(within(selected).getByRole("button", { name: "Cancel Step-Up, action 1 for line-1" })).toBeEnabled();
+    expect(screen.queryByRole("gridcell", { name: /LN1:.*staged move/ })).not.toBeInTheDocument();
+
+    fireEvent.click(within(selected).getByRole("button", { name: "Increase range" }));
+    fireEvent.click(screen.getByRole("gridcell", { name: /^0,3/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Resolve Kinetic" }));
+    for (const cancel of within(selected).getAllByRole("button", { name: /^Cancel/ })) expect(cancel).toBeDisabled();
+    fireEvent.click(within(selected).getByRole("button", { name: /^Cancel Step-Up/ }));
+    expect(within(selected).getAllByRole("button", { name: /^Cancel/ })).toHaveLength(3);
+    const submitted = JSON.parse((fetcher.mock.calls as unknown as [string, RequestInit][]).find(([path]) => path.endsWith("/actions"))![1].body as string);
+    expect(submitted.submission.plans.find((plan: { unitId: string }) => plan.unitId === line.unitId).actions).toEqual([
+      { kind: "step-up" }, { kind: "range-shift", delta: 1 }, { kind: "move", destination: { x: 0, y: 3 } }
+    ]);
+    finishSubmission(response({ ...battleViewFixture("artillery"), revision: 1 }));
+    await waitFor(() => expect(screen.queryByRole("button", { name: /^Cancel Step-Up/ })).not.toBeInTheDocument());
   });
 
   it("uses a focus-managed in-app risk dialog for projected detonations", async () => {

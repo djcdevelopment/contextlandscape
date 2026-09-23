@@ -1,14 +1,6 @@
 import { readFileSync } from "node:fs";
-import {
-  ATTENTION_V4_COMMANDER_COMPILER_VERSION,
-  ATTENTION_V4_RESOLVER_VERSION,
-  ATTENTION_V4_RULESET_VERSION
-} from "../packages/contracts/dist/index.js";
-import {
-  ATTENTION_V4_RULESET_HASH,
-  attentionV4ContentHash,
-  createAttentionV4CommanderCatalog
-} from "../packages/engine/dist/index.js";
+import { attentionV4ContentHash } from "../packages/engine/dist/index.js";
+import { assertAttentionV42EvidenceIdentity } from "./attention-v4.2-evidence.mjs";
 
 const EXPECTED_REPORT_HASH = "sha256:48c68d58671e926ae14a14ef20cd32046166de97f545c1661d4ef9de6d2ec585";
 const reportPath = new URL("../data/experiments/attention-v4.2-descriptive-landscape/report.json", import.meta.url);
@@ -23,10 +15,7 @@ if (report.studyId !== "attention-v4.2-descriptive-landscape-1" || report.eviden
   fail("evidence classification drifted");
 }
 if (report.modelVersion !== "duel-capacity-v3-experimental") fail("external model id changed");
-if (report.rulesetVersion !== ATTENTION_V4_RULESET_VERSION || report.rulesetHash !== ATTENTION_V4_RULESET_HASH) fail("ruleset attribution drifted");
-if (report.resolverVersion !== ATTENTION_V4_RESOLVER_VERSION) fail("resolver attribution drifted");
-if (report.compilerVersion !== ATTENTION_V4_COMMANDER_COMPILER_VERSION) fail("compiler attribution drifted");
-if (report.commanderCatalogHash !== createAttentionV4CommanderCatalog().catalogHash) fail("commander catalog attribution drifted");
+assertAttentionV42EvidenceIdentity(report, fail);
 if (!report.design.complete || report.design.commanders !== 3_200 || report.design.nonSelfEdges !== 12_800 || report.design.selfPlayEdges !== 3_200 ||
   report.design.physicalMatches !== 115_200 || report.design.reversalPairs !== 51_200 || report.design.replaySentinels !== 125) {
   fail("fixed sparse design is incomplete");
